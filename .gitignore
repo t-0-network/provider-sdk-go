@@ -30,4 +30,4 @@ Thumbs.db
 *.bench
 
 # environment files
-.env
+local.env

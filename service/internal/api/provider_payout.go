@@ -9,12 +9,7 @@ import (
 
 func (s *ProviderService) PayOut(
 	ctx context.Context,
-	_ *connect.Request[network.PayoutRequest],
+	req *connect.Request[network.PayoutRequest],
 ) (*connect.Response[network.PayoutResponse], error) {
-	_, err := s.networkClient.UpdateQuote(ctx, connect.NewRequest(&network.UpdateQuoteRequest{}))
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-
 	return connect.NewResponse(&network.PayoutResponse{}), nil
 }
