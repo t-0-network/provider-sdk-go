@@ -1,0 +1,23 @@
+version: v2
+managed:
+  enabled: true
+  disable:
+    - file_option: go_package
+      module: buf.build/googleapis/googleapis
+    - file_option: go_package
+      module: buf.build/envoyproxy/protoc-gen-validate
+  override:
+    - file_option: go_package_prefix
+      value: github.com/t-0-network/provider-sdk-go/service/gen/proto
+plugins:
+  - local: ["go", "tool", "-modfile=../tools/go.mod", "protoc-gen-go"]
+    out: gen/proto
+    opt: paths=source_relative
+  - local: ["go", "tool", "-modfile=../tools/go.mod", "protoc-gen-connect-go"]
+    out: gen/proto
+    opt: paths=source_relative
+  - local: ["go", "tool", "-modfile=../tools/go.mod", "protoc-gen-validate"]
+    out: gen/proto
+    opt:
+      - paths=source_relative
+      - lang=go
