@@ -6,4 +6,14 @@ import (
 
 var _ networkconnect.ProviderServiceHandler = (*ProviderService)(nil)
 
-type ProviderService struct{}
+type ProviderService struct {
+	networkClient networkconnect.NetworkServiceClient
+}
+
+func NewProviderService(
+	networkClient networkconnect.NetworkServiceClient,
+) *ProviderService {
+	return &ProviderService{
+		networkClient: networkClient,
+	}
+}
