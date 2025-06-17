@@ -1,6 +1,8 @@
 package config
 
 import (
+	"time"
+
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog/log"
@@ -8,12 +10,18 @@ import (
 )
 
 type Config struct {
-	ServerPort string `env:"SERVER_PORT" envDefault:"8080"`
+	Server ServerConfig `envPrefix:"SERVER_"`
 
 	NetworkClient network.Config `envPrefix:"NETWORK_CLIENT_"`
 }
 
-func NewConfig() (Config, error) {
+type ServerConfig struct {
+	Address      string        `env:"PORT" envDefault:":8080"`
+	WriteTimeout time.Duration `env:"WRITE_TIMEOUT" envDefault:"10s"`
+	ReadTimeout  time.Duration `env:"READ_TIMEOUT" envDefault:"10s"`
+}
+
+func LoadConfig() (Config, error) {
 	err := godotenv.Load("local.env")
 	if err != nil {
 		log.Trace().Err(err).Msg("local.env is not loaded")

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/decred/dcrd/dcrec/secp256k1"
+	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/t-0-network/provider-sdk-go/service/gen/proto/network/networkconnect"
 )
 
@@ -33,15 +33,8 @@ func NewNetworkServiceClient(cfg Config) (networkconnect.NetworkServiceClient, e
 	return networkconnect.NewNetworkServiceClient(&client, string(cfg.BaseURL)), nil
 }
 
-// hexToECDSA converts a 32-byte hex-encoded private key string (optionally prefixed with "0x")
-// into a valid ECDSA private key on the secp256k1 curve.
-//
-// This function is intended as a replacement for Ethereum's crypto.HexToECDSA and produces
-// keys fully compatible with Ethereum's cryptography. It uses the secp256k1 curve implementation
-// from the github.com/decred/dcrd/dcrec/secp256k1/v4
 func hexToECDSA(hexedPrivatekey string) (*ecdsa.PrivateKey, error) {
-	hexedPrivatekey = strings.TrimPrefix(hexedPrivatekey, "0x")
-	keyBytes, err := hex.DecodeString(hexedPrivatekey)
+	keyBytes, err := hex.DecodeString(strings.TrimPrefix(hexedPrivatekey, "0x"))
 	if err != nil {
 		return nil, fmt.Errorf("decoding private key: %w", err)
 	}
@@ -50,15 +43,15 @@ func hexToECDSA(hexedPrivatekey string) (*ecdsa.PrivateKey, error) {
 		return nil, fmt.Errorf("invalid private key length: expected %d bytes, got %d", keyLen, len(keyBytes))
 	}
 
-	privateKey, _ := secp256k1.PrivKeyFromBytes(keyBytes)
+	// Convert to btcec private key
+	privateKey, publicKey := btcec.PrivKeyFromBytes(keyBytes)
 
 	// Convert to std library ecdsa.PrivateKey
-	pubKey := privateKey.PubKey()
 	priv := &ecdsa.PrivateKey{
 		PublicKey: ecdsa.PublicKey{
-			Curve: secp256k1.S256(),
-			X:     pubKey.X,
-			Y:     pubKey.Y,
+			Curve: btcec.S256(),
+			X:     publicKey.X(),
+			Y:     publicKey.Y(),
 		},
 		D: new(big.Int).SetBytes(privateKey.Serialize()),
 	}
