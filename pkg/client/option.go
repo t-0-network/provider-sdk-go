@@ -10,10 +10,10 @@ import (
 )
 
 var (
-	ErrEmptyBaseURL       = errors.New("base URL is not set")
-	ErrInvalidBaseURL     = errors.New("base URL is not valid")
-	ErrInvalidSignOptions = errors.New("either a sign function or a private key must be set")
-	ErrInvalidTimeOut     = errors.New("timeout must be greater than zero")
+	ErrEmptyBaseURL    = errors.New("base URL is not set")
+	ErrInvalidBaseURL  = errors.New("base URL is not valid")
+	ErrEmptyPrivateKey = errors.New("private key is not set")
+	ErrInvalidTimeOut  = errors.New("timeout must be greater than zero")
 )
 
 type client struct {
@@ -24,16 +24,15 @@ type client struct {
 }
 
 func (c *client) validate() error {
+	if c.baseURL == "" {
+		return ErrEmptyBaseURL
+	}
+
 	if _, err := url.Parse(c.baseURL); err != nil {
 		return fmt.Errorf("%w: %s", ErrInvalidBaseURL, err)
 	}
 
-	switch {
-	case c.baseURL == "":
-		return ErrEmptyBaseURL
-	case c.signFn == nil && c.hexedPrivateKey == "":
-		return ErrInvalidSignOptions
-	case c.timeOut <= 0:
+	if c.timeOut <= 0 {
 		return ErrInvalidTimeOut
 	}
 
