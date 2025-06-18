@@ -18,6 +18,8 @@ const (
 
 // SignFn accepts digest hash bytes and returns a signature and
 // the public key bytes of the signer or an error.
+//
+// Signature and public key bytes are following the Ethereum format.
 type SignFn func(digestHash []byte) (sig []byte, pubKeyBytes []byte, err error)
 
 func NewSigner(privateKey *ecdsa.PrivateKey) SignFn {

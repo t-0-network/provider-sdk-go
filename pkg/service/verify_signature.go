@@ -1,4 +1,4 @@
-package error
+package service
 
 import (
 	"bufio"
@@ -12,17 +12,13 @@ import (
 	"strconv"
 
 	"connectrpc.com/connect"
+	"github.com/t-0-network/provider-sdk-go/pkg/constant"
 	"github.com/t-0-network/provider-sdk-go/pkg/internal/crypto"
 )
 
-const (
-	SignatureHeader = "X-Signature"
-	PublicKeyHeader = "X-Public-Key"
-)
-
 type (
-	VerifySignatureMiddleware  func(http.Handler) http.Handler
-	VerifySignatureMaxBodySize int64
+	middleware                 func(http.Handler) http.Handler
+	verifySignatureMaxBodySize int64
 )
 
 type SignatureError struct {
@@ -30,17 +26,17 @@ type SignatureError struct {
 	Message     string
 }
 
-type SignatureErrorContextKey struct{}
+type signatureErrorContextKey struct{}
 
-func GetSignatureErrorFromContext(ctx context.Context) (*SignatureError, bool) {
-	sigErr, ok := ctx.Value(SignatureErrorContextKey{}).(*SignatureError)
+func getSignatureErrorFromContext(ctx context.Context) (*SignatureError, bool) {
+	sigErr, ok := ctx.Value(signatureErrorContextKey{}).(*SignatureError)
 	return sigErr, ok
 }
 
-func NewSignatureVerifierMiddleware(
-	verifySignature VerifySignature,
-	maxBodySizeOpt VerifySignatureMaxBodySize,
-) VerifySignatureMiddleware {
+func newSignatureVerifierMiddleware(
+	verifySignature verifySignature,
+	maxBodySizeOpt verifySignatureMaxBodySize,
+) middleware {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
 			setErrorAndContinue := func(req *http.Request, statusCode connect.Code, message string) {
@@ -48,17 +44,17 @@ func NewSignatureVerifierMiddleware(
 					ConnectCode: statusCode,
 					Message:     message,
 				}
-				ctx := context.WithValue(req.Context(), SignatureErrorContextKey{}, errObj)
+				ctx := context.WithValue(req.Context(), signatureErrorContextKey{}, errObj)
 				handler.ServeHTTP(writer, req.WithContext(ctx))
 			}
 
-			publicKey, err := parseRequiredHexedHeader(PublicKeyHeader, req.Header)
+			publicKey, err := parseRequiredHexedHeader(constant.PublicKeyHeader, req.Header)
 			if err != nil {
 				setErrorAndContinue(req, connect.CodeInvalidArgument, err.Error())
 				return
 			}
 
-			signature, err := parseRequiredHexedHeader(SignatureHeader, req.Header)
+			signature, err := parseRequiredHexedHeader(constant.SignatureHeader, req.Header)
 			if err != nil {
 				setErrorAndContinue(req, connect.CodeInvalidArgument, err.Error())
 				return
@@ -79,7 +75,7 @@ func NewSignatureVerifierMiddleware(
 				return
 			}
 
-			ctx := context.WithValue(req.Context(), SignatureErrorContextKey{}, (*SignatureError)(nil))
+			ctx := context.WithValue(req.Context(), signatureErrorContextKey{}, (*SignatureError)(nil))
 			handler.ServeHTTP(writer, req.WithContext(ctx))
 		})
 	}
@@ -121,9 +117,9 @@ func readBodyWithCap(r *http.Request, cap int64) ([]byte, error) {
 	return body.Bytes(), nil
 }
 
-type VerifySignature func(publicKey []byte, message []byte, signature []byte) error
+type verifySignature func(publicKey []byte, message []byte, signature []byte) error
 
-func newVerifyEthereumSignature() VerifySignature {
+func newVerifyEthereumSignature() verifySignature {
 	return func(publicKey []byte, message []byte, signature []byte) error {
 		if len(signature) < 64 || len(signature) > 65 {
 			return ErrInvalidSignature

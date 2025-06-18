@@ -7,26 +7,17 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/t-0-network/provider-sdk-go/pkg/constant"
 	"github.com/t-0-network/provider-sdk-go/pkg/internal/crypto"
 )
 
 const (
-	signatureHeader = "X-Signature"
-	publicKeyHeader = "X-Public-Key"
-
 	ethereumSignatureLength int = 65 // 32 bytes r + 32 bytes s + 1 byte recovery ID
 )
 
 type signingTransport struct {
 	transport http.RoundTripper
 	sign      crypto.SignFn
-}
-
-func newSigningTransport(transport http.RoundTripper, signFn crypto.SignFn) *signingTransport {
-	return &signingTransport{
-		transport: transport,
-		sign:      signFn,
-	}
 }
 
 func (t *signingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -46,8 +37,8 @@ func (t *signingTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 	}
 
 	// Set headers
-	req.Header.Set(publicKeyHeader, "0x"+hex.EncodeToString(pubKeyBytes))
-	req.Header.Set(signatureHeader, "0x"+hex.EncodeToString(signature))
+	req.Header.Set(constant.PublicKeyHeader, "0x"+hex.EncodeToString(pubKeyBytes))
+	req.Header.Set(constant.SignatureHeader, "0x"+hex.EncodeToString(signature))
 
 	return t.transport.RoundTrip(req)
 }
