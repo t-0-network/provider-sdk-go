@@ -15,6 +15,9 @@ const (
 	ethereumSignatureLength int = 65 // 32 bytes r + 32 bytes s + 1 byte recovery ID
 )
 
+// signingTransport is an HTTP transport that signs requests with a given signing function.
+// It reads the request body, computes its digest, signs it, and adds the signature and public key
+// to the request headers before forwarding the request to the underlying transport.
 type signingTransport struct {
 	transport http.RoundTripper
 	sign      crypto.SignFn
