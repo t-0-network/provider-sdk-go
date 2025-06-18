@@ -25,7 +25,6 @@ func TestSignAndVerify(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, signature, 65, "signature length should be 65 bytes")
 	require.Len(t, pubKeyBytes, 65, "public key bytes length should be 65 bytes")
-
 	require.Equal(t, expectedPubKeyHex, hex.EncodeToString(pubKeyBytes))
 
 	publicKey, err := crypto.GetPublicKeyFromBytes(pubKeyBytes)

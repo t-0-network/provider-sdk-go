@@ -10,7 +10,7 @@ const (
 	defaultMaxBodySize = 1024 * 1024 // 1 MB
 )
 
-var ErrPrivateKeyNotSet = errors.New("private key not set")
+var ErrNetworkPublicKeyIsRequired = errors.New("network public key is not set")
 
 type providerHandlerOptions struct {
 	networkHexedPublicKey        string

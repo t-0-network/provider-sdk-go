@@ -21,11 +21,11 @@ func NewServiceClient(opts ...ClientOption) (networkconnect.NetworkServiceClient
 	}
 
 	if options.signFn == nil {
-		if options.hexedProviderPrivateKey == "" {
+		if options.providerPrivateKeyHexed == "" {
 			return nil, ErrEmptyPrivateKey
 		}
 
-		defaultSignFn, err := crypto.NewSignerFromHex(options.hexedProviderPrivateKey)
+		defaultSignFn, err := crypto.NewSignerFromHex(options.providerPrivateKeyHexed)
 		if err != nil {
 			return nil, fmt.Errorf("creating signer from hexed private key: %w", err)
 		}

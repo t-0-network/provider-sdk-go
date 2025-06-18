@@ -18,7 +18,7 @@ var (
 
 type clientOptions struct {
 	baseURL                string
-	hexedNetworkPrivateKey string
+	networkPrivateKeyHexed string
 	signFn                 crypto.SignFn
 	timeout                time.Duration
 }
@@ -41,7 +41,7 @@ func (c *clientOptions) validate() error {
 
 var defaultClientOptions = &clientOptions{
 	baseURL:                "",
-	hexedNetworkPrivateKey: "",
+	networkPrivateKeyHexed: "",
 	signFn:                 nil,
 	timeout:                defaultTimeout,
 }
@@ -56,7 +56,7 @@ func WithBaseURL(url string) Option {
 
 func WithNetworkPrivateKeyHexed(privateKey string) Option {
 	return func(c *clientOptions) {
-		c.hexedNetworkPrivateKey = privateKey
+		c.networkPrivateKeyHexed = privateKey
 	}
 }
 

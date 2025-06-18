@@ -127,16 +127,16 @@ func newVerifyEthereumSignature(networkPublicKey *ecdsa.PublicKey) verifySignatu
 
 		digestHash := crypto.LegacyKeccak256(message)
 
-		signerPK, err := crypto.GetPublicKeyFromBytes(publicKey)
+		signerPublicKey, err := crypto.GetPublicKeyFromBytes(publicKey)
 		if err != nil {
 			return fmt.Errorf("invalid public key: %w", err)
 		}
 
-		if !signerPK.Equal(networkPublicKey) {
+		if !signerPublicKey.Equal(networkPublicKey) {
 			return ErrUnknownPublicKey
 		}
 
-		if !crypto.VerifySignature(signerPK, digestHash, signature[:64]) {
+		if !crypto.VerifySignature(signerPublicKey, digestHash, signature[:64]) {
 			return ErrSignatureVerificationFailed
 		}
 

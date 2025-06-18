@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -21,15 +20,15 @@ func NewProviderHandler(
 
 	if handler.verifySignatureFn == nil {
 		if handler.networkHexedPublicKey == "" {
-			return nil, errors.New("network public key is required")
+			return nil, ErrNetworkPublicKeyIsRequired
 		}
 
-		networkPK, err := crypto.HexToECDSAPublicKey(handler.networkHexedPublicKey)
+		networkPublicKey, err := crypto.HexToECDSAPublicKey(handler.networkHexedPublicKey)
 		if err != nil {
 			return nil, fmt.Errorf("invalid network public key: %w", err)
 		}
 
-		handler.verifySignatureFn = newVerifyEthereumSignature(networkPK)
+		handler.verifySignatureFn = newVerifyEthereumSignature(networkPublicKey)
 	}
 
 	connectHandlerOpts := append([]connect.HandlerOption{
@@ -44,10 +43,7 @@ func NewProviderHandler(
 	mux := http.NewServeMux()
 	mux.Handle(path, provideServiceHandler)
 
-	signatureVerifierMiddleware := newSignatureVerifierMiddleware(
-		handler.verifySignatureFn,
-		handler.verifySignatureMaxBodySize,
-	)
-
-	return signatureVerifierMiddleware(mux), nil
+	return newSignatureVerifierMiddleware(
+		handler.verifySignatureFn, handler.verifySignatureMaxBodySize,
+	)(mux), nil
 }
