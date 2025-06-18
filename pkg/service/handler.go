@@ -1,29 +1,53 @@
 package service
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 
 	"connectrpc.com/connect"
 	"github.com/t-0-network/provider-sdk-go/pkg/gen/proto/network/networkconnect"
+	"github.com/t-0-network/provider-sdk-go/pkg/internal/crypto"
 )
 
-func NewHandler(
+func NewProviderHandler(
 	providerHandler networkconnect.ProviderServiceHandler,
-) http.Handler {
+	option ...HandlerOption,
+) (http.Handler, error) {
+	handler := defaultProviderHandlerOptions
+	for _, opt := range option {
+		opt(handler)
+	}
+
+	if handler.verifySignatureFn == nil {
+		if handler.networkHexedPublicKey == "" {
+			return nil, errors.New("network public key is required")
+		}
+
+		networkPK, err := crypto.HexToECDSAPublicKey(handler.networkHexedPublicKey)
+		if err != nil {
+			return nil, fmt.Errorf("invalid network public key: %w", err)
+		}
+
+		handler.verifySignatureFn = newVerifyEthereumSignature(networkPK)
+	}
+
+	connectHandlerOpts := append([]connect.HandlerOption{
+		connect.WithInterceptors(signatureErrorInterceptor()),
+	}, handler.connectHandlerOptions...)
+
 	path, provideServiceHandler := networkconnect.NewProviderServiceHandler(
 		providerHandler,
-		connect.WithInterceptors(
-			signatureErrorInterceptor(),
-		),
+		connectHandlerOpts...,
 	)
 
 	mux := http.NewServeMux()
 	mux.Handle(path, provideServiceHandler)
 
-	signatureVerifier := newSignatureVerifierMiddleware(
-		newVerifyEthereumSignature(),
-		verifySignatureMaxBodySize(1024*1024), // 1 MB
+	signatureVerifierMiddleware := newSignatureVerifierMiddleware(
+		handler.verifySignatureFn,
+		handler.verifySignatureMaxBodySize,
 	)
 
-	return signatureVerifier(mux)
+	return signatureVerifierMiddleware(mux), nil
 }

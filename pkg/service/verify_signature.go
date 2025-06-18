@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -12,14 +13,11 @@ import (
 	"strconv"
 
 	"connectrpc.com/connect"
-	"github.com/t-0-network/provider-sdk-go/pkg/constant"
+	"github.com/t-0-network/provider-sdk-go/pkg/internal/constant"
 	"github.com/t-0-network/provider-sdk-go/pkg/internal/crypto"
 )
 
-type (
-	middleware                 func(http.Handler) http.Handler
-	verifySignatureMaxBodySize int64
-)
+type middleware func(http.Handler) http.Handler
 
 type SignatureError struct {
 	ConnectCode connect.Code
@@ -35,7 +33,7 @@ func getSignatureErrorFromContext(ctx context.Context) (*SignatureError, bool) {
 
 func newSignatureVerifierMiddleware(
 	verifySignature verifySignature,
-	maxBodySizeOpt verifySignatureMaxBodySize,
+	maxBodySizeOpt int64,
 ) middleware {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
@@ -60,7 +58,7 @@ func newSignatureVerifierMiddleware(
 				return
 			}
 
-			body, err := readBodyWithCap(req, int64(maxBodySizeOpt))
+			body, err := readBodyWithCap(req, maxBodySizeOpt)
 			if err != nil {
 				setErrorAndContinue(req, connect.CodeInvalidArgument, err.Error())
 				return
@@ -117,22 +115,28 @@ func readBodyWithCap(r *http.Request, cap int64) ([]byte, error) {
 	return body.Bytes(), nil
 }
 
-type verifySignature func(publicKey []byte, message []byte, signature []byte) error
+// verifySignature accepts a public key, a message, and a signature, hashes the
+// message, and verifies the signature against the public key.
+type verifySignature func(publicKey, message, signature []byte) error
 
-func newVerifyEthereumSignature() verifySignature {
-	return func(publicKey []byte, message []byte, signature []byte) error {
+func newVerifyEthereumSignature(networkPublicKey *ecdsa.PublicKey) verifySignature {
+	return func(publicKey, message, signature []byte) error {
 		if len(signature) < 64 || len(signature) > 65 {
 			return ErrInvalidSignature
 		}
 
 		digestHash := crypto.LegacyKeccak256(message)
 
-		pk, err := crypto.GetPublicKeyFromBytes(publicKey)
+		signerPK, err := crypto.GetPublicKeyFromBytes(publicKey)
 		if err != nil {
 			return fmt.Errorf("invalid public key: %w", err)
 		}
 
-		if !crypto.VerifySignature(pk, digestHash, signature[:64]) {
+		if !signerPK.Equal(networkPublicKey) {
+			return ErrUnknownPublicKey
+		}
+
+		if !crypto.VerifySignature(signerPK, digestHash, signature[:64]) {
 			return ErrSignatureVerificationFailed
 		}
 

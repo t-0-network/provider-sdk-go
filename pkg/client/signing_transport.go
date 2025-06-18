@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/t-0-network/provider-sdk-go/pkg/constant"
+	"github.com/t-0-network/provider-sdk-go/pkg/internal/constant"
 	"github.com/t-0-network/provider-sdk-go/pkg/internal/crypto"
 )
 
@@ -15,15 +15,22 @@ const (
 	ethereumSignatureLength int = 65 // 32 bytes r + 32 bytes s + 1 byte recovery ID
 )
 
-// signingTransport is an HTTP transport that signs requests with a given signing function.
+func NewEthereumSigningTransport(signFn crypto.SignFn) *EthereumSigningTransport {
+	return &EthereumSigningTransport{
+		transport: http.DefaultTransport,
+		sign:      signFn,
+	}
+}
+
+// EthereumSigningTransport is an HTTP transport that signs requests with a given signing function.
 // It reads the request body, computes its digest, signs it, and adds the signature and public key
 // to the request headers before forwarding the request to the underlying transport.
-type signingTransport struct {
+type EthereumSigningTransport struct {
 	transport http.RoundTripper
 	sign      crypto.SignFn
 }
 
-func (t *signingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+func (t *EthereumSigningTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	// Read and restore request body
 	body, err := io.ReadAll(req.Body)
 	if err != nil {

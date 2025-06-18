@@ -34,7 +34,7 @@ func NewSigner(privateKey *ecdsa.PrivateKey) SignFn {
 }
 
 func NewSignerFromHex(hexedPrivateKey string) (SignFn, error) {
-	privateKey, err := hexToECDSA(hexedPrivateKey)
+	privateKey, err := HexToECDSA(hexedPrivateKey)
 	if err != nil {
 		return nil, fmt.Errorf("parsing private key: %w", err)
 	}
@@ -63,11 +63,10 @@ func sign(digest []byte, privateKey *ecdsa.PrivateKey) ([]byte, error) {
 	return signature, nil
 }
 
-// hexToECDSA converts a 32-byte hex-encoded private key string (optionally prefixed with "0x")
+// HexToECDSA converts a 32-byte hex-encoded private key string (optionally prefixed with "0x")
 // into a valid ECDSA private key on the secp256k1 curve using btcec.
-func hexToECDSA(hexedPrivatekey string) (*ecdsa.PrivateKey, error) {
-	hexedPrivatekey = strings.TrimPrefix(hexedPrivatekey, "0x")
-	keyBytes, err := hex.DecodeString(hexedPrivatekey)
+func HexToECDSA(hexedPrivatekey string) (*ecdsa.PrivateKey, error) {
+	keyBytes, err := hex.DecodeString(strings.TrimPrefix(hexedPrivatekey, "0x"))
 	if err != nil {
 		return nil, fmt.Errorf("decoding private key: %w", err)
 	}
@@ -90,6 +89,28 @@ func hexToECDSA(hexedPrivatekey string) (*ecdsa.PrivateKey, error) {
 	}
 
 	return priv, nil
+}
+
+func HexToECDSAPublicKey(hexedPublicKey string) (*ecdsa.PublicKey, error) {
+	keyBytes, err := hex.DecodeString(strings.TrimPrefix(hexedPublicKey, "0x"))
+	if err != nil {
+		return nil, fmt.Errorf("decoding public key: %w", err)
+	}
+
+	// Parse using btcec which handles both compressed and uncompressed formats
+	btcecPubKey, err := btcec.ParsePubKey(keyBytes)
+	if err != nil {
+		return nil, fmt.Errorf("parsing public key: %w", err)
+	}
+
+	// Convert to std library ecdsa.PublicKey
+	pubKey := &ecdsa.PublicKey{
+		Curve: btcec.S256(),
+		X:     btcecPubKey.X(),
+		Y:     btcecPubKey.Y(),
+	}
+
+	return pubKey, nil
 }
 
 func GetPublicKeyBytes(privateKey *ecdsa.PrivateKey) []byte {
