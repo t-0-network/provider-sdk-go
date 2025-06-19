@@ -1,12 +1,10 @@
 package service
 
 import (
-	"fmt"
 	"net/http"
 
 	"connectrpc.com/connect"
 	"github.com/t-0-network/provider-sdk-go/pkg/gen/proto/network/networkconnect"
-	"github.com/t-0-network/provider-sdk-go/pkg/internal/crypto"
 )
 
 func NewProviderHandler(
@@ -23,12 +21,11 @@ func NewProviderHandler(
 			return nil, ErrNetworkPublicKeyIsRequired
 		}
 
-		networkPublicKey, err := crypto.HexToECDSAPublicKey(handler.networkHexedPublicKey)
+		verifySignatureFn, err := newVerifyEthereumSignature(handler.networkHexedPublicKey)
 		if err != nil {
-			return nil, fmt.Errorf("invalid network public key: %w", err)
+			return nil, err
 		}
-
-		handler.verifySignatureFn = newVerifyEthereumSignature(networkPublicKey)
+		handler.verifySignatureFn = verifySignatureFn
 	}
 
 	connectHandlerOpts := append([]connect.HandlerOption{

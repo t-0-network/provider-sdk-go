@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/t-0-network/provider-sdk-go/pkg/client"
 	"github.com/t-0-network/provider-sdk-go/pkg/gen/proto/network/networkconnect"
 	"github.com/t-0-network/provider-sdk-go/pkg/internal/crypto"
+	"github.com/t-0-network/provider-sdk-go/pkg/internal/transport"
 )
 
 const (
@@ -40,7 +40,7 @@ func NewServiceClient(opts ...Option) (networkconnect.ProviderServiceClient, err
 
 	client := http.Client{
 		Timeout:   options.timeout,
-		Transport: client.NewEthereumSigningTransport(options.signFn),
+		Transport: transport.NewEthereumSigningTransport(options.signFn),
 	}
 
 	return networkconnect.NewProviderServiceClient(&client, options.baseURL), nil

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"context"
-	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -119,27 +118,56 @@ func readBodyWithCap(r *http.Request, cap int64) ([]byte, error) {
 // message, and verifies the signature against the public key.
 type verifySignature func(publicKey, message, signature []byte) error
 
-func newVerifyEthereumSignature(networkPublicKey *ecdsa.PublicKey) verifySignature {
+func newVerifyEthereumSignature(networkPublicKeyHexed string) (verifySignature, error) {
+	networkPublicKey, err := crypto.GetPublicKeyFromHex(networkPublicKeyHexed)
+	if err != nil {
+		return nil, fmt.Errorf("invalid network public key: %w", err)
+	}
+
 	return func(publicKey, message, signature []byte) error {
 		if len(signature) < 64 || len(signature) > 65 {
 			return ErrInvalidSignature
 		}
-
-		digestHash := crypto.LegacyKeccak256(message)
 
 		signerPublicKey, err := crypto.GetPublicKeyFromBytes(publicKey)
 		if err != nil {
 			return fmt.Errorf("invalid public key: %w", err)
 		}
 
-		if !signerPublicKey.Equal(networkPublicKey) {
+		if !signerPublicKey.IsEqual(networkPublicKey) {
 			return ErrUnknownPublicKey
 		}
 
+		digestHash := crypto.LegacyKeccak256(message)
 		if !crypto.VerifySignature(signerPublicKey, digestHash, signature[:64]) {
 			return ErrSignatureVerificationFailed
 		}
 
 		return nil
-	}
+	}, nil
 }
+
+// func newVerifyEthereumSignature(networkPublicKey *secp256k1.PublicKey) verifySignature {
+// 	return func(publicKey, message, signature []byte) error {
+// 		if len(signature) < 64 || len(signature) > 65 {
+// 			return ErrInvalidSignature
+// 		}
+
+// 		digestHash := crypto.LegacyKeccak256(message)
+
+// 		signerPublicKey, err := crypto.GetPublicKeyFromBytes(publicKey)
+// 		if err != nil {
+// 			return fmt.Errorf("invalid public key: %w", err)
+// 		}
+
+// 		if !signerPublicKey.IsEqual(networkPublicKey) {
+// 			return ErrUnknownPublicKey
+// 		}
+
+// 		if !crypto.VerifySignature(signerPublicKey, digestHash, signature[:64]) {
+// 			return ErrSignatureVerificationFailed
+// 		}
+
+// 		return nil
+// 	}
+// }

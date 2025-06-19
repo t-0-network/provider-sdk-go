@@ -39,9 +39,7 @@ func (t *EthereumSigningTransport) RoundTrip(req *http.Request) (*http.Response,
 	req.Body.Close()
 	req.Body = io.NopCloser(bytes.NewReader(body))
 
-	digest := crypto.LegacyKeccak256(body)
-
-	signature, pubKeyBytes, err := t.sign(digest)
+	signature, pubKeyBytes, err := t.sign(body)
 	if err != nil {
 		return nil, fmt.Errorf("signing request body: %w", err)
 	}

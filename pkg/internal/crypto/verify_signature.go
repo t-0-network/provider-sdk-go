@@ -2,13 +2,14 @@ package crypto
 
 import (
 	"crypto/ecdsa"
-	"math/big"
+
+	"github.com/decred/dcrd/dcrec/secp256k1/v4"
+	dcrececdsa "github.com/decred/dcrd/dcrec/secp256k1/v4/ecdsa"
 )
 
 type VerifySignatureFn func(digest []byte, signature []byte, privateKey *ecdsa.PrivateKey) bool
 
-// VerifySignature verifies an Ethereum signature by performing ECDSA verification.
-func VerifySignature(pubKey *ecdsa.PublicKey, digest []byte, signature []byte) bool {
+func VerifySignature(pubKey *secp256k1.PublicKey, digest []byte, signature []byte) bool {
 	if len(digest) != 32 {
 		return false
 	}
@@ -18,15 +19,18 @@ func VerifySignature(pubKey *ecdsa.PublicKey, digest []byte, signature []byte) b
 		return false
 	}
 
-	// Extract R and S from signature (always first 64 bytes)
-	r := new(big.Int).SetBytes(signature[:32])
-	s := new(big.Int).SetBytes(signature[32:64])
+	// Extract R and S from the signature (ignore recovery ID at position 64)
+	rBytes := signature[:32]
+	sBytes := signature[32:64]
 
-	// Validate r and s are not zero
-	if r.Sign() == 0 || s.Sign() == 0 {
-		return false
-	}
+	// Convert to ModNScalar
+	var r, s secp256k1.ModNScalar
+	r.SetByteSlice(rBytes)
+	s.SetByteSlice(sBytes)
 
-	// Perform ECDSA verification
-	return ecdsa.Verify(pubKey, digest, r, s)
+	// Create the signature
+	sig := dcrececdsa.NewSignature(&r, &s)
+
+	// Verify
+	return sig.Verify(digest, pubKey)
 }

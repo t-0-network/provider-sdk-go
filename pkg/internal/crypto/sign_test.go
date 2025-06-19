@@ -1,12 +1,10 @@
 package crypto_test
 
 import (
-	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/rand"
 	"encoding/hex"
 	"testing"
 
+	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"github.com/stretchr/testify/require"
 	"github.com/t-0-network/provider-sdk-go/pkg/internal/crypto"
 )
@@ -18,7 +16,7 @@ func TestSignAndVerify(t *testing.T) {
 	sign, err := crypto.NewSignerFromHex(privateKeyHex)
 	require.NoError(t, err, "failed to create signer from hex private key")
 
-	msg := []byte("hash and sign me!")
+	msg := []byte("please sign me!")
 	digest := crypto.LegacyKeccak256(msg)
 
 	signature, pubKeyBytes, err := sign(digest)
@@ -34,8 +32,8 @@ func TestSignAndVerify(t *testing.T) {
 	require.True(t, valid, "signature verification should succeed")
 
 	t.Run("Should fail to verify due to key miss match", func(t *testing.T) {
-		pk, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-		require.NoError(t, err, "failed to generate ECDSA key")
+		pk, err := secp256k1.GeneratePrivateKey()
+		require.NoError(t, err, "failed to generate private key key")
 
 		sign = crypto.NewSigner(pk)
 		signature, pubKeyBytes, err := sign(digest)
