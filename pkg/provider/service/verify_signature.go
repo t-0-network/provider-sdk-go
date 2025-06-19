@@ -146,28 +146,3 @@ func newVerifyEthereumSignature(networkPublicKeyHexed string) (verifySignature, 
 		return nil
 	}, nil
 }
-
-// func newVerifyEthereumSignature(networkPublicKey *secp256k1.PublicKey) verifySignature {
-// 	return func(publicKey, message, signature []byte) error {
-// 		if len(signature) < 64 || len(signature) > 65 {
-// 			return ErrInvalidSignature
-// 		}
-
-// 		digestHash := crypto.LegacyKeccak256(message)
-
-// 		signerPublicKey, err := crypto.GetPublicKeyFromBytes(publicKey)
-// 		if err != nil {
-// 			return fmt.Errorf("invalid public key: %w", err)
-// 		}
-
-// 		if !signerPublicKey.IsEqual(networkPublicKey) {
-// 			return ErrUnknownPublicKey
-// 		}
-
-// 		if !crypto.VerifySignature(signerPublicKey, digestHash, signature[:64]) {
-// 			return ErrSignatureVerificationFailed
-// 		}
-
-// 		return nil
-// 	}
-// }
