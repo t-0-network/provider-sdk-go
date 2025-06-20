@@ -2,19 +2,14 @@ package examples_test
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
-	"net/http"
-	"time"
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
 	networkproto "github.com/t-0-network/provider-sdk-go/pkg/gen/proto/network"
 	providerClient "github.com/t-0-network/provider-sdk-go/pkg/provider/client"
 	providerService "github.com/t-0-network/provider-sdk-go/pkg/provider/service"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
 )
 
 var (
@@ -34,23 +29,14 @@ func ExampleNewProviderHandler() {
 		log.Fatalf("Failed to create provider service handler: %v", err)
 	}
 
-	server := &http.Server{
-		Addr:         ":8080",
-		ReadTimeout:  time.Duration(10) * time.Second,
-		WriteTimeout: time.Duration(10) * time.Second,
-		Handler:      h2c.NewHandler(providerServiceHandler, &http2.Server{}),
-	}
-
-	go func() {
-		if err := server.ListenAndServe(); err != nil &&
-			!errors.Is(err, http.ErrServerClosed) {
-			log.Fatal(err)
-		}
-	}()
+	shutdownFunc := providerService.NewStartedServer(
+		providerServiceHandler,
+		providerService.WithAddr("127.0.0.1:8080"),
+	)
 
 	// Create client to consume the service
 	providerClient, err := providerClient.NewServiceClient(
-		providerClient.WithBaseURL("http://localhost:8080"),
+		providerClient.WithBaseURL("http://127.0.0.1:8080"),
 		providerClient.WithNetworkPrivateKeyHexed(networkPrivateKey),
 	)
 	if err != nil {
@@ -69,12 +55,8 @@ func ExampleNewProviderHandler() {
 
 	fmt.Println("Successfully created pay in details")
 
-	// Graceful shutdown
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	if err := server.Shutdown(ctx); err != nil {
-		log.Printf("HTTP server Shutdown: %v", err)
+	if err := shutdownFunc(context.Background()); err != nil {
+		log.Fatalf("Failed to shutdown provider service: %v", err)
 	}
 
 	// Output:

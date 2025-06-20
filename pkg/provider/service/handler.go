@@ -7,6 +7,17 @@ import (
 	"github.com/t-0-network/provider-sdk-go/pkg/gen/proto/network/networkconnect"
 )
 
+// NewProviderHandler returns a ready-to-use *http.ServeMux with the
+// networkconnect.ProviderServiceHandler registered.
+//
+// It creates a new HTTP mux, registers the provided ProviderServiceHandler on the appropriate path,
+// and returns the mux for immediate use in your HTTP server.
+//
+// Parameters:
+//   - service: An implementation of the networkconnect.ProviderServiceHandler interface.
+//
+// Returns:
+//   - *http.ServeMux: An HTTP mux with the provider service handler registered.
 func NewProviderHandler(
 	providerHandler networkconnect.ProviderServiceHandler,
 	option ...HandlerOption,
@@ -25,6 +36,7 @@ func NewProviderHandler(
 		if err != nil {
 			return nil, err
 		}
+
 		handler.verifySignatureFn = verifySignatureFn
 	}
 
