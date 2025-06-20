@@ -11,10 +11,6 @@ import (
 	"github.com/t-0-network/provider-sdk-go/pkg/internal/crypto"
 )
 
-const (
-	ethereumSignatureLength int = 65 // 32 bytes r + 32 bytes s + 1 byte recovery ID
-)
-
 func NewEthereumSigningTransport(signFn crypto.SignFn) *EthereumSigningTransport {
 	return &EthereumSigningTransport{
 		transport: http.DefaultTransport,

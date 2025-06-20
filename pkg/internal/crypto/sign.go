@@ -36,7 +36,7 @@ func sign(digest []byte, privateKey *secp256k1.PrivateKey) []byte {
 
 	// compactSig is [recovery_id + 27][r][s] (65 bytes)
 	// We need to adjust the recovery ID format for Ethereum
-	signature := make([]byte, 65)
+	signature := make([]byte, ethereumSignatureLength)
 	copy(signature[:32], compactSig[1:33])  // R
 	copy(signature[32:64], compactSig[33:]) // S
 	signature[64] = compactSig[0] - 27      // V (recovery ID, subtract 27)
