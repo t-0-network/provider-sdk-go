@@ -5,7 +5,9 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
+	"sync"
 	"time"
 
 	"golang.org/x/net/http2"
@@ -87,12 +89,25 @@ func NewServer(handler http.Handler, serverOptions ...ServerOption) *http.Server
 func NewStartedServer(handler http.Handler, serverOptions ...ServerOption) ServerShutdownFn {
 	server := NewServer(handler, serverOptions...)
 
+	var wg sync.WaitGroup
+	wg.Add(1)
+
 	go func() {
-		if err := server.ListenAndServe(); err != nil &&
+		listener, err := net.Listen("tcp", server.Addr)
+		if err != nil {
+			panic(fmt.Sprintf("failed to create listener: %v", err))
+		}
+		wg.Done()
+
+		// At this point, server is ready to accept connections
+		if err := server.Serve(listener); err != nil &&
 			!errors.Is(err, http.ErrServerClosed) {
 			panic(fmt.Sprintf("failed to start provider server: %v", err))
 		}
 	}()
+
+	// Wait for server to be ready
+	wg.Wait()
 
 	serverShutdown := func(ctx context.Context) error {
 		timeoutCtx, cancel := context.WithTimeout(ctx, defaultServerOptions.shutdownTimeout)

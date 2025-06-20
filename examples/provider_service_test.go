@@ -31,7 +31,7 @@ func ExampleNewProviderHandler() {
 
 	shutdownFunc := providerService.NewStartedServer(
 		providerServiceHandler,
-		providerService.WithAddr("127.0.0.1:8080"),
+		providerService.WithAddr(":8080"),
 	)
 
 	// Create client to consume the service
