@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/cosmos/go-bip39"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"github.com/tyler-smith/go-bip32"
+	"github.com/tyler-smith/go-bip39"
 )
 
 const bip39EntropySize = 128
