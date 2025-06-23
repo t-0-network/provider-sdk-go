@@ -18,7 +18,7 @@ const (
 func NewServiceClient(opts ...Option) (networkconnect.ProviderServiceClient, error) {
 	options := defaultClientOptions
 	for _, opt := range opts {
-		opt(options)
+		opt(&options)
 	}
 
 	if err := options.validate(); err != nil {

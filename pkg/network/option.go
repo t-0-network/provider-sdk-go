@@ -44,7 +44,7 @@ func (c *clientOptions) validate() error {
 	return nil
 }
 
-var defaultClientOptions = &clientOptions{
+var defaultClientOptions = clientOptions{
 	baseURL:                 defaultBaseURL,
 	providerPrivateKeyHexed: "",
 	signFn:                  nil,

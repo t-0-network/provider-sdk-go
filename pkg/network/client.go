@@ -13,7 +13,7 @@ import (
 func NewServiceClient(opts ...ClientOption) (networkconnect.NetworkServiceClient, error) {
 	options := defaultClientOptions
 	for _, opt := range opts {
-		opt(options)
+		opt(&options)
 	}
 
 	if err := options.validate(); err != nil {
