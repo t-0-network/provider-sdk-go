@@ -14,11 +14,6 @@ import (
 const bip39EntropySize = 128
 
 func main() {
-	// key := make([]byte, 32)
-	// if _, err := rand.Read(key); err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	// Generate mnemonic

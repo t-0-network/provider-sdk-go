@@ -6,16 +6,18 @@ import (
 	"log"
 
 	"connectrpc.com/connect"
-	networkproto "github.com/t-0-network/provider-sdk-go/pkg/gen/proto/network"
+	networkproto "github.com/t-0-network/provider-sdk-go/api/gen/proto/network"
 	"github.com/t-0-network/provider-sdk-go/pkg/network"
 )
 
+// ExampleNewServiceClient demonstrates how to create a new network service client
+// to interact with the T-0 Network.
 func ExampleNewServiceClient() {
-	providerPrivateKey := "0x7795db2f4499c04d80062c1f1614ff1e427c148e47ed23e387d62829f437b5d8"
+	yourPrivateKey := network.PrivateKeyHexed("0x7795db2f4499c04d80062c1f1614ff1e427c148e47ed23e387d62829f437b5d8")
 
 	networkClient, err := network.NewServiceClient(
-		network.WithBaseURL("http://0.0.0.0:8080"),
-		network.WithProviderPrivateKeyHexed(providerPrivateKey),
+		yourPrivateKey,
+		network.WithBaseURL("http://0.0.0.0:8080"), // No need to set, defaults to t-zero network
 	)
 	if err != nil {
 		log.Fatalf("Failed to create network service client: %v", err)

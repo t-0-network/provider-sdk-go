@@ -1,0 +1,156 @@
+syntax = "proto3";
+
+package network.v1.provider;
+
+import "common/payment_method.proto";
+import "common/common.proto";
+import "google/protobuf/timestamp.proto";
+
+// this service must be implemented my member of the network
+// all requests will be signed with network private key
+// public key is available to all the member to be able to validate signature.
+// TODO: implement SDK and interceptor to validate request signature
+service ProviderService {// better naming
+  // TODO: may be one of and only one method?
+  rpc PayOut(PayoutRequest) returns (PayoutResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+
+  rpc UpdatePayment(UpdatePaymentRequest) returns (UpdatePaymentResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+
+  rpc CreatePayInDetails(CreatePayInDetailsRequest) returns (CreatePayInDetailsResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+
+  // TODO: optional, either UpdateLimit either AppendLedgerEntries should be handled in order to know exposure to other participants
+  rpc UpdateLimit(UpdateLimitRequest) returns (UpdateLimitResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+
+  // duplicates must be idempotently handled
+  rpc AppendLedgerEntries(AppendLedgerEntriesRequest) returns (AppendLedgerEntriesResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+}
+
+message AppendLedgerEntriesRequest {
+  repeated Transaction transactions = 20;
+
+  message Transaction {
+    uint64 transaction_id = 10; // incrementally growing but could have gaps and could be out of order
+    repeated LedgerEntry entries = 30;
+
+    oneof transaction_details {
+      PayIn pay_in = 110;
+      PayoutReservation payout_reservation = 120;
+      Payout payout = 130;
+      Settlement settlement = 140;
+      FeeSettlement fee_settlement = 150;
+      PayoutReservationRelease payout_reservation_release = 160;
+    }
+
+    message PayIn {
+      string payment_id = 10;
+      // TODO: should we include details in the transaction?
+    }
+
+    message PayoutReservation {
+      string payment_id = 10;
+    }
+
+    message Payout {
+      string payment_id = 10;
+    }
+
+    message Settlement {// TODO: naming? CreditSettlement, ParticipantSettlement, ProviderSettlement ?
+      uint64 settlement_id = 10;
+    }
+
+    message FeeSettlement {
+      uint64 fee_settlement_id = 10;
+    }
+
+    message PayoutReservationRelease {
+      string payment_id = 10;
+    }
+  }
+
+  message LedgerEntry {
+    uint32 account_owner_id = 10; // 1 is network account, others are ids of participants
+    AccountType account_type = 20;
+    string currency = 30;
+    tzero.v1.common.Decimal debit = 40;
+    tzero.v1.common.Decimal credit = 50;
+    tzero.v1.common.Decimal exchange_rate = 60; // exchange rate of currency to USD if currency is not USD and Transaction contains entries with multiple currencies
+  }
+
+  enum AccountType {
+    ACCOUNT_TYPE_UNSPECIFIED = 0;
+    // TODO: chart of account
+  }
+}
+
+message AppendLedgerEntriesResponse {}
+
+message PayoutRequest {
+  int64 payment_id = 10;
+  int64 payout_id = 20;
+  string currency = 30; // currency of the payout (participant could support multiple currencies)
+  tzero.v1.common.Decimal amount = 40; // amount in currency of the payout
+  tzero.v1.common.PaymentMethod payout_method = 50;
+  // TODO: ensure Payout participant don't require sender info. Likely travel rule would require sender info
+}
+message PayoutResponse {}
+
+message UpdatePaymentRequest {
+  int64 payment_id = 10;
+
+  oneof result {
+    Success success = 20;
+    Failure failure = 30;
+  }
+
+  message Success {
+    tzero.v1.common.Decimal payout_amount = 10; // amount in currency of the payout
+    google.protobuf.Timestamp paid_out_at = 50; // time of the payout
+  }
+
+  message Failure {
+    enum Reason {
+      REASON_UNSPECIFIED = 0;
+    }
+  }
+}
+message UpdatePaymentResponse {}
+
+message UpdateLimitRequest {
+  int64 version = 10; // incrementally growing same as in Ledger
+  // all in USD
+  tzero.v1.common.Decimal payout_limit = 20; //payout_limit = credit_limit - credit_usage, negative value means credit limit is exceeded, e.g. if counterparty decreased credit limit
+  tzero.v1.common.Decimal credit_limit = 30;
+  tzero.v1.common.Decimal credit_usage = 40; // sum(payout) - settlement_net(settlement_balance), could be negative
+}
+
+message UpdateLimitResponse {}
+
+message CreatePayInDetailsRequest {
+  string payment_id = 10;
+  Sender sender = 40;
+
+  message Sender {
+    oneof sender {
+      PrivatePerson private_person = 10;
+    }
+
+    message PrivatePerson {
+      string private_person_id = 10; // can be used to get KYC data
+    }
+  }
+}
+
+message CreatePayInDetailsResponse {
+  repeated tzero.v1.common.PaymentMethod pay_in_method = 10;
+}
+

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package tzero.v1.common;
+
+message PaymentMethod { // TODO: what could be better name?
+  oneof details {
+    tzero.v1.common.SepaPaymentMethod sepa = 10;
+  }
+}
+
+message SepaPaymentMethod {
+  string iban = 10;
+  string payment_reference = 20;
+  string name = 30;
+}

@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/t-0-network/provider-sdk-go/pkg/gen/proto/network/networkconnect"
-	"github.com/t-0-network/provider-sdk-go/pkg/internal/crypto"
-	"github.com/t-0-network/provider-sdk-go/pkg/internal/transport"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/network/networkconnect"
+	"github.com/t-0-network/provider-sdk-go/pkg/crypto"
 )
 
-func NewServiceClient(opts ...ClientOption) (networkconnect.NetworkServiceClient, error) {
+type PrivateKeyHexed string
+
+func NewServiceClient(
+	privateKey PrivateKeyHexed, opts ...ClientOption,
+) (networkconnect.NetworkServiceClient, error) {
 	options := defaultClientOptions
 	for _, opt := range opts {
 		opt(&options)
@@ -21,21 +24,21 @@ func NewServiceClient(opts ...ClientOption) (networkconnect.NetworkServiceClient
 	}
 
 	if options.signFn == nil {
-		if options.providerPrivateKeyHexed == "" {
+		if privateKey == "" {
 			return nil, ErrEmptyPrivateKey
 		}
 
-		defaultSignFn, err := crypto.NewSignerFromHex(options.providerPrivateKeyHexed)
+		defaultSignFn, err := crypto.NewSignerFromHex(string(privateKey))
 		if err != nil {
 			return nil, fmt.Errorf("creating signer from hexed private key: %w", err)
 		}
 
-		options.signFn = defaultSignFn
+		options.signFn = crypto.SignFn(defaultSignFn)
 	}
 
 	client := http.Client{
 		Timeout:   options.timeout,
-		Transport: transport.NewEthereumSigningTransport(options.signFn),
+		Transport: newSigningTransport(options.signFn),
 	}
 
 	return networkconnect.NewNetworkServiceClient(&client, options.baseURL), nil

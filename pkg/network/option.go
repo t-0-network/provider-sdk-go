@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/t-0-network/provider-sdk-go/pkg/internal/crypto"
+	"github.com/t-0-network/provider-sdk-go/pkg/crypto"
 )
 
 const (
@@ -22,10 +22,9 @@ var (
 )
 
 type clientOptions struct {
-	baseURL                 string
-	providerPrivateKeyHexed string
-	signFn                  crypto.SignFn
-	timeout                 time.Duration
+	baseURL string
+	signFn  crypto.SignFn
+	timeout time.Duration
 }
 
 func (c *clientOptions) validate() error {
@@ -45,10 +44,9 @@ func (c *clientOptions) validate() error {
 }
 
 var defaultClientOptions = clientOptions{
-	baseURL:                 defaultBaseURL,
-	providerPrivateKeyHexed: "",
-	signFn:                  nil,
-	timeout:                 defaultTimeout,
+	baseURL: defaultBaseURL,
+	signFn:  nil,
+	timeout: defaultTimeout,
 }
 
 type ClientOption func(*clientOptions)
@@ -56,12 +54,6 @@ type ClientOption func(*clientOptions)
 func WithBaseURL(url string) ClientOption {
 	return func(c *clientOptions) {
 		c.baseURL = url
-	}
-}
-
-func WithProviderPrivateKeyHexed(privateKey string) ClientOption {
-	return func(c *clientOptions) {
-		c.providerPrivateKeyHexed = privateKey
 	}
 }
 
