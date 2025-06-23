@@ -21,9 +21,6 @@ import (
 var (
 	dummyNetworkPublicKey  = "0x049bb924680bfba3f64d924bf9040c45dcc215b124b5b9ee73ca8e32c050d042c0bbd8dbb98e3929ed5bc2967f28c3a3b72dd5e24312404598bbf6c6cc47708dc7"
 	dummyNetworkPrivateKey = "691db48202ca70d83cc7f5f3aa219536f9bb2dfe12ebb78a7bb634544858ee92"
-
-	dummyNetworkPublicKey2  = "0x0483bc52a52dc822836a0b242c671069292ea07fb18feada97c3b526a34b17abff54d113a4048e42691a94f63b2826dc499a50eb925ae88d991f81562489360282"
-	dummyNetworkPrivateKey2 = "0x4a719c250fd098f6aac38f259a45c669b01d4258a969bbf5670cbd39f1cd2a60"
 )
 
 func ExampleNewProviderHandler() {
