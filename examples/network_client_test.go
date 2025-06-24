@@ -13,6 +13,7 @@ import (
 // ExampleNewServiceClient demonstrates how to create a new network service client
 // to interact with the T-0 Network.
 func ExampleNewServiceClient() {
+	// Replace with your actual private key in hex format.
 	yourPrivateKey := network.PrivateKeyHexed("0x7795db2f4499c04d80062c1f1614ff1e427c148e47ed23e387d62829f437b5d8")
 
 	networkClient, err := network.NewServiceClient(
