@@ -26,9 +26,10 @@ func ExampleNewServiceClient() {
 
 	_, err = networkClient.UpdateQuote(context.Background(), connect.NewRequest(&networkproto.UpdateQuoteRequest{}))
 	if err != nil {
-		fmt.Println("Need to use a valid public key")
+		fmt.Println(err)
 	}
 
+	// Example will fail as it tries to connect to a fake address using an invalid key.
 	// Output:
-	// Need to use a valid public key
+	// unavailable: dial tcp 0.0.0.0:8080: connect: connection refused
 }
