@@ -31,7 +31,7 @@ func ExampleNewServiceClient() {
 		fmt.Println(err)
 	}
 
-	// Example will fail as it tries to connect to a fake address using an invalid key.
+	// Example will fail as it tries to connect to a fake address using an unknown key.
 	// Output:
 	// unavailable: dial tcp 0.0.0.0:8080: connect: connection refused
 }
