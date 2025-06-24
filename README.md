@@ -117,7 +117,9 @@ networkPublicKey := "0x049bb924680bfba3f64d924bf9040c45dcc215b124b5b9ee73ca8e32c
 providerServiceHandler, err := provider.NewProviderHandler(
     provider.NetworkPublicKeyHexed(networkPublicKey),
     &ProviderServiceImplementation{},
-    ...opts, // optional configuration
+    // optional configuration
+    provider.WithVerifySignatureFn(verifySignatureFn)
+    provider.WithConnectHandlerOptions(HandlerOptions)
 )
 if err != nil {
     log.Fatalf("Failed to create provider service handler: %v", err)
@@ -133,7 +135,14 @@ Launch an HTTP server with the provider handler:
 ```go
 shutdownFunc := provider.NewStartedServer(
     providerServiceHandler,
-    provider.WithAddr(":8080"), // optional address configuration
+    // optional configuration
+    provider.WithAddr(":8080"),
+    provider.WithReadTimeout(10 * time.Second)
+    provider.WithWriteTimeout(10 * time.Second)
+    provider.WithReadHeaderTimeout(10 * time.Second)
+    provider.WithTLSConfig(tlsConfig)
+
+
 )
 
 // Manual shutdown handling
