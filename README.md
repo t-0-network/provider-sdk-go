@@ -1,4 +1,4 @@
-# Provider SDK Documentation
+# Provider SDK
 
 ## Overview
 
