@@ -111,7 +111,7 @@ func (s *ProviderServiceImplementation) UpdatePayment(
 Initialize the provider handler with the T-ZERO Network public key and your service implementation:
 
 ```go
-// T-ZERO Network public key (hex format without 0x prefix in function call)
+// T-ZERO Network hex formatted public key 
 networkPublicKey := "0x049bb924680bfba3f64d924bf9040c45dcc215b124b5b9ee73ca8e32c050d042c0bbd8dbb98e3929ed5bc2967f28c3a3b72dd5e24312404598bbf6c6cc47708dc7"
 
 providerServiceHandler, err := provider.NewProviderHandler(
