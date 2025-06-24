@@ -18,6 +18,7 @@ func ExampleNewServiceClient() {
 
 	networkClient, err := network.NewServiceClient(
 		yourPrivateKey,
+		// Optional configuration for the network service client.
 		network.WithBaseURL("http://0.0.0.0:8080"), // No need to set, defaults to t-zero network
 	)
 	if err != nil {
