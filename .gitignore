@@ -31,3 +31,7 @@ Thumbs.db
 
 # environment files
 local.env
+
+# keys
+*.pem
+*.key

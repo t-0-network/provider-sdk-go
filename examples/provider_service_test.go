@@ -59,10 +59,7 @@ func ExampleNewProviderHandler() {
 
 	// Initialize the provider service providerClient using the http client with the
 	// custom signing transport.
-	providerClient, err := networkconnect.NewProviderServiceClient(&httpClient, "http://127.0.0.1:8080"), nil
-	if err != nil {
-		log.Fatalf("Failed to create provider service client: %v", err)
-	}
+	providerClient := networkconnect.NewProviderServiceClient(&httpClient, "http://127.0.0.1:8080")
 
 	// Build a CreatePayInDetails request
 	req := connect.NewRequest(&networkproto.CreatePayInDetailsRequest{
