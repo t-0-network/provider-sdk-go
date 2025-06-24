@@ -128,12 +128,10 @@ if err != nil {
 
 ### HTTP Server Configuration
 
-#### Started Server
-
-Launch an HTTP server with the provider handler:
+#### Launch an HTTP server with the provider handler:
 
 ```go
-shutdownFunc := provider.NewStartedServer(
+shutdownFunc := provider.StartServer(
     providerServiceHandler,
     // optional configuration
     provider.WithAddr(":8080"),
@@ -151,7 +149,7 @@ if err := shutdownFunc(context.Background()); err != nil {
 }
 ```
 
-#### Non-Started Server
+#### Just return a ready to use HTTP Server
 
 Create an HTTP server instance without starting it:
 

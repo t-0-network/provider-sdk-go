@@ -84,9 +84,9 @@ func NewServer(handler http.Handler, serverOptions ...ServerOption) *http.Server
 	return &server
 }
 
-// NewStartedServer creates and starts a new HTTP server with the provided handler
+// StartServer creates and starts a new HTTP server with the provided handler
 // registered and ready to handle requests.
-func NewStartedServer(handler http.Handler, serverOptions ...ServerOption) ServerShutdownFn {
+func StartServer(handler http.Handler, serverOptions ...ServerOption) ServerShutdownFn {
 	server := NewServer(handler, serverOptions...)
 
 	var wg sync.WaitGroup

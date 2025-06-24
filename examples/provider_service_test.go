@@ -38,7 +38,7 @@ func ExampleNewProviderHandler() {
 	}
 
 	// Start an HTTP server with the provider service handler,
-	shutdownFunc := provider.NewStartedServer(
+	shutdownFunc := provider.StartServer(
 		providerServiceHandler,
 		provider.WithAddr(":8080"),
 	)
