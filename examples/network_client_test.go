@@ -24,7 +24,9 @@ func ExampleNewServiceClient() {
 		log.Fatalf("Failed to create network service client: %v", err)
 	}
 
-	_, err = networkClient.UpdateQuote(context.Background(), connect.NewRequest(&networkproto.UpdateQuoteRequest{}))
+	_, err = networkClient.UpdateQuote(context.Background(), connect.NewRequest(&networkproto.UpdateQuoteRequest{
+		// You actual quote data here
+	}))
 	if err != nil {
 		fmt.Println(err)
 	}
