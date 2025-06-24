@@ -136,12 +136,10 @@ shutdownFunc := provider.NewStartedServer(
     provider.WithAddr(":8080"), // optional address configuration
 )
 
-// Shutdown handling
-defer func() {
-    if err := shutdownFunc(context.Background()); err != nil {
-        log.Printf("Failed to shutdown server: %v", err)
-    }
-}()
+// Manual shutdown handling
+if err := shutdownFunc(context.Background()); err != nil {
+    log.Printf("Failed to shutdown server: %v", err)
+}
 ```
 
 #### Non-Started Server
@@ -198,7 +196,7 @@ func (t *signingTransport) RoundTrip(req *http.Request) (*http.Response, error) 
     req.Body.Close()
     req.Body = io.NopCloser(bytes.NewReader(body))
 
-    // Generate digest using LegacyKeccak256
+    // Generate digest using Legacy Keccak 256
     digest := crypto.LegacyKeccak256(body)
 
     // Sign the digest
