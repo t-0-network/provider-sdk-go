@@ -43,23 +43,11 @@ func ExampleNewProviderHandler() {
 		provider.WithAddr(":8080"),
 	)
 
-	// Create an http client with a custom transport which signs the raw
-	// request body using the dummy network private key.
-	signFn, err := crypto.NewSignerFromHex(dummyNetworkPrivateKey)
+	// Create a provider client to connect to the provider service.
+	providerClient, err := newProviderClient(dummyNetworkPrivateKey)
 	if err != nil {
-		log.Fatalf("Failed to create signer function: %v", err)
+		log.Fatalf("Failed to create provider client: %v", err)
 	}
-	httpClient := http.Client{
-		Timeout: 15 * time.Second,
-		Transport: &signingTransport{
-			transport: http.DefaultTransport,
-			signFn:    signFn,
-		},
-	}
-
-	// Initialize the provider service providerClient using the http client with the
-	// custom signing transport.
-	providerClient := networkconnect.NewProviderServiceClient(&httpClient, "http://127.0.0.1:8080")
 
 	// Build a CreatePayInDetails request
 	req := connect.NewRequest(&networkproto.CreatePayInDetailsRequest{
@@ -80,6 +68,27 @@ func ExampleNewProviderHandler() {
 
 	// Output:
 	// Successfully created pay in details
+}
+
+func newProviderClient(privateKey string) (networkconnect.ProviderServiceClient, error) {
+	// Create an http client with a custom transport which signs the raw
+	// request body using the dummy network private key.
+	signFn, err := crypto.NewSignerFromHex(privateKey)
+	if err != nil {
+		return nil, fmt.Errorf("creating signer function: %w", err)
+	}
+
+	// Create a custom HTTP client with a custom transport to sign requests.
+	httpClient := http.Client{
+		Timeout: 15 * time.Second,
+		Transport: &signingTransport{
+			transport: http.DefaultTransport,
+			signFn:    signFn,
+		},
+	}
+
+	// Initialize the provider service client using custom HTTP client.
+	return networkconnect.NewProviderServiceClient(&httpClient, "http://127.0.0.1:8080"), nil
 }
 
 type ProviderServiceImplementation struct{}
