@@ -33,7 +33,7 @@ func NewServiceClient(
 			return nil, fmt.Errorf("creating signer from hexed private key: %w", err)
 		}
 
-		options.signFn = crypto.SignFn(defaultSignFn)
+		options.signFn = defaultSignFn
 	}
 
 	client := http.Client{
