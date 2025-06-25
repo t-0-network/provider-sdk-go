@@ -107,6 +107,7 @@ func (s *ProviderServiceImplementation) UpdatePayment(
 ```
 
 ### Provider Handler Setup
+
 Initialize the provider handler with the T-ZERO Network public key and your service implementation:
 
 ```go
@@ -126,6 +127,7 @@ if err != nil {
 ```
 
 ### HTTP Server Configuration
+This step is optional, you can register and serve the handler using your existing HTTP server.
 
 #### Launch an HTTP server with the provider handler:
 
@@ -138,8 +140,6 @@ shutdownFunc := provider.StartServer(
     provider.WithWriteTimeout(10 * time.Second)
     provider.WithReadHeaderTimeout(10 * time.Second)
     provider.WithTLSConfig(tlsConfig)
-
-
 )
 
 // Manual shutdown handling
@@ -148,7 +148,7 @@ if err := shutdownFunc(context.Background()); err != nil {
 }
 ```
 
-#### Just return a ready to use HTTP Server
+#### Or return a ready to use HTTP Server
 
 Create an HTTP server instance without starting it:
 
