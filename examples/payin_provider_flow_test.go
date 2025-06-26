@@ -28,9 +28,10 @@ func ExamplePayinProviderBasicFlow() {
 
 	networkClient := createClientToInteractWithNetwork() // Create a network service client to interact with the T-ZERO Network.
 
-	// ----- Step 0 (optional): Submit periodically pay-in quotes to the network. The pay-in quotes needs to convert the
+	// ----- Step 0 (optional): Submit periodically pay-in quotes to the network. The pay-in quotes are needed to convert the
 	// payment amount from local pay-in currency to the network's settlement currency (USD). For example, if the pay-in currency is EUR,
-	// the pay-in quote should be for USD/EUR. Since the base currency is always USD for all the quotes, only the quote currency needs to be specified.
+	// the pay-in quote should be for USD/EUR. Since the base currency is always USD for all the quotes, only the quote currency needs
+	// to be specified in the request.
 	//
 	// It's also possible to submit an amount in payment requests in USD directly, in which case the pay-in quote is not needed.
 	resp, err := networkClient.UpdateQuote(context.Background(), payInQuotesRequestExample())
