@@ -10,6 +10,8 @@ require (
 	google.golang.org/protobuf v1.36.6
 )
 
+replace github.com/t-0-network/provider-sdk-go => ../../provider-sdk-go
+
 require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.5 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect

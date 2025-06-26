@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"github.com/t-0-network/provider-sdk-go-examples/utils"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/common"
 	networkreq "github.com/t-0-network/provider-sdk-go/api/gen/proto/network"
 	"github.com/t-0-network/provider-sdk-go/api/gen/proto/network/networkconnect"
 	"github.com/t-0-network/provider-sdk-go/pkg/network"
@@ -65,6 +66,7 @@ func ExamplePayinProviderBasicFlow() {
 	// ----- Step 3: The network will process the payment and pay out to the recipient. The pay-in provider will receive
 	// a webhook notification via ProviderService.UpdatePayment rpc (should be implemented by the provider). The result
 	// can be either success or failure, depending on the payment processing outcome.
+	// see the PayInProviderImplementation.UpdatePayment method for more details.
 
 	if err := shutdownFunc(context.Background()); err != nil {
 		log.Fatalf("Failed to shutdown provider service: %v", err)
@@ -175,26 +177,58 @@ func (p *PayInProviderImplementation) UpdatePayment(ctx context.Context, c *conn
 	// This function is called by the network to notify the provider about the payment status.
 	// The provider can use this to update its internal state and notify the user about the payment status.
 	// The message contains the payment client ID, which was specified in the CreatePaymentRequest by this provider.
-	log.Printf("Received payment update: %v, %d", c.Msg, c.Msg.PaymentId)
+	log.Printf("Received payment update: %v, %s", c.Msg, c.Msg.PaymentClientId)
 
 	// Here you can implement your logic to handle the payment update, e.g. update the payment status in your database.
 	// For now, we just return a success response.
 	return connect.NewResponse(&networkreq.UpdatePaymentResponse{}), nil
 }
 
-func (p *PayInProviderImplementation) CreatePayInDetails(ctx context.Context, c *connect.Request[networkreq.CreatePayInDetailsRequest]) (*connect.Response[networkreq.CreatePayInDetailsResponse], error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (p *PayInProviderImplementation) UpdateLimit(ctx context.Context, c *connect.Request[networkreq.UpdateLimitRequest]) (*connect.Response[networkreq.UpdateLimitResponse], error) {
-	//TODO implement me
-	panic("implement me")
+	// This function is called by the network to notify about the changes in the limits between providers.
+	// This is not required to be implemented by the pay-in provider, but it can be useful to keep track of the limits.
+	log.Printf("Received limit update: %v", c.Msg)
+
+	// Here you can implement your logic to handle the limit update, e.g. update the limits in your database.
+	// For now, we just return a success response.
+	return connect.NewResponse(&networkreq.UpdateLimitResponse{}), nil
 }
 
 func (p *PayInProviderImplementation) AppendLedgerEntries(ctx context.Context, c *connect.Request[networkreq.AppendLedgerEntriesRequest]) (*connect.Response[networkreq.AppendLedgerEntriesResponse], error) {
-	//TODO implement me
-	panic("implement me")
+	// Alternatively to the UpdateLimit, the provider can handle all the changes in the ledger entries via this rpc.
+	// This is not required to be implemented by the pay-in provider, but if the provider wants to keep track of all the changes
+	// in the ledger, it can implement this rpc.
+	log.Printf("Appending ledger entries: %v", c.Msg)
+
+	// Here you can implement your logic to handle the ledger entries
+	// For now, we just return a success response.
+	return connect.NewResponse(&networkreq.AppendLedgerEntriesResponse{}), nil
+
+}
+
+func (p *PayInProviderImplementation) CreatePayInDetails(ctx context.Context, c *connect.Request[networkreq.CreatePayInDetailsRequest]) (*connect.Response[networkreq.CreatePayInDetailsResponse], error) {
+	// This function is called by the network to create pay-in details for the payment.
+	// This is not necessarily required, this rpc will be called if the network will initiate the pay-in flow.
+	// The provider then response with the payment details for the user to pay in. Specifically, the
+	log.Printf("Creating pay-in details for payment: %s", c.Msg.PaymentIntentId)
+
+	return connect.NewResponse(&networkreq.CreatePayInDetailsResponse{
+		PayInMethod: []*common.PaymentMethod{
+			{
+				Details: &common.PaymentMethod_Sepa{
+					Sepa: &common.SepaPaymentMethod{
+						// Example IBAN to which the user should pay in.
+						Iban: "IE29AIBK93115212345678",
+						// Reference for the user to use when making the payment, this is needed for pay-in provider to identify the payment from user.
+						PaymentReference: "paymentRef-1234",
+						// This is name associated with the IBAN to initate the payment
+						Name: "PAY-IN PROVIDER",
+					},
+				},
+			},
+		},
+	}), nil
+
 }
 
 func (p *PayInProviderImplementation) PayOut(ctx context.Context, c *connect.Request[networkreq.PayoutRequest]) (*connect.Response[networkreq.PayoutResponse], error) {
