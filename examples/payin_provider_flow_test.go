@@ -24,9 +24,11 @@ var (
 )
 
 func ExamplePayinProviderBasicFlow() {
-	shutdownFunc := startTheProviderService() // Start the provider service, which listens for incoming requests from the network.
+	// Start the provider service, which listens for incoming requests from the network.
+	shutdownFunc := startTheProviderService(&PayInProviderImplementation{})
 
-	networkClient := createClientToInteractWithNetwork() // Create a network service client to interact with the T-ZERO Network.
+	// Create a network service client to interact with the T-ZERO Network.
+	networkClient := createClientToInteractWithNetwork()
 
 	// ----- Step 0 (optional): Submit periodically pay-in quotes to the network. The pay-in quotes are needed to convert the
 	// payment amount from local pay-in currency to the network's settlement currency (USD). For example, if the pay-in currency is EUR,
@@ -108,8 +110,9 @@ func createPaymentRequestExample(payoutQuote *connect.Response[networkreq.GetPay
 }
 
 func payInQuotesRequestExample() *connect.Request[networkreq.UpdateQuoteRequest] {
-
 	return connect.NewRequest(&networkreq.UpdateQuoteRequest{
+		// There are 2 repeated fields in the request, one for the pay-in quotes and one for the pay-out quotes.
+		// So the provider can either submit pay-in quotes, pay-out quotes or both.
 		PayIn: []*networkreq.UpdateQuoteRequest_Quote{
 			{
 				Currency: payInCurrency,
@@ -124,14 +127,17 @@ func payInQuotesRequestExample() *connect.Request[networkreq.UpdateQuoteRequest]
 						ClientQuoteId: uuid.NewString(),
 						//band of the quote, e.g. this rate is up to 1000 USD
 						MaxAmount: utils.DecimalToProto(decimal.NewFromFloat(1000.0)),
-						//rate for the band, USD/EUR = 0.86
+						// rate for the band, USD/EUR = 0.86
+						// This means, that for 1 USD equivalent, the user will pay in 0.86 EUR.
 						Rate: utils.DecimalToProto(decimal.NewFromFloat(0.86)),
 					},
 					{
 						ClientQuoteId: uuid.NewString(),
-						//band of the quote, e.g. this rate is up to 5000 USD payment amount
+						// band of the quote, e.g. this rate is up to 5000 USD payment amount
 						MaxAmount: utils.DecimalToProto(decimal.NewFromFloat(5000.0)),
-						//rate for this band, USD/EUR = 0.88. Rate for the bigger bands includes risk premium, so the rate is higher than for the smaller bands.
+						// rate for this band, USD/EUR = 0.88. Rate for the bigger bands includes risk premium,
+						// so the rate is higher than for the smaller bands.
+						// This means, that for 1 USD equivalent, the user will pay in 0.88 EUR (more than for the smaller band).
 						Rate: utils.DecimalToProto(decimal.NewFromFloat(0.88)),
 					},
 				},
@@ -155,10 +161,10 @@ func createClientToInteractWithNetwork() networkconnect.NetworkServiceClient {
 	return networkClient
 }
 
-func startTheProviderService() provider.ServerShutdownFn {
+func startTheProviderService(providerImpl networkconnect.ProviderServiceHandler) provider.ServerShutdownFn {
 	providerServiceHandler, err := provider.NewProviderHandler(
 		provider.NetworkPublicKeyHexed(dummyNetworkPublicKey),
-		&ProviderServiceImplementation{},
+		providerImpl,
 	)
 	if err != nil {
 		log.Fatalf("Failed to create provider service handler: %v", err)
@@ -233,6 +239,6 @@ func (p *PayInProviderImplementation) CreatePayInDetails(ctx context.Context, c 
 }
 
 func (p *PayInProviderImplementation) PayOut(ctx context.Context, c *connect.Request[networkreq.PayoutRequest]) (*connect.Response[networkreq.PayoutResponse], error) {
-	// this function is not required for the pay-in provider flow, but it can be implemented if provider wants to participate in the payout flow as well.
+	// this function is not required for the pay-in provider flow, but it can be implemented if provider wants to participate as the payout provider flow as well.
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("PayOut is not implemented for PayInProviderImplementation"))
 }
