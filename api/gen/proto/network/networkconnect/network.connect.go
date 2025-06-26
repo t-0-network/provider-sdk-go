@@ -55,15 +55,37 @@ const (
 
 // NetworkServiceClient is a client for the tzero.v1.network.NetworkService service.
 type NetworkServiceClient interface {
+	// *
+	// Used by the provider to publish pay-in and pay-out quotes (FX rates) into the network.
+	// These quotes include tiered pricing bands and an expiration timestamp.
+	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdateQuote(context.Context, *connect.Request[network.UpdateQuoteRequest]) (*connect.Response[network.UpdateQuoteResponse], error)
-	// get best quote among available matching parameters and limits
+	// *
+	// Request the best available quote for a payout in a specific currency, for a given amount.
+	// If the payout quote exists, but the credit limit is exceeded, this quote will not be considered.
 	GetPayoutQuote(context.Context, *connect.Request[network.GetPayoutQuoteRequest]) (*connect.Response[network.GetPayoutQuoteResponse], error)
-	// network will try to find a provider matching request parameters and limits/credit usage
+	// *
+	// Submit a request to create a new payment. PayIn currency and QuoteId are the optional parameters.
+	// If the payIn currency is not specified, the network will use USD as the default payIn currency, and considering
+	// the amount in USD.
+	// If specified, it must be a valid currency code - in this case the network will try to find the payIn quote for the
+	// specified currency and considering the band from the provider initiated this request. So this is only possible, if
+	// this provider already submitted the payIn quote for the specified currency using UpdateQuote rpc.
+	// If the quoteID is specified, it must be a valid quoteId that was previously returned by the GetPayoutQuote method.
+	// If the quoteId is not specified, the network will try to find a suitable quote for the payout currency and amount,
+	// same way as GetPayoutQuote rpc.
+	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	CreatePayment(context.Context, *connect.Request[network.CreatePaymentRequest]) (*connect.Response[network.CreatePaymentResponse], error)
-	// called when provider made a payout to user
+	// *
+	// Inform the network that a payout has been completed or failed. This endpoint is called by the payout
+	// provider, specifying the payment ID and payout ID, which was provided when the payout request was made to this provider.
+	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdatePayout(context.Context, *connect.Request[network.UpdatePayoutRequest]) (*connect.Response[network.UpdatePayoutResponse], error)
-	// called when provider received payment from user
+	// *
+	// Inform the network that the provider has received a pay-in from the user.
+	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	CreatePayIn(context.Context, *connect.Request[network.CreatePayInRequest]) (*connect.Response[network.CreatePayInResponse], error)
+	// Retrieve KYC verification data (e.g., SumSub token) for a person involved in the payment.
 	GetKycData(context.Context, *connect.Request[network.GetKycDataRequest]) (*connect.Response[network.GetKycDataResponse], error)
 }
 
@@ -165,15 +187,37 @@ func (c *networkServiceClient) GetKycData(ctx context.Context, req *connect.Requ
 
 // NetworkServiceHandler is an implementation of the tzero.v1.network.NetworkService service.
 type NetworkServiceHandler interface {
+	// *
+	// Used by the provider to publish pay-in and pay-out quotes (FX rates) into the network.
+	// These quotes include tiered pricing bands and an expiration timestamp.
+	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdateQuote(context.Context, *connect.Request[network.UpdateQuoteRequest]) (*connect.Response[network.UpdateQuoteResponse], error)
-	// get best quote among available matching parameters and limits
+	// *
+	// Request the best available quote for a payout in a specific currency, for a given amount.
+	// If the payout quote exists, but the credit limit is exceeded, this quote will not be considered.
 	GetPayoutQuote(context.Context, *connect.Request[network.GetPayoutQuoteRequest]) (*connect.Response[network.GetPayoutQuoteResponse], error)
-	// network will try to find a provider matching request parameters and limits/credit usage
+	// *
+	// Submit a request to create a new payment. PayIn currency and QuoteId are the optional parameters.
+	// If the payIn currency is not specified, the network will use USD as the default payIn currency, and considering
+	// the amount in USD.
+	// If specified, it must be a valid currency code - in this case the network will try to find the payIn quote for the
+	// specified currency and considering the band from the provider initiated this request. So this is only possible, if
+	// this provider already submitted the payIn quote for the specified currency using UpdateQuote rpc.
+	// If the quoteID is specified, it must be a valid quoteId that was previously returned by the GetPayoutQuote method.
+	// If the quoteId is not specified, the network will try to find a suitable quote for the payout currency and amount,
+	// same way as GetPayoutQuote rpc.
+	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	CreatePayment(context.Context, *connect.Request[network.CreatePaymentRequest]) (*connect.Response[network.CreatePaymentResponse], error)
-	// called when provider made a payout to user
+	// *
+	// Inform the network that a payout has been completed or failed. This endpoint is called by the payout
+	// provider, specifying the payment ID and payout ID, which was provided when the payout request was made to this provider.
+	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdatePayout(context.Context, *connect.Request[network.UpdatePayoutRequest]) (*connect.Response[network.UpdatePayoutResponse], error)
-	// called when provider received payment from user
+	// *
+	// Inform the network that the provider has received a pay-in from the user.
+	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	CreatePayIn(context.Context, *connect.Request[network.CreatePayInRequest]) (*connect.Response[network.CreatePayInResponse], error)
+	// Retrieve KYC verification data (e.g., SumSub token) for a person involved in the payment.
 	GetKycData(context.Context, *connect.Request[network.GetKycDataRequest]) (*connect.Response[network.GetKycDataResponse], error)
 }
 

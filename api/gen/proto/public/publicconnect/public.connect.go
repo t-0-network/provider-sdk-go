@@ -56,7 +56,6 @@ const (
 type PaymentServiceClient interface {
 	// available without authentication. This will find a pair of best PayIn nad PayOut providers in order to
 	// provide best quote for payment
-	// TODO: should quote have a life time?
 	GetPaymentQuote(context.Context, *connect.Request[public.GetPaymentQuoteRequest]) (*connect.Response[public.GetPaymentQuoteResponse], error)
 	// Creates a payment details containing all the required attributes for PayOut
 	// requires authentication and completed KYC
@@ -137,7 +136,6 @@ func (c *paymentServiceClient) GetPayments(ctx context.Context, req *connect.Req
 type PaymentServiceHandler interface {
 	// available without authentication. This will find a pair of best PayIn nad PayOut providers in order to
 	// provide best quote for payment
-	// TODO: should quote have a life time?
 	GetPaymentQuote(context.Context, *connect.Request[public.GetPaymentQuoteRequest]) (*connect.Response[public.GetPaymentQuoteResponse], error)
 	// Creates a payment details containing all the required attributes for PayOut
 	// requires authentication and completed KYC
