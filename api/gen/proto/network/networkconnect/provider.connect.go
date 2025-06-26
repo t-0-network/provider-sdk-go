@@ -51,13 +51,24 @@ const (
 
 // ProviderServiceClient is a client for the network.v1.provider.ProviderService service.
 type ProviderServiceClient interface {
-	// TODO: may be one of and only one method?
+	// *
+	// Network instructs the provider to execute a payout to the recipient.
+	// This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	PayOut(context.Context, *connect.Request[network.PayoutRequest]) (*connect.Response[network.PayoutResponse], error)
+	// *
+	// Network provides an update on the status of a payment. This can be either a success or a failure.
+	// This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdatePayment(context.Context, *connect.Request[network.UpdatePaymentRequest]) (*connect.Response[network.UpdatePaymentResponse], error)
+	// *
+	// Network asks the provider for possible pay-in options for a sender, in preparation for a pay-in process.
+	// This is optional, but if implemented, it should return a list of available pay-in methods.
 	CreatePayInDetails(context.Context, *connect.Request[network.CreatePayInDetailsRequest]) (*connect.Response[network.CreatePayInDetailsResponse], error)
-	// TODO: optional, either UpdateLimit either AppendLedgerEntries should be handled in order to know exposure to other participants
+	// *
+	// This rpc is used to notify the provider about the changes in credit limit and/or credit usage.
 	UpdateLimit(context.Context, *connect.Request[network.UpdateLimitRequest]) (*connect.Response[network.UpdateLimitResponse], error)
-	// duplicates must be idempotently handled
+	// *
+	// Network can send all the updates about ledger entries of the provider's accounts. It can be used to
+	// keep track of the provider's exposure to other participants and other important financial events. (see the list in the message below)
 	AppendLedgerEntries(context.Context, *connect.Request[network.AppendLedgerEntriesRequest]) (*connect.Response[network.AppendLedgerEntriesResponse], error)
 }
 
@@ -146,13 +157,24 @@ func (c *providerServiceClient) AppendLedgerEntries(ctx context.Context, req *co
 
 // ProviderServiceHandler is an implementation of the network.v1.provider.ProviderService service.
 type ProviderServiceHandler interface {
-	// TODO: may be one of and only one method?
+	// *
+	// Network instructs the provider to execute a payout to the recipient.
+	// This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	PayOut(context.Context, *connect.Request[network.PayoutRequest]) (*connect.Response[network.PayoutResponse], error)
+	// *
+	// Network provides an update on the status of a payment. This can be either a success or a failure.
+	// This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdatePayment(context.Context, *connect.Request[network.UpdatePaymentRequest]) (*connect.Response[network.UpdatePaymentResponse], error)
+	// *
+	// Network asks the provider for possible pay-in options for a sender, in preparation for a pay-in process.
+	// This is optional, but if implemented, it should return a list of available pay-in methods.
 	CreatePayInDetails(context.Context, *connect.Request[network.CreatePayInDetailsRequest]) (*connect.Response[network.CreatePayInDetailsResponse], error)
-	// TODO: optional, either UpdateLimit either AppendLedgerEntries should be handled in order to know exposure to other participants
+	// *
+	// This rpc is used to notify the provider about the changes in credit limit and/or credit usage.
 	UpdateLimit(context.Context, *connect.Request[network.UpdateLimitRequest]) (*connect.Response[network.UpdateLimitResponse], error)
-	// duplicates must be idempotently handled
+	// *
+	// Network can send all the updates about ledger entries of the provider's accounts. It can be used to
+	// keep track of the provider's exposure to other participants and other important financial events. (see the list in the message below)
 	AppendLedgerEntries(context.Context, *connect.Request[network.AppendLedgerEntriesRequest]) (*connect.Response[network.AppendLedgerEntriesResponse], error)
 }
 

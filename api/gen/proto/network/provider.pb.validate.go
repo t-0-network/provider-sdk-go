@@ -302,6 +302,8 @@ func (m *PayoutRequest) validate(all bool) error {
 
 	// no validation rules for Currency
 
+	// no validation rules for ClientQuoteId
+
 	if all {
 		switch v := interface{}(m.GetAmount()).(type) {
 		case interface{ ValidateAll() error }:
@@ -560,7 +562,7 @@ func (m *UpdatePaymentRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for PaymentId
+	// no validation rules for PaymentClientId
 
 	switch v := m.Result.(type) {
 	case *UpdatePaymentRequest_Success_:
@@ -855,6 +857,8 @@ func (m *UpdateLimitRequest) validate(all bool) error {
 
 	// no validation rules for Version
 
+	// no validation rules for ProviderId
+
 	if all {
 		switch v := interface{}(m.GetPayoutLimit()).(type) {
 		case interface{ ValidateAll() error }:
@@ -1146,7 +1150,7 @@ func (m *CreatePayInDetailsRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for PaymentId
+	// no validation rules for PaymentIntentId
 
 	if all {
 		switch v := interface{}(m.GetSender()).(type) {
@@ -1577,7 +1581,7 @@ func (m *AppendLedgerEntriesRequest_Transaction) validate(all bool) error {
 			}
 		}
 
-	case *AppendLedgerEntriesRequest_Transaction_Settlement_:
+	case *AppendLedgerEntriesRequest_Transaction_ProviderSettlement_:
 		if v == nil {
 			err := AppendLedgerEntriesRequest_TransactionValidationError{
 				field:  "TransactionDetails",
@@ -1590,11 +1594,11 @@ func (m *AppendLedgerEntriesRequest_Transaction) validate(all bool) error {
 		}
 
 		if all {
-			switch v := interface{}(m.GetSettlement()).(type) {
+			switch v := interface{}(m.GetProviderSettlement()).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
 					errors = append(errors, AppendLedgerEntriesRequest_TransactionValidationError{
-						field:  "Settlement",
+						field:  "ProviderSettlement",
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -1602,16 +1606,16 @@ func (m *AppendLedgerEntriesRequest_Transaction) validate(all bool) error {
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
 					errors = append(errors, AppendLedgerEntriesRequest_TransactionValidationError{
-						field:  "Settlement",
+						field:  "ProviderSettlement",
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
 				}
 			}
-		} else if v, ok := interface{}(m.GetSettlement()).(interface{ Validate() error }); ok {
+		} else if v, ok := interface{}(m.GetProviderSettlement()).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return AppendLedgerEntriesRequest_TransactionValidationError{
-					field:  "Settlement",
+					field:  "ProviderSettlement",
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
@@ -2326,23 +2330,24 @@ var _ interface {
 } = AppendLedgerEntriesRequest_Transaction_PayoutValidationError{}
 
 // Validate checks the field values on
-// AppendLedgerEntriesRequest_Transaction_Settlement with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *AppendLedgerEntriesRequest_Transaction_Settlement) Validate() error {
+// AppendLedgerEntriesRequest_Transaction_ProviderSettlement with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AppendLedgerEntriesRequest_Transaction_ProviderSettlement) Validate() error {
 	return m.validate(false)
 }
 
 // ValidateAll checks the field values on
-// AppendLedgerEntriesRequest_Transaction_Settlement with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in
-// AppendLedgerEntriesRequest_Transaction_SettlementMultiError, or nil if none found.
-func (m *AppendLedgerEntriesRequest_Transaction_Settlement) ValidateAll() error {
+// AppendLedgerEntriesRequest_Transaction_ProviderSettlement with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AppendLedgerEntriesRequest_Transaction_ProviderSettlementMultiError, or nil
+// if none found.
+func (m *AppendLedgerEntriesRequest_Transaction_ProviderSettlement) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *AppendLedgerEntriesRequest_Transaction_Settlement) validate(all bool) error {
+func (m *AppendLedgerEntriesRequest_Transaction_ProviderSettlement) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -2352,20 +2357,20 @@ func (m *AppendLedgerEntriesRequest_Transaction_Settlement) validate(all bool) e
 	// no validation rules for SettlementId
 
 	if len(errors) > 0 {
-		return AppendLedgerEntriesRequest_Transaction_SettlementMultiError(errors)
+		return AppendLedgerEntriesRequest_Transaction_ProviderSettlementMultiError(errors)
 	}
 
 	return nil
 }
 
-// AppendLedgerEntriesRequest_Transaction_SettlementMultiError is an error
-// wrapping multiple validation errors returned by
-// AppendLedgerEntriesRequest_Transaction_Settlement.ValidateAll() if the
-// designated constraints aren't met.
-type AppendLedgerEntriesRequest_Transaction_SettlementMultiError []error
+// AppendLedgerEntriesRequest_Transaction_ProviderSettlementMultiError is an
+// error wrapping multiple validation errors returned by
+// AppendLedgerEntriesRequest_Transaction_ProviderSettlement.ValidateAll() if
+// the designated constraints aren't met.
+type AppendLedgerEntriesRequest_Transaction_ProviderSettlementMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m AppendLedgerEntriesRequest_Transaction_SettlementMultiError) Error() string {
+func (m AppendLedgerEntriesRequest_Transaction_ProviderSettlementMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -2374,13 +2379,15 @@ func (m AppendLedgerEntriesRequest_Transaction_SettlementMultiError) Error() str
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m AppendLedgerEntriesRequest_Transaction_SettlementMultiError) AllErrors() []error { return m }
+func (m AppendLedgerEntriesRequest_Transaction_ProviderSettlementMultiError) AllErrors() []error {
+	return m
+}
 
-// AppendLedgerEntriesRequest_Transaction_SettlementValidationError is the
-// validation error returned by
-// AppendLedgerEntriesRequest_Transaction_Settlement.Validate if the
+// AppendLedgerEntriesRequest_Transaction_ProviderSettlementValidationError is
+// the validation error returned by
+// AppendLedgerEntriesRequest_Transaction_ProviderSettlement.Validate if the
 // designated constraints aren't met.
-type AppendLedgerEntriesRequest_Transaction_SettlementValidationError struct {
+type AppendLedgerEntriesRequest_Transaction_ProviderSettlementValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -2388,30 +2395,32 @@ type AppendLedgerEntriesRequest_Transaction_SettlementValidationError struct {
 }
 
 // Field function returns field value.
-func (e AppendLedgerEntriesRequest_Transaction_SettlementValidationError) Field() string {
+func (e AppendLedgerEntriesRequest_Transaction_ProviderSettlementValidationError) Field() string {
 	return e.field
 }
 
 // Reason function returns reason value.
-func (e AppendLedgerEntriesRequest_Transaction_SettlementValidationError) Reason() string {
+func (e AppendLedgerEntriesRequest_Transaction_ProviderSettlementValidationError) Reason() string {
 	return e.reason
 }
 
 // Cause function returns cause value.
-func (e AppendLedgerEntriesRequest_Transaction_SettlementValidationError) Cause() error {
+func (e AppendLedgerEntriesRequest_Transaction_ProviderSettlementValidationError) Cause() error {
 	return e.cause
 }
 
 // Key function returns key value.
-func (e AppendLedgerEntriesRequest_Transaction_SettlementValidationError) Key() bool { return e.key }
+func (e AppendLedgerEntriesRequest_Transaction_ProviderSettlementValidationError) Key() bool {
+	return e.key
+}
 
 // ErrorName returns error name.
-func (e AppendLedgerEntriesRequest_Transaction_SettlementValidationError) ErrorName() string {
-	return "AppendLedgerEntriesRequest_Transaction_SettlementValidationError"
+func (e AppendLedgerEntriesRequest_Transaction_ProviderSettlementValidationError) ErrorName() string {
+	return "AppendLedgerEntriesRequest_Transaction_ProviderSettlementValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e AppendLedgerEntriesRequest_Transaction_SettlementValidationError) Error() string {
+func (e AppendLedgerEntriesRequest_Transaction_ProviderSettlementValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -2423,14 +2432,14 @@ func (e AppendLedgerEntriesRequest_Transaction_SettlementValidationError) Error(
 	}
 
 	return fmt.Sprintf(
-		"invalid %sAppendLedgerEntriesRequest_Transaction_Settlement.%s: %s%s",
+		"invalid %sAppendLedgerEntriesRequest_Transaction_ProviderSettlement.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = AppendLedgerEntriesRequest_Transaction_SettlementValidationError{}
+var _ error = AppendLedgerEntriesRequest_Transaction_ProviderSettlementValidationError{}
 
 var _ interface {
 	Field() string
@@ -2438,7 +2447,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = AppendLedgerEntriesRequest_Transaction_SettlementValidationError{}
+} = AppendLedgerEntriesRequest_Transaction_ProviderSettlementValidationError{}
 
 // Validate checks the field values on
 // AppendLedgerEntriesRequest_Transaction_FeeSettlement with the rules defined

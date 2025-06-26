@@ -26,16 +26,46 @@ const (
 type AppendLedgerEntriesRequest_AccountType int32
 
 const (
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_UNSPECIFIED AppendLedgerEntriesRequest_AccountType = 0 // TODO: chart of account
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_UNSPECIFIED         AppendLedgerEntriesRequest_AccountType = 0
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_USER_PAYABLE        AppendLedgerEntriesRequest_AccountType = 1  // Reflects the user's payable balance, the amount that the provider owes to the user.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_CASH                AppendLedgerEntriesRequest_AccountType = 2  // Reflects the cash balance of the provider.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_RESERVE             AppendLedgerEntriesRequest_AccountType = 3  // This is the reserve account of the provider, which reflects the reserve of balance to reduce the limit available from one provider to another.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_RESERVE_USAGE       AppendLedgerEntriesRequest_AccountType = 4  // This is the mirror account for the reserve. To keep the double entry accounting principle.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PROVIDER_PAYABLE    AppendLedgerEntriesRequest_AccountType = 5  // Reflects how much the provider owes to the network or other participants.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PROVIDER_RECEIVABLE AppendLedgerEntriesRequest_AccountType = 6  // Reflects how much the provider is owed by the network or other participants.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_FEE_PAYABLE         AppendLedgerEntriesRequest_AccountType = 7  // Reflects the fees that the provider owes to the network.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_FEE_RECEIVABLE      AppendLedgerEntriesRequest_AccountType = 8  // Reflects the fees that the network is owed by the provider.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_FEE_EXPENSE         AppendLedgerEntriesRequest_AccountType = 9  // Reflects the fees that the provider has to pay for the services provided by the network.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PROVIDER_SETTLEMENT AppendLedgerEntriesRequest_AccountType = 10 // Reflects the settlement balance of the provider with the network or other participants.
 )
 
 // Enum value maps for AppendLedgerEntriesRequest_AccountType.
 var (
 	AppendLedgerEntriesRequest_AccountType_name = map[int32]string{
-		0: "ACCOUNT_TYPE_UNSPECIFIED",
+		0:  "ACCOUNT_TYPE_UNSPECIFIED",
+		1:  "ACCOUNT_TYPE_USER_PAYABLE",
+		2:  "ACCOUNT_TYPE_CASH",
+		3:  "ACCOUNT_TYPE_RESERVE",
+		4:  "ACCOUNT_TYPE_RESERVE_USAGE",
+		5:  "ACCOUNT_TYPE_PROVIDER_PAYABLE",
+		6:  "ACCOUNT_TYPE_PROVIDER_RECEIVABLE",
+		7:  "ACCOUNT_TYPE_FEE_PAYABLE",
+		8:  "ACCOUNT_TYPE_FEE_RECEIVABLE",
+		9:  "ACCOUNT_TYPE_FEE_EXPENSE",
+		10: "ACCOUNT_TYPE_PROVIDER_SETTLEMENT",
 	}
 	AppendLedgerEntriesRequest_AccountType_value = map[string]int32{
-		"ACCOUNT_TYPE_UNSPECIFIED": 0,
+		"ACCOUNT_TYPE_UNSPECIFIED":         0,
+		"ACCOUNT_TYPE_USER_PAYABLE":        1,
+		"ACCOUNT_TYPE_CASH":                2,
+		"ACCOUNT_TYPE_RESERVE":             3,
+		"ACCOUNT_TYPE_RESERVE_USAGE":       4,
+		"ACCOUNT_TYPE_PROVIDER_PAYABLE":    5,
+		"ACCOUNT_TYPE_PROVIDER_RECEIVABLE": 6,
+		"ACCOUNT_TYPE_FEE_PAYABLE":         7,
+		"ACCOUNT_TYPE_FEE_RECEIVABLE":      8,
+		"ACCOUNT_TYPE_FEE_EXPENSE":         9,
+		"ACCOUNT_TYPE_PROVIDER_SETTLEMENT": 10,
 	}
 )
 
@@ -110,7 +140,10 @@ func (UpdatePaymentRequest_Failure_Reason) EnumDescriptor() ([]byte, []int) {
 }
 
 type AppendLedgerEntriesRequest struct {
-	state         protoimpl.MessageState                    `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// *
+	// This is a list of transactions that were appended to the ledger of the provider.
+	// The transaction_id should be used to identify the transaction and ensure that it is processed only once.
 	Transactions  []*AppendLedgerEntriesRequest_Transaction `protobuf:"bytes,20,rep,name=transactions,proto3" json:"transactions,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -190,12 +223,29 @@ func (*AppendLedgerEntriesResponse) Descriptor() ([]byte, []int) {
 }
 
 type PayoutRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PaymentId     int64                  `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
-	PayoutId      int64                  `protobuf:"varint,20,opt,name=payout_id,json=payoutId,proto3" json:"payout_id,omitempty"`
-	Currency      string                 `protobuf:"bytes,30,opt,name=currency,proto3" json:"currency,omitempty"`                             // currency of the payout (participant could support multiple currencies)
-	Amount        *common.Decimal        `protobuf:"bytes,40,opt,name=amount,proto3" json:"amount,omitempty"`                                 // amount in currency of the payout
-	PayoutMethod  *common.PaymentMethod  `protobuf:"bytes,50,opt,name=payout_method,json=payoutMethod,proto3" json:"payout_method,omitempty"` // TODO: ensure Payout participant don't require sender info. Likely travel rule would require sender info
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// *
+	// payment id assigned by the network (provider should store this id to provide details in UpdatePayout later)
+	PaymentId int64 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	// *
+	// payout id assigned by the network (provider should store this id to provide details in UpdatePayout later)
+	PayoutId int64 `protobuf:"varint,20,opt,name=payout_id,json=payoutId,proto3" json:"payout_id,omitempty"`
+	// *
+	// currency of the payout (participant could support multiple currencies)
+	// This is the currency in which the payout should be made.
+	Currency string `protobuf:"bytes,30,opt,name=currency,proto3" json:"currency,omitempty"`
+	// *
+	// client quote id of the quote used for this payout (the provider provides the quote IDs in the UpdateQuote rpc)
+	// This is the identifier of the quote that was used to calculate the payout amount.
+	ClientQuoteId string `protobuf:"bytes,40,opt,name=client_quote_id,json=clientQuoteId,proto3" json:"client_quote_id,omitempty"`
+	// *
+	// amount in currency of the payout
+	// This is the amount that should be paid out to the recipient.
+	Amount *common.Decimal `protobuf:"bytes,50,opt,name=amount,proto3" json:"amount,omitempty"`
+	// *
+	// payout_method is the payment method for the payout, e.g. bank transfer, crypto transfer, etc.
+	// This is used to specify how the payout should be made.
+	PayoutMethod  *common.PaymentMethod `protobuf:"bytes,60,opt,name=payout_method,json=payoutMethod,proto3" json:"payout_method,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -251,6 +301,13 @@ func (x *PayoutRequest) GetCurrency() string {
 	return ""
 }
 
+func (x *PayoutRequest) GetClientQuoteId() string {
+	if x != nil {
+		return x.ClientQuoteId
+	}
+	return ""
+}
+
 func (x *PayoutRequest) GetAmount() *common.Decimal {
 	if x != nil {
 		return x.Amount
@@ -302,8 +359,10 @@ func (*PayoutResponse) Descriptor() ([]byte, []int) {
 }
 
 type UpdatePaymentRequest struct {
-	state     protoimpl.MessageState `protogen:"open.v1"`
-	PaymentId int64                  `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// *
+	// payment_client_id is a payment id assigned by the client, this is the same id that was provided in the CreatePaymentRequest.
+	PaymentClientId string `protobuf:"bytes,10,opt,name=payment_client_id,json=paymentClientId,proto3" json:"payment_client_id,omitempty"`
 	// Types that are valid to be assigned to Result:
 	//
 	//	*UpdatePaymentRequest_Success_
@@ -343,11 +402,11 @@ func (*UpdatePaymentRequest) Descriptor() ([]byte, []int) {
 	return file_network_provider_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdatePaymentRequest) GetPaymentId() int64 {
+func (x *UpdatePaymentRequest) GetPaymentClientId() string {
 	if x != nil {
-		return x.PaymentId
+		return x.PaymentClientId
 	}
-	return 0
+	return ""
 }
 
 func (x *UpdatePaymentRequest) GetResult() isUpdatePaymentRequest_Result {
@@ -380,10 +439,15 @@ type isUpdatePaymentRequest_Result interface {
 }
 
 type UpdatePaymentRequest_Success_ struct {
+	// *
+	// Success response - means the payout was executed successfully and the payment is now complete. This happens when
+	// the payout is successfully processed by the payout provider, and the payment was made to the recipient.
 	Success *UpdatePaymentRequest_Success `protobuf:"bytes,20,opt,name=success,proto3,oneof"`
 }
 
 type UpdatePaymentRequest_Failure_ struct {
+	// *
+	// Failure response - means the payout was not executed successfully, e.g. the payout provider could not process the payout.
 	Failure *UpdatePaymentRequest_Failure `protobuf:"bytes,30,opt,name=failure,proto3,oneof"`
 }
 
@@ -427,13 +491,28 @@ func (*UpdatePaymentResponse) Descriptor() ([]byte, []int) {
 	return file_network_provider_proto_rawDescGZIP(), []int{5}
 }
 
+// All the amounts are in USD
 type UpdateLimitRequest struct {
-	state   protoimpl.MessageState `protogen:"open.v1"`
-	Version int64                  `protobuf:"varint,10,opt,name=version,proto3" json:"version,omitempty"` // incrementally growing same as in Ledger
-	// all in USD
-	PayoutLimit   *common.Decimal `protobuf:"bytes,20,opt,name=payout_limit,json=payoutLimit,proto3" json:"payout_limit,omitempty"` //payout_limit = credit_limit - credit_usage, negative value means credit limit is exceeded, e.g. if counterparty decreased credit limit
-	CreditLimit   *common.Decimal `protobuf:"bytes,30,opt,name=credit_limit,json=creditLimit,proto3" json:"credit_limit,omitempty"`
-	CreditUsage   *common.Decimal `protobuf:"bytes,40,opt,name=credit_usage,json=creditUsage,proto3" json:"credit_usage,omitempty"` // sum(payout) - settlement_net(settlement_balance), could be negative
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// *
+	// Incrementally growing for the provider - same as in Ledger. Different providers have different versions.
+	Version int64 `protobuf:"varint,10,opt,name=version,proto3" json:"version,omitempty"`
+	// *
+	// the Id of the counterparty (creditor) provider, e.g. the provider that is providing the credit limit.
+	// It's usually the payOut provider, which provides the credit line to the payIn provider.
+	ProviderId int32 `protobuf:"varint,15,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
+	// *
+	// payout_limit = credit_limit - credit_usage, negative value means credit limit is exceeded,
+	// e.g. if counterparty decreased credit limit
+	PayoutLimit *common.Decimal `protobuf:"bytes,20,opt,name=payout_limit,json=payoutLimit,proto3" json:"payout_limit,omitempty"`
+	// *
+	// This is the credit limit that the counterparty is willing to extend to the provider.
+	CreditLimit *common.Decimal `protobuf:"bytes,30,opt,name=credit_limit,json=creditLimit,proto3" json:"credit_limit,omitempty"`
+	// *
+	// This is the credit usage that the provider has used so far. It is the sum of all payouts made by the provider
+	// minus the settlement net (settlement balance). It could be negative if the provider has received more settlements
+	// than payouts.
+	CreditUsage   *common.Decimal `protobuf:"bytes,40,opt,name=credit_usage,json=creditUsage,proto3" json:"credit_usage,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -475,6 +554,13 @@ func (x *UpdateLimitRequest) GetVersion() int64 {
 	return 0
 }
 
+func (x *UpdateLimitRequest) GetProviderId() int32 {
+	if x != nil {
+		return x.ProviderId
+	}
+	return 0
+}
+
 func (x *UpdateLimitRequest) GetPayoutLimit() *common.Decimal {
 	if x != nil {
 		return x.PayoutLimit
@@ -496,6 +582,8 @@ func (x *UpdateLimitRequest) GetCreditUsage() *common.Decimal {
 	return nil
 }
 
+// *
+// Empty message - means no response is needed.
 type UpdateLimitResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -533,8 +621,12 @@ func (*UpdateLimitResponse) Descriptor() ([]byte, []int) {
 }
 
 type CreatePayInDetailsRequest struct {
-	state         protoimpl.MessageState            `protogen:"open.v1"`
-	PaymentId     string                            `protobuf:"bytes,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// *
+	// payment_intent_id is a unique identifier for the payment intent, which is used to create a payment later.
+	PaymentIntentId string `protobuf:"bytes,10,opt,name=payment_intent_id,json=paymentIntentId,proto3" json:"payment_intent_id,omitempty"`
+	// *
+	// Sender details for the pay-in process.
 	Sender        *CreatePayInDetailsRequest_Sender `protobuf:"bytes,40,opt,name=sender,proto3" json:"sender,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -570,9 +662,9 @@ func (*CreatePayInDetailsRequest) Descriptor() ([]byte, []int) {
 	return file_network_provider_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *CreatePayInDetailsRequest) GetPaymentId() string {
+func (x *CreatePayInDetailsRequest) GetPaymentIntentId() string {
 	if x != nil {
-		return x.PaymentId
+		return x.PaymentIntentId
 	}
 	return ""
 }
@@ -585,7 +677,9 @@ func (x *CreatePayInDetailsRequest) GetSender() *CreatePayInDetailsRequest_Sende
 }
 
 type CreatePayInDetailsResponse struct {
-	state         protoimpl.MessageState  `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// *
+	// List of available pay-in methods for the sender. This is used to present the user with options for how they can pay in.
 	PayInMethod   []*common.PaymentMethod `protobuf:"bytes,10,rep,name=pay_in_method,json=payInMethod,proto3" json:"pay_in_method,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -629,15 +723,25 @@ func (x *CreatePayInDetailsResponse) GetPayInMethod() []*common.PaymentMethod {
 }
 
 type AppendLedgerEntriesRequest_Transaction struct {
-	state         protoimpl.MessageState                    `protogen:"open.v1"`
-	TransactionId uint64                                    `protobuf:"varint,10,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"` // incrementally growing but could have gaps and could be out of order
-	Entries       []*AppendLedgerEntriesRequest_LedgerEntry `protobuf:"bytes,30,rep,name=entries,proto3" json:"entries,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// *
+	// transaction_id is an incrementally growing identifier for the transaction.
+	// It could have gaps and could be out of order, but it is unique for each transaction.
+	TransactionId uint64 `protobuf:"varint,10,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
+	// *
+	// entries is a list of ledger entries that were appended to the ledger of the provider.
+	// Each entry represents a financial event that occurred in the provider's accounts.
+	Entries []*AppendLedgerEntriesRequest_LedgerEntry `protobuf:"bytes,30,rep,name=entries,proto3" json:"entries,omitempty"`
+	// *
+	// transaction_details is a oneof field that contains details about the transaction.
+	// It can be one of the following: PayIn, PayoutReservation, Payout, ProviderSettlement, FeeSettlement, PayoutReservationRelease.
+	//
 	// Types that are valid to be assigned to TransactionDetails:
 	//
 	//	*AppendLedgerEntriesRequest_Transaction_PayIn_
 	//	*AppendLedgerEntriesRequest_Transaction_PayoutReservation_
 	//	*AppendLedgerEntriesRequest_Transaction_Payout_
-	//	*AppendLedgerEntriesRequest_Transaction_Settlement_
+	//	*AppendLedgerEntriesRequest_Transaction_ProviderSettlement_
 	//	*AppendLedgerEntriesRequest_Transaction_FeeSettlement_
 	//	*AppendLedgerEntriesRequest_Transaction_PayoutReservationRelease_
 	TransactionDetails isAppendLedgerEntriesRequest_Transaction_TransactionDetails `protobuf_oneof:"transaction_details"`
@@ -723,10 +827,10 @@ func (x *AppendLedgerEntriesRequest_Transaction) GetPayout() *AppendLedgerEntrie
 	return nil
 }
 
-func (x *AppendLedgerEntriesRequest_Transaction) GetSettlement() *AppendLedgerEntriesRequest_Transaction_Settlement {
+func (x *AppendLedgerEntriesRequest_Transaction) GetProviderSettlement() *AppendLedgerEntriesRequest_Transaction_ProviderSettlement {
 	if x != nil {
-		if x, ok := x.TransactionDetails.(*AppendLedgerEntriesRequest_Transaction_Settlement_); ok {
-			return x.Settlement
+		if x, ok := x.TransactionDetails.(*AppendLedgerEntriesRequest_Transaction_ProviderSettlement_); ok {
+			return x.ProviderSettlement
 		}
 	}
 	return nil
@@ -766,8 +870,8 @@ type AppendLedgerEntriesRequest_Transaction_Payout_ struct {
 	Payout *AppendLedgerEntriesRequest_Transaction_Payout `protobuf:"bytes,130,opt,name=payout,proto3,oneof"`
 }
 
-type AppendLedgerEntriesRequest_Transaction_Settlement_ struct {
-	Settlement *AppendLedgerEntriesRequest_Transaction_Settlement `protobuf:"bytes,140,opt,name=settlement,proto3,oneof"`
+type AppendLedgerEntriesRequest_Transaction_ProviderSettlement_ struct {
+	ProviderSettlement *AppendLedgerEntriesRequest_Transaction_ProviderSettlement `protobuf:"bytes,140,opt,name=provider_settlement,json=providerSettlement,proto3,oneof"`
 }
 
 type AppendLedgerEntriesRequest_Transaction_FeeSettlement_ struct {
@@ -787,7 +891,7 @@ func (*AppendLedgerEntriesRequest_Transaction_PayoutReservation_) isAppendLedger
 func (*AppendLedgerEntriesRequest_Transaction_Payout_) isAppendLedgerEntriesRequest_Transaction_TransactionDetails() {
 }
 
-func (*AppendLedgerEntriesRequest_Transaction_Settlement_) isAppendLedgerEntriesRequest_Transaction_TransactionDetails() {
+func (*AppendLedgerEntriesRequest_Transaction_ProviderSettlement_) isAppendLedgerEntriesRequest_Transaction_TransactionDetails() {
 }
 
 func (*AppendLedgerEntriesRequest_Transaction_FeeSettlement_) isAppendLedgerEntriesRequest_Transaction_TransactionDetails() {
@@ -797,15 +901,31 @@ func (*AppendLedgerEntriesRequest_Transaction_PayoutReservationRelease_) isAppen
 }
 
 type AppendLedgerEntriesRequest_LedgerEntry struct {
-	state          protoimpl.MessageState                 `protogen:"open.v1"`
-	AccountOwnerId uint32                                 `protobuf:"varint,10,opt,name=account_owner_id,json=accountOwnerId,proto3" json:"account_owner_id,omitempty"` // 1 is network account, others are ids of participants
-	AccountType    AppendLedgerEntriesRequest_AccountType `protobuf:"varint,20,opt,name=account_type,json=accountType,proto3,enum=network.v1.provider.AppendLedgerEntriesRequest_AccountType" json:"account_type,omitempty"`
-	Currency       string                                 `protobuf:"bytes,30,opt,name=currency,proto3" json:"currency,omitempty"`
-	Debit          *common.Decimal                        `protobuf:"bytes,40,opt,name=debit,proto3" json:"debit,omitempty"`
-	Credit         *common.Decimal                        `protobuf:"bytes,50,opt,name=credit,proto3" json:"credit,omitempty"`
-	ExchangeRate   *common.Decimal                        `protobuf:"bytes,60,opt,name=exchange_rate,json=exchangeRate,proto3" json:"exchange_rate,omitempty"` // exchange rate of currency to USD if currency is not USD and Transaction contains entries with multiple currencies
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 1 is network account, others are ids of participants
+	AccountOwnerId uint32 `protobuf:"varint,10,opt,name=account_owner_id,json=accountOwnerId,proto3" json:"account_owner_id,omitempty"`
+	// *
+	// account_type is the type of the account that the entry belongs to.
+	// It is used to categorize the entries and understand the nature of the financial event.
+	AccountType AppendLedgerEntriesRequest_AccountType `protobuf:"varint,20,opt,name=account_type,json=accountType,proto3,enum=network.v1.provider.AppendLedgerEntriesRequest_AccountType" json:"account_type,omitempty"`
+	// *
+	// It is the currency of the entry. If the transaction contains entries with multiple currencies, the exchange_rate
+	// field should be provided to be used to convert the amounts to USD.
+	Currency string `protobuf:"bytes,30,opt,name=currency,proto3" json:"currency,omitempty"`
+	// *
+	// debit is the amount that was debited from the account.
+	// If the entry is a credit, this field should be 0.
+	Debit *common.Decimal `protobuf:"bytes,40,opt,name=debit,proto3" json:"debit,omitempty"`
+	// *
+	// credit is the amount that was credited to the account.
+	// If the entry is a debit, this field should be 0.
+	Credit *common.Decimal `protobuf:"bytes,50,opt,name=credit,proto3" json:"credit,omitempty"`
+	// *
+	// exchange_rate is the exchange rate of the currency to USD if the currency is not USD and the transaction contains
+	// entries with multiple currencies. Exchange rate for the base currency USD and the quote currency provided in the entry.
+	ExchangeRate  *common.Decimal `protobuf:"bytes,60,opt,name=exchange_rate,json=exchangeRate,proto3" json:"exchange_rate,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AppendLedgerEntriesRequest_LedgerEntry) Reset() {
@@ -882,7 +1002,7 @@ func (x *AppendLedgerEntriesRequest_LedgerEntry) GetExchangeRate() *common.Decim
 
 type AppendLedgerEntriesRequest_Transaction_PayIn struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PaymentId     string                 `protobuf:"bytes,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"` // TODO: should we include details in the transaction?
+	PaymentId     string                 `protobuf:"bytes,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1012,27 +1132,27 @@ func (x *AppendLedgerEntriesRequest_Transaction_Payout) GetPaymentId() string {
 	return ""
 }
 
-type AppendLedgerEntriesRequest_Transaction_Settlement struct {
+type AppendLedgerEntriesRequest_Transaction_ProviderSettlement struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	SettlementId  uint64                 `protobuf:"varint,10,opt,name=settlement_id,json=settlementId,proto3" json:"settlement_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *AppendLedgerEntriesRequest_Transaction_Settlement) Reset() {
-	*x = AppendLedgerEntriesRequest_Transaction_Settlement{}
+func (x *AppendLedgerEntriesRequest_Transaction_ProviderSettlement) Reset() {
+	*x = AppendLedgerEntriesRequest_Transaction_ProviderSettlement{}
 	mi := &file_network_provider_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *AppendLedgerEntriesRequest_Transaction_Settlement) String() string {
+func (x *AppendLedgerEntriesRequest_Transaction_ProviderSettlement) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*AppendLedgerEntriesRequest_Transaction_Settlement) ProtoMessage() {}
+func (*AppendLedgerEntriesRequest_Transaction_ProviderSettlement) ProtoMessage() {}
 
-func (x *AppendLedgerEntriesRequest_Transaction_Settlement) ProtoReflect() protoreflect.Message {
+func (x *AppendLedgerEntriesRequest_Transaction_ProviderSettlement) ProtoReflect() protoreflect.Message {
 	mi := &file_network_provider_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1044,12 +1164,12 @@ func (x *AppendLedgerEntriesRequest_Transaction_Settlement) ProtoReflect() proto
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use AppendLedgerEntriesRequest_Transaction_Settlement.ProtoReflect.Descriptor instead.
-func (*AppendLedgerEntriesRequest_Transaction_Settlement) Descriptor() ([]byte, []int) {
+// Deprecated: Use AppendLedgerEntriesRequest_Transaction_ProviderSettlement.ProtoReflect.Descriptor instead.
+func (*AppendLedgerEntriesRequest_Transaction_ProviderSettlement) Descriptor() ([]byte, []int) {
 	return file_network_provider_proto_rawDescGZIP(), []int{0, 0, 3}
 }
 
-func (x *AppendLedgerEntriesRequest_Transaction_Settlement) GetSettlementId() uint64 {
+func (x *AppendLedgerEntriesRequest_Transaction_ProviderSettlement) GetSettlementId() uint64 {
 	if x != nil {
 		return x.SettlementId
 	}
@@ -1346,19 +1466,17 @@ var File_network_provider_proto protoreflect.FileDescriptor
 
 const file_network_provider_proto_rawDesc = "" +
 	"\n" +
-	"\x16network/provider.proto\x12\x13network.v1.provider\x1a\x1bcommon/payment_method.proto\x1a\x13common/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\r\n" +
+	"\x16network/provider.proto\x12\x13network.v1.provider\x1a\x1bcommon/payment_method.proto\x1a\x13common/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe8\x0f\n" +
 	"\x1aAppendLedgerEntriesRequest\x12_\n" +
-	"\ftransactions\x18\x14 \x03(\v2;.network.v1.provider.AppendLedgerEntriesRequest.TransactionR\ftransactions\x1a\x85\t\n" +
+	"\ftransactions\x18\x14 \x03(\v2;.network.v1.provider.AppendLedgerEntriesRequest.TransactionR\ftransactions\x1a\xa7\t\n" +
 	"\vTransaction\x12%\n" +
 	"\x0etransaction_id\x18\n" +
 	" \x01(\x04R\rtransactionId\x12U\n" +
 	"\aentries\x18\x1e \x03(\v2;.network.v1.provider.AppendLedgerEntriesRequest.LedgerEntryR\aentries\x12Z\n" +
 	"\x06pay_in\x18n \x01(\v2A.network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayInH\x00R\x05payIn\x12~\n" +
 	"\x12payout_reservation\x18x \x01(\v2M.network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayoutReservationH\x00R\x11payoutReservation\x12]\n" +
-	"\x06payout\x18\x82\x01 \x01(\v2B.network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayoutH\x00R\x06payout\x12i\n" +
-	"\n" +
-	"settlement\x18\x8c\x01 \x01(\v2F.network.v1.provider.AppendLedgerEntriesRequest.Transaction.SettlementH\x00R\n" +
-	"settlement\x12s\n" +
+	"\x06payout\x18\x82\x01 \x01(\v2B.network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayoutH\x00R\x06payout\x12\x82\x01\n" +
+	"\x13provider_settlement\x18\x8c\x01 \x01(\v2N.network.v1.provider.AppendLedgerEntriesRequest.Transaction.ProviderSettlementH\x00R\x12providerSettlement\x12s\n" +
 	"\x0efee_settlement\x18\x96\x01 \x01(\v2I.network.v1.provider.AppendLedgerEntriesRequest.Transaction.FeeSettlementH\x00R\rfeeSettlement\x12\x95\x01\n" +
 	"\x1apayout_reservation_release\x18\xa0\x01 \x01(\v2T.network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayoutReservationReleaseH\x00R\x18payoutReservationRelease\x1a&\n" +
 	"\x05PayIn\x12\x1d\n" +
@@ -1372,9 +1490,8 @@ const file_network_provider_proto_rawDesc = "" +
 	"\x06Payout\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\n" +
-	" \x01(\tR\tpaymentId\x1a1\n" +
-	"\n" +
-	"Settlement\x12#\n" +
+	" \x01(\tR\tpaymentId\x1a9\n" +
+	"\x12ProviderSettlement\x12#\n" +
 	"\rsettlement_id\x18\n" +
 	" \x01(\x04R\fsettlementId\x1a;\n" +
 	"\rFeeSettlement\x12*\n" +
@@ -1392,23 +1509,34 @@ const file_network_provider_proto_rawDesc = "" +
 	"\bcurrency\x18\x1e \x01(\tR\bcurrency\x12.\n" +
 	"\x05debit\x18( \x01(\v2\x18.tzero.v1.common.DecimalR\x05debit\x120\n" +
 	"\x06credit\x182 \x01(\v2\x18.tzero.v1.common.DecimalR\x06credit\x12=\n" +
-	"\rexchange_rate\x18< \x01(\v2\x18.tzero.v1.common.DecimalR\fexchangeRate\"+\n" +
+	"\rexchange_rate\x18< \x01(\v2\x18.tzero.v1.common.DecimalR\fexchangeRate\"\xe7\x02\n" +
 	"\vAccountType\x12\x1c\n" +
-	"\x18ACCOUNT_TYPE_UNSPECIFIED\x10\x00\"\x1d\n" +
-	"\x1bAppendLedgerEntriesResponse\"\xde\x01\n" +
+	"\x18ACCOUNT_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
+	"\x19ACCOUNT_TYPE_USER_PAYABLE\x10\x01\x12\x15\n" +
+	"\x11ACCOUNT_TYPE_CASH\x10\x02\x12\x18\n" +
+	"\x14ACCOUNT_TYPE_RESERVE\x10\x03\x12\x1e\n" +
+	"\x1aACCOUNT_TYPE_RESERVE_USAGE\x10\x04\x12!\n" +
+	"\x1dACCOUNT_TYPE_PROVIDER_PAYABLE\x10\x05\x12$\n" +
+	" ACCOUNT_TYPE_PROVIDER_RECEIVABLE\x10\x06\x12\x1c\n" +
+	"\x18ACCOUNT_TYPE_FEE_PAYABLE\x10\a\x12\x1f\n" +
+	"\x1bACCOUNT_TYPE_FEE_RECEIVABLE\x10\b\x12\x1c\n" +
+	"\x18ACCOUNT_TYPE_FEE_EXPENSE\x10\t\x12$\n" +
+	" ACCOUNT_TYPE_PROVIDER_SETTLEMENT\x10\n" +
+	"\"\x1d\n" +
+	"\x1bAppendLedgerEntriesResponse\"\x86\x02\n" +
 	"\rPayoutRequest\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\n" +
 	" \x01(\x03R\tpaymentId\x12\x1b\n" +
 	"\tpayout_id\x18\x14 \x01(\x03R\bpayoutId\x12\x1a\n" +
-	"\bcurrency\x18\x1e \x01(\tR\bcurrency\x120\n" +
-	"\x06amount\x18( \x01(\v2\x18.tzero.v1.common.DecimalR\x06amount\x12C\n" +
-	"\rpayout_method\x182 \x01(\v2\x1e.tzero.v1.common.PaymentMethodR\fpayoutMethod\"\x10\n" +
-	"\x0ePayoutResponse\"\x91\x03\n" +
-	"\x14UpdatePaymentRequest\x12\x1d\n" +
-	"\n" +
-	"payment_id\x18\n" +
-	" \x01(\x03R\tpaymentId\x12M\n" +
+	"\bcurrency\x18\x1e \x01(\tR\bcurrency\x12&\n" +
+	"\x0fclient_quote_id\x18( \x01(\tR\rclientQuoteId\x120\n" +
+	"\x06amount\x182 \x01(\v2\x18.tzero.v1.common.DecimalR\x06amount\x12C\n" +
+	"\rpayout_method\x18< \x01(\v2\x1e.tzero.v1.common.PaymentMethodR\fpayoutMethod\"\x10\n" +
+	"\x0ePayoutResponse\"\x9e\x03\n" +
+	"\x14UpdatePaymentRequest\x12*\n" +
+	"\x11payment_client_id\x18\n" +
+	" \x01(\tR\x0fpaymentClientId\x12M\n" +
 	"\asuccess\x18\x14 \x01(\v21.network.v1.provider.UpdatePaymentRequest.SuccessH\x00R\asuccess\x12M\n" +
 	"\afailure\x18\x1e \x01(\v21.network.v1.provider.UpdatePaymentRequest.FailureH\x00R\afailure\x1a\x84\x01\n" +
 	"\aSuccess\x12=\n" +
@@ -1419,18 +1547,19 @@ const file_network_provider_proto_rawDesc = "" +
 	"\x06Reason\x12\x16\n" +
 	"\x12REASON_UNSPECIFIED\x10\x00B\b\n" +
 	"\x06result\"\x17\n" +
-	"\x15UpdatePaymentResponse\"\xe5\x01\n" +
+	"\x15UpdatePaymentResponse\"\x86\x02\n" +
 	"\x12UpdateLimitRequest\x12\x18\n" +
 	"\aversion\x18\n" +
-	" \x01(\x03R\aversion\x12;\n" +
+	" \x01(\x03R\aversion\x12\x1f\n" +
+	"\vprovider_id\x18\x0f \x01(\x05R\n" +
+	"providerId\x12;\n" +
 	"\fpayout_limit\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalR\vpayoutLimit\x12;\n" +
 	"\fcredit_limit\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalR\vcreditLimit\x12;\n" +
 	"\fcredit_usage\x18( \x01(\v2\x18.tzero.v1.common.DecimalR\vcreditUsage\"\x15\n" +
-	"\x13UpdateLimitResponse\"\xc9\x02\n" +
-	"\x19CreatePayInDetailsRequest\x12\x1d\n" +
-	"\n" +
-	"payment_id\x18\n" +
-	" \x01(\tR\tpaymentId\x12M\n" +
+	"\x13UpdateLimitResponse\"\xd6\x02\n" +
+	"\x19CreatePayInDetailsRequest\x12*\n" +
+	"\x11payment_intent_id\x18\n" +
+	" \x01(\tR\x0fpaymentIntentId\x12M\n" +
 	"\x06sender\x18( \x01(\v25.network.v1.provider.CreatePayInDetailsRequest.SenderR\x06sender\x1a\xbd\x01\n" +
 	"\x06Sender\x12l\n" +
 	"\x0eprivate_person\x18\n" +
@@ -1482,7 +1611,7 @@ var file_network_provider_proto_goTypes = []any{
 	(*AppendLedgerEntriesRequest_Transaction_PayIn)(nil),                    // 14: network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayIn
 	(*AppendLedgerEntriesRequest_Transaction_PayoutReservation)(nil),        // 15: network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayoutReservation
 	(*AppendLedgerEntriesRequest_Transaction_Payout)(nil),                   // 16: network.v1.provider.AppendLedgerEntriesRequest.Transaction.Payout
-	(*AppendLedgerEntriesRequest_Transaction_Settlement)(nil),               // 17: network.v1.provider.AppendLedgerEntriesRequest.Transaction.Settlement
+	(*AppendLedgerEntriesRequest_Transaction_ProviderSettlement)(nil),       // 17: network.v1.provider.AppendLedgerEntriesRequest.Transaction.ProviderSettlement
 	(*AppendLedgerEntriesRequest_Transaction_FeeSettlement)(nil),            // 18: network.v1.provider.AppendLedgerEntriesRequest.Transaction.FeeSettlement
 	(*AppendLedgerEntriesRequest_Transaction_PayoutReservationRelease)(nil), // 19: network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayoutReservationRelease
 	(*UpdatePaymentRequest_Success)(nil),                                    // 20: network.v1.provider.UpdatePaymentRequest.Success
@@ -1508,7 +1637,7 @@ var file_network_provider_proto_depIdxs = []int32{
 	14, // 11: network.v1.provider.AppendLedgerEntriesRequest.Transaction.pay_in:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayIn
 	15, // 12: network.v1.provider.AppendLedgerEntriesRequest.Transaction.payout_reservation:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayoutReservation
 	16, // 13: network.v1.provider.AppendLedgerEntriesRequest.Transaction.payout:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.Payout
-	17, // 14: network.v1.provider.AppendLedgerEntriesRequest.Transaction.settlement:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.Settlement
+	17, // 14: network.v1.provider.AppendLedgerEntriesRequest.Transaction.provider_settlement:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.ProviderSettlement
 	18, // 15: network.v1.provider.AppendLedgerEntriesRequest.Transaction.fee_settlement:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.FeeSettlement
 	19, // 16: network.v1.provider.AppendLedgerEntriesRequest.Transaction.payout_reservation_release:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayoutReservationRelease
 	0,  // 17: network.v1.provider.AppendLedgerEntriesRequest.LedgerEntry.account_type:type_name -> network.v1.provider.AppendLedgerEntriesRequest.AccountType
@@ -1548,7 +1677,7 @@ func file_network_provider_proto_init() {
 		(*AppendLedgerEntriesRequest_Transaction_PayIn_)(nil),
 		(*AppendLedgerEntriesRequest_Transaction_PayoutReservation_)(nil),
 		(*AppendLedgerEntriesRequest_Transaction_Payout_)(nil),
-		(*AppendLedgerEntriesRequest_Transaction_Settlement_)(nil),
+		(*AppendLedgerEntriesRequest_Transaction_ProviderSettlement_)(nil),
 		(*AppendLedgerEntriesRequest_Transaction_FeeSettlement_)(nil),
 		(*AppendLedgerEntriesRequest_Transaction_PayoutReservationRelease_)(nil),
 	}

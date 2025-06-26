@@ -200,5 +200,5 @@ if err != nil {
 ## Examples
 
 Comprehensive examples are available in:
-- [Provider Service Example](examples/provider_service_test.go)
-- [Network Client Example](examples/network_client_test.go)
+- [Provider Service Example](https://github.com/t-0-network/provider-sdk-go/blob/main/examples/network_client_test.go)
+- [Network Client Example](https://github.com/t-0-network/provider-sdk-go/blob/main/examples/provider_service_test.go)

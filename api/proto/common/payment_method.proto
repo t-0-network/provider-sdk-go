@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package tzero.v1.common;
 
-message PaymentMethod { // TODO: what could be better name?
+message PaymentMethod {
   oneof details {
     tzero.v1.common.SepaPaymentMethod sepa = 10;
   }

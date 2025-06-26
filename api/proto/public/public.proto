@@ -6,10 +6,7 @@ package network.v1.public;
 service PaymentService {
   // available without authentication. This will find a pair of best PayIn nad PayOut providers in order to
   // provide best quote for payment
-  // TODO: should quote have a life time?
   rpc GetPaymentQuote(GetPaymentQuoteRequest) returns (GetPaymentQuoteResponse);
-
-  // TODO: Get available PayIn and PayOut methods
 
   // Creates a payment details containing all the required attributes for PayOut
   // requires authentication and completed KYC
