@@ -68,7 +68,9 @@ openssl ec -in private_key.pem -text -noout 2>/dev/null | grep -A 5 'pub:' | tai
 Implement the `networkconnect.ProviderServiceHandler` interface to create your provider service:
 
 ```go
-type ProviderServiceImplementation struct{}
+type ProviderServiceImplementation struct{
+    networkClient networkconnect.NetworkServiceClient 
+}
 
 func (s *ProviderServiceImplementation) AppendLedgerEntries(
     ctx context.Context, req *connect.Request[networkproto.AppendLedgerEntriesRequest],
@@ -84,11 +86,26 @@ func (s *ProviderServiceImplementation) CreatePayInDetails(
     return connect.NewResponse(&networkproto.CreatePayInDetailsResponse{}), nil
 }
 
-func (s *ProviderServiceImplementation) PayOut(
-    ctx context.Context, req *connect.Request[networkproto.PayoutRequest],
+func (s *ProviderServiceImplementation) PayOut(ctx context.Context, req *connect.Request[networkproto.PayoutRequest],
 ) (*connect.Response[networkproto.PayoutResponse], error) {
-    // Implement payout logic
-    return connect.NewResponse(&networkproto.PayoutResponse{}), nil
+	// At his point we would typically call the bank API to create a payment
+	// and return the payment details to the network.
+
+	msg := req.Msg
+	updatePayoutReq := &networkproto.UpdatePayoutRequest{
+		PaymentId: msg.GetPaymentId(),
+		PayoutId:  msg.GetPayoutId(),
+		Result: &networkproto.UpdatePayoutRequest_Success_{
+			Success: &networkproto.UpdatePayoutRequest_Success{},
+		},
+	}
+
+	_, err := s.networkClient.UpdatePayout(ctx, connect.NewRequest(updatePayoutReq))
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&networkproto.PayoutResponse{}), nil
 }
 
 func (s *ProviderServiceImplementation) UpdateLimit(
