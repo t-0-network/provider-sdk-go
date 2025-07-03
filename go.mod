@@ -6,6 +6,8 @@ require (
 	connectrpc.com/connect v1.18.1
 	github.com/btcsuite/btcd/btcec/v2 v2.3.5
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0
+	github.com/google/uuid v1.6.0
+	github.com/shopspring/decimal v1.4.0
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/crypto v0.39.0
 	golang.org/x/net v0.41.0

@@ -9,12 +9,12 @@ import (
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
-	"github.com/t-0-network/provider-sdk-go-examples/utils"
 	networkreq "github.com/t-0-network/provider-sdk-go/api/gen/proto/network"
+	"github.com/t-0-network/provider-sdk-go/examples/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func ExamplePayoutProviderBasicFlow() {
+func _ExamplePayoutProviderBasicFlow() {
 	// Start the provider service, which listens for incoming requests from the network.
 	shutdownFunc := startTheProviderService(&PayOutProviderImplementation{})
 
@@ -41,7 +41,7 @@ func ExamplePayoutProviderBasicFlow() {
 		Result: &networkreq.UpdatePayoutRequest_Success_{
 			Success: &networkreq.UpdatePayoutRequest_Success{},
 		},
-		//Result:    &networkreq.UpdatePayoutRequest_Failure_{},
+		// Result:    &networkreq.UpdatePayoutRequest_Failure_{},
 	}))
 
 	log.Printf("Pay-out quotes submitted successfully: %v", resp.Msg)
@@ -59,7 +59,7 @@ func payOutQuotesRequestExample() *connect.Request[networkreq.UpdateQuoteRequest
 			{
 				// specify the currency for the pay-out quote, e.g. BRL. In this case the rate is for USD/BRL.
 				Currency: payoutCurrency,
-				//right now only realtime quotes are supported
+				// right now only realtime quotes are supported
 				QuoteType: networkreq.QuoteType_QUOTE_TYPE_REALTIME,
 				// Set the expiration time for the quote
 				Expiration: timestamppb.New(time.Now().Add(10 * time.Minute)),
@@ -68,9 +68,9 @@ func payOutQuotesRequestExample() *connect.Request[networkreq.UpdateQuoteRequest
 					{
 						// ClientQuoteId is a unique identifier for each quote of this provider, which can be used to reference it later.
 						ClientQuoteId: uuid.NewString(),
-						//band of the quote, e.g. this rate is up to 1000 USD
+						// band of the quote, e.g. this rate is up to 1000 USD
 						MaxAmount: utils.DecimalToProto(decimal.NewFromFloat(1000.0)),
-						//rate for the band, USD/BRL = 5.56
+						// rate for the band, USD/BRL = 5.56
 						// This means, that the provider is willing to pay out 5.56 BRL for each USD
 						Rate: utils.DecimalToProto(decimal.NewFromFloat(5.56)),
 					},

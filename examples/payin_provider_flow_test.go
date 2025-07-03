@@ -9,10 +9,10 @@ import (
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
-	"github.com/t-0-network/provider-sdk-go-examples/utils"
 	"github.com/t-0-network/provider-sdk-go/api/gen/proto/common"
 	networkreq "github.com/t-0-network/provider-sdk-go/api/gen/proto/network"
 	"github.com/t-0-network/provider-sdk-go/api/gen/proto/network/networkconnect"
+	"github.com/t-0-network/provider-sdk-go/examples/utils"
 	"github.com/t-0-network/provider-sdk-go/pkg/network"
 	"github.com/t-0-network/provider-sdk-go/pkg/provider"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -23,7 +23,7 @@ var (
 	payoutCurrency = "BRL"
 )
 
-func ExamplePayinProviderBasicFlow() {
+func _ExamplePayinProviderBasicFlow() {
 	// Start the provider service, which listens for incoming requests from the network.
 	shutdownFunc := startTheProviderService(&PayInProviderImplementation{})
 
@@ -116,7 +116,7 @@ func payInQuotesRequestExample() *connect.Request[networkreq.UpdateQuoteRequest]
 		PayIn: []*networkreq.UpdateQuoteRequest_Quote{
 			{
 				Currency: payInCurrency,
-				//right now only realtime quotes are supported
+				// right now only realtime quotes are supported
 				QuoteType: networkreq.QuoteType_QUOTE_TYPE_REALTIME,
 				// Set the expiration time for the quote
 				Expiration: timestamppb.New(time.Now().Add(10 * time.Minute)),
@@ -125,7 +125,7 @@ func payInQuotesRequestExample() *connect.Request[networkreq.UpdateQuoteRequest]
 					{
 						// ClientQuoteId is a unique identifier for each quote of this provider, which can be used to reference it later.
 						ClientQuoteId: uuid.NewString(),
-						//band of the quote, e.g. this rate is up to 1000 USD
+						// band of the quote, e.g. this rate is up to 1000 USD
 						MaxAmount: utils.DecimalToProto(decimal.NewFromFloat(1000.0)),
 						// rate for the band, USD/EUR = 0.86
 						// This means, that for 1 USD equivalent, the user will pay in 0.86 EUR.
@@ -210,7 +210,6 @@ func (p *PayInProviderImplementation) AppendLedgerEntries(ctx context.Context, c
 	// Here you can implement your logic to handle the ledger entries
 	// For now, we just return a success response.
 	return connect.NewResponse(&networkreq.AppendLedgerEntriesResponse{}), nil
-
 }
 
 func (p *PayInProviderImplementation) CreatePayInDetails(ctx context.Context, c *connect.Request[networkreq.CreatePayInDetailsRequest]) (*connect.Response[networkreq.CreatePayInDetailsResponse], error) {
@@ -235,7 +234,6 @@ func (p *PayInProviderImplementation) CreatePayInDetails(ctx context.Context, c 
 			},
 		},
 	}), nil
-
 }
 
 func (p *PayInProviderImplementation) PayOut(ctx context.Context, c *connect.Request[networkreq.PayoutRequest]) (*connect.Response[networkreq.PayoutResponse], error) {

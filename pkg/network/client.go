@@ -4,6 +4,7 @@ package network
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/t-0-network/provider-sdk-go/api/gen/proto/network/networkconnect"
 	"github.com/t-0-network/provider-sdk-go/pkg/crypto"
@@ -37,8 +38,10 @@ func NewServiceClient(
 	}
 
 	client := http.Client{
-		Timeout:   options.timeout,
-		Transport: newSigningTransport(options.signFn),
+		Timeout: options.timeout,
+		Transport: newSigningTransport(
+			options.signFn, time.Now,
+		),
 	}
 
 	return networkconnect.NewNetworkServiceClient(&client, options.baseURL), nil
