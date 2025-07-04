@@ -4,12 +4,14 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"encoding/binary"
 	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 
 	"connectrpc.com/connect"
 	"github.com/t-0-network/provider-sdk-go/pkg/constant"
@@ -57,6 +59,17 @@ func newSignatureVerifierMiddleware(
 				return
 			}
 
+			timestamp, timestampBytes, err := parseTimestamp(req.Header)
+			if err != nil {
+				setErrorAndContinue(req, connect.CodeInvalidArgument, err.Error())
+				return
+			}
+
+			if !timesWithinDelta(timestamp, time.Now(), time.Minute) {
+				setErrorAndContinue(req, connect.CodeInvalidArgument, "timestamp is outside the allowed time window")
+				return
+			}
+
 			body, err := readBodyWithCap(req, maxBodySizeOpt)
 			if err != nil {
 				setErrorAndContinue(req, connect.CodeInvalidArgument, err.Error())
@@ -67,7 +80,7 @@ func newSignatureVerifierMiddleware(
 			_ = req.Body.Close()
 			req.Body = io.NopCloser(bytes.NewReader(body))
 
-			if err := verifySignature(publicKey, body, signature); err != nil {
+			if err := verifySignature(publicKey, append(timestampBytes, body...), signature); err != nil {
 				setErrorAndContinue(req, connect.CodeUnauthenticated, err.Error())
 				return
 			}
@@ -94,6 +107,25 @@ func parseRequiredHexedHeader(headerName string, headers http.Header) ([]byte, e
 	}
 
 	return decodedHeader, nil
+}
+
+// parseTimestamp extracts the timestamp from the request headers, and returns
+// the parsed time and its byte representation in little-endian format.
+func parseTimestamp(headers http.Header) (time.Time, []byte, error) {
+	timestampValue := headers.Get(constant.SignatureTimestampHeader)
+	if timestampValue == "" {
+		return time.Time{}, nil, fmt.Errorf("%w: %s", ErrMissingRequiredHeader, constant.SignatureTimestampHeader)
+	}
+
+	timestamp, err := strconv.ParseInt(timestampValue, 10, 64)
+	if err != nil {
+		return time.Time{}, nil, fmt.Errorf("invalid timestamp header: %s", err.Error())
+	}
+
+	timestampBytes := make([]byte, 8)
+	binary.LittleEndian.PutUint64(timestampBytes, uint64(timestamp))
+
+	return time.UnixMilli(timestamp), timestampBytes, nil
 }
 
 func readBodyWithCap(r *http.Request, cap int64) ([]byte, error) {
@@ -145,4 +177,13 @@ func newVerifySignature(networkPublicKeyHexed string) (verifySignature, error) {
 
 		return nil
 	}, nil
+}
+
+func timesWithinDelta(t1, t2 time.Time, delta time.Duration) bool {
+	diff := t1.Sub(t2)
+	if diff < 0 {
+		diff = -diff
+	}
+
+	return diff <= delta
 }

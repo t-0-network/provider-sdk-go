@@ -3,11 +3,13 @@ package examples_test
 import (
 	"bytes"
 	"context"
+	"encoding/binary"
 	"encoding/hex"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"connectrpc.com/connect"
@@ -51,7 +53,7 @@ func ExampleNewProviderHandler() {
 
 	// Build a CreatePayInDetails request
 	req := connect.NewRequest(&networkproto.CreatePayInDetailsRequest{
-		PaymentId: "a-payment-unique-identifier",
+		PaymentIntentId: "a-payment-unique-identifier",
 	})
 
 	// Use the providerClient to call the CreatePayInDetails method
@@ -83,7 +85,8 @@ func newProviderClient(privateKey string) (networkconnect.ProviderServiceClient,
 		Timeout: 15 * time.Second,
 		Transport: &signingTransport{
 			transport: http.DefaultTransport,
-			signFn:    signFn,
+			sign:      signFn,
+			timeNow:   time.Now,
 		},
 	}
 
@@ -124,7 +127,8 @@ func (s *ProviderServiceImplementation) UpdatePayment(
 
 type signingTransport struct {
 	transport http.RoundTripper
-	signFn    crypto.SignFn
+	sign      crypto.SignFn
+	timeNow   func() time.Time
 }
 
 func (t *signingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -136,10 +140,17 @@ func (t *signingTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 	req.Body.Close()
 	req.Body = io.NopCloser(bytes.NewReader(body))
 
-	// Hash the request body using LegacyKeccak256
-	digest := crypto.LegacyKeccak256(body)
+	// Get current timestamp in milliseconds
+	timestamp := t.timeNow().UnixMilli()
 
-	signature, pubKeyBytes, err := t.signFn(digest)
+	// Convert timestamp to little-endian (8 bytes for int64)
+	timestampBytes := make([]byte, 8)
+	binary.LittleEndian.PutUint64(timestampBytes, uint64(timestamp))
+
+	// Prepend timestamp bytes to the body and compute the digest
+	digest := crypto.LegacyKeccak256(append(timestampBytes, body...))
+
+	signature, pubKeyBytes, err := t.sign(digest)
 	if err != nil {
 		return nil, fmt.Errorf("signing request body: %w", err)
 	}
@@ -147,6 +158,7 @@ func (t *signingTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 	// Set headers
 	req.Header.Set(constant.PublicKeyHeader, "0x"+hex.EncodeToString(pubKeyBytes))
 	req.Header.Set(constant.SignatureHeader, "0x"+hex.EncodeToString(signature))
+	req.Header.Set(constant.SignatureTimestampHeader, strconv.FormatInt(timestamp, 10))
 
 	return t.transport.RoundTrip(req)
 }

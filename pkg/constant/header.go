@@ -1,6 +1,7 @@
 package constant
 
 const (
-	SignatureHeader = "X-Signature"
-	PublicKeyHeader = "X-Public-Key"
+	SignatureHeader          = "X-Signature"
+	SignatureTimestampHeader = "X-Signature-Timestamp"
+	PublicKeyHeader          = "X-Public-Key"
 )
