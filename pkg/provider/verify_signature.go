@@ -122,10 +122,10 @@ func parseTimestamp(headers http.Header) (time.Time, []byte, error) {
 		return time.Time{}, nil, fmt.Errorf("invalid timestamp header: %s", err.Error())
 	}
 
-	timestampBytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(timestampBytes, uint64(timestamp))
+	timestampBytes := [8]byte{}
+	binary.LittleEndian.PutUint64(timestampBytes[:], uint64(timestamp))
 
-	return time.UnixMilli(timestamp), timestampBytes, nil
+	return time.UnixMilli(timestamp), timestampBytes[:], nil
 }
 
 func readBodyWithCap(r *http.Request, cap int64) ([]byte, error) {
