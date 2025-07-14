@@ -144,11 +144,11 @@ func (t *signingTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 	timestamp := t.timeNow().UnixMilli()
 
 	// Convert timestamp to little-endian (8 bytes for int64)
-	timestampBytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(timestampBytes, uint64(timestamp))
+	timestampBytes := [8]byte{}
+	binary.LittleEndian.PutUint64(timestampBytes[:], uint64(timestamp))
 
-	// Prepend timestamp bytes to the body and compute the digest
-	digest := crypto.LegacyKeccak256(append(timestampBytes, body...))
+	// Append timestamp bytes to the body and compute the digest
+	digest := crypto.LegacyKeccak256(append(body, timestampBytes[:]...))
 
 	signature, pubKeyBytes, err := t.sign(digest)
 	if err != nil {
