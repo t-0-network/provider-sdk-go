@@ -562,6 +562,8 @@ func (m *UpdatePaymentRequest) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for PaymentId
+
 	// no validation rules for PaymentClientId
 
 	switch v := m.Result.(type) {
@@ -855,95 +857,38 @@ func (m *UpdateLimitRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Version
+	for idx, item := range m.GetLimits() {
+		_, _ = idx, item
 
-	// no validation rules for ProviderId
-
-	if all {
-		switch v := interface{}(m.GetPayoutLimit()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, UpdateLimitRequestValidationError{
-					field:  "PayoutLimit",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, UpdateLimitRequestValidationError{
+						field:  fmt.Sprintf("Limits[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, UpdateLimitRequestValidationError{
+						field:  fmt.Sprintf("Limits[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
 			}
-		case interface{ Validate() error }:
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				errors = append(errors, UpdateLimitRequestValidationError{
-					field:  "PayoutLimit",
+				return UpdateLimitRequestValidationError{
+					field:  fmt.Sprintf("Limits[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
-				})
+				}
 			}
 		}
-	} else if v, ok := interface{}(m.GetPayoutLimit()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateLimitRequestValidationError{
-				field:  "PayoutLimit",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
 
-	if all {
-		switch v := interface{}(m.GetCreditLimit()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, UpdateLimitRequestValidationError{
-					field:  "CreditLimit",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, UpdateLimitRequestValidationError{
-					field:  "CreditLimit",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetCreditLimit()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateLimitRequestValidationError{
-				field:  "CreditLimit",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetCreditUsage()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, UpdateLimitRequestValidationError{
-					field:  "CreditUsage",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, UpdateLimitRequestValidationError{
-					field:  "CreditUsage",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetCreditUsage()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateLimitRequestValidationError{
-				field:  "CreditUsage",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
 	}
 
 	if len(errors) > 0 {
@@ -2948,6 +2893,199 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = UpdatePaymentRequest_FailureValidationError{}
+
+// Validate checks the field values on UpdateLimitRequest_Limit with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateLimitRequest_Limit) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateLimitRequest_Limit with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateLimitRequest_LimitMultiError, or nil if none found.
+func (m *UpdateLimitRequest_Limit) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateLimitRequest_Limit) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Version
+
+	// no validation rules for CreditorId
+
+	if all {
+		switch v := interface{}(m.GetPayoutLimit()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UpdateLimitRequest_LimitValidationError{
+					field:  "PayoutLimit",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UpdateLimitRequest_LimitValidationError{
+					field:  "PayoutLimit",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPayoutLimit()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateLimitRequest_LimitValidationError{
+				field:  "PayoutLimit",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetCreditLimit()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UpdateLimitRequest_LimitValidationError{
+					field:  "CreditLimit",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UpdateLimitRequest_LimitValidationError{
+					field:  "CreditLimit",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreditLimit()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateLimitRequest_LimitValidationError{
+				field:  "CreditLimit",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetCreditUsage()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UpdateLimitRequest_LimitValidationError{
+					field:  "CreditUsage",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UpdateLimitRequest_LimitValidationError{
+					field:  "CreditUsage",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreditUsage()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateLimitRequest_LimitValidationError{
+				field:  "CreditUsage",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return UpdateLimitRequest_LimitMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateLimitRequest_LimitMultiError is an error wrapping multiple validation
+// errors returned by UpdateLimitRequest_Limit.ValidateAll() if the designated
+// constraints aren't met.
+type UpdateLimitRequest_LimitMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateLimitRequest_LimitMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateLimitRequest_LimitMultiError) AllErrors() []error { return m }
+
+// UpdateLimitRequest_LimitValidationError is the validation error returned by
+// UpdateLimitRequest_Limit.Validate if the designated constraints aren't met.
+type UpdateLimitRequest_LimitValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateLimitRequest_LimitValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateLimitRequest_LimitValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateLimitRequest_LimitValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateLimitRequest_LimitValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateLimitRequest_LimitValidationError) ErrorName() string {
+	return "UpdateLimitRequest_LimitValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateLimitRequest_LimitValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateLimitRequest_Limit.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateLimitRequest_LimitValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateLimitRequest_LimitValidationError{}
 
 // Validate checks the field values on CreatePayInDetailsRequest_Sender with
 // the rules defined in the proto definition for this message. If any rules

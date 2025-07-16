@@ -361,6 +361,9 @@ func (*PayoutResponse) Descriptor() ([]byte, []int) {
 type UpdatePaymentRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// *
+	// payment_id is a payment id in the T-0 network.
+	PaymentId uint64 `protobuf:"varint,5,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	// *
 	// payment_client_id is a payment id assigned by the client, this is the same id that was provided in the CreatePaymentRequest.
 	PaymentClientId string `protobuf:"bytes,10,opt,name=payment_client_id,json=paymentClientId,proto3" json:"payment_client_id,omitempty"`
 	// Types that are valid to be assigned to Result:
@@ -400,6 +403,13 @@ func (x *UpdatePaymentRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use UpdatePaymentRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePaymentRequest) Descriptor() ([]byte, []int) {
 	return file_network_provider_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UpdatePaymentRequest) GetPaymentId() uint64 {
+	if x != nil {
+		return x.PaymentId
+	}
+	return 0
 }
 
 func (x *UpdatePaymentRequest) GetPaymentClientId() string {
@@ -495,24 +505,8 @@ func (*UpdatePaymentResponse) Descriptor() ([]byte, []int) {
 type UpdateLimitRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// *
-	// Incrementally growing for the provider - same as in Ledger. Different providers have different versions.
-	Version int64 `protobuf:"varint,10,opt,name=version,proto3" json:"version,omitempty"`
-	// *
-	// the Id of the counterparty (creditor) provider, e.g. the provider that is providing the credit limit.
-	// It's usually the payOut provider, which provides the credit line to the payIn provider.
-	ProviderId int32 `protobuf:"varint,15,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
-	// *
-	// payout_limit = credit_limit - credit_usage, negative value means credit limit is exceeded,
-	// e.g. if counterparty decreased credit limit
-	PayoutLimit *common.Decimal `protobuf:"bytes,20,opt,name=payout_limit,json=payoutLimit,proto3" json:"payout_limit,omitempty"`
-	// *
-	// This is the credit limit that the counterparty is willing to extend to the provider.
-	CreditLimit *common.Decimal `protobuf:"bytes,30,opt,name=credit_limit,json=creditLimit,proto3" json:"credit_limit,omitempty"`
-	// *
-	// This is the credit usage that the provider has used so far. It is the sum of all payouts made by the provider
-	// minus the settlement net (settlement balance). It could be negative if the provider has received more settlements
-	// than payouts.
-	CreditUsage   *common.Decimal `protobuf:"bytes,40,opt,name=credit_usage,json=creditUsage,proto3" json:"credit_usage,omitempty"`
+	// can contain one or more Limit messages, each representing a credit limit for a specific counterparty provider.
+	Limits        []*UpdateLimitRequest_Limit `protobuf:"bytes,10,rep,name=limits,proto3" json:"limits,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -547,37 +541,9 @@ func (*UpdateLimitRequest) Descriptor() ([]byte, []int) {
 	return file_network_provider_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *UpdateLimitRequest) GetVersion() int64 {
+func (x *UpdateLimitRequest) GetLimits() []*UpdateLimitRequest_Limit {
 	if x != nil {
-		return x.Version
-	}
-	return 0
-}
-
-func (x *UpdateLimitRequest) GetProviderId() int32 {
-	if x != nil {
-		return x.ProviderId
-	}
-	return 0
-}
-
-func (x *UpdateLimitRequest) GetPayoutLimit() *common.Decimal {
-	if x != nil {
-		return x.PayoutLimit
-	}
-	return nil
-}
-
-func (x *UpdateLimitRequest) GetCreditLimit() *common.Decimal {
-	if x != nil {
-		return x.CreditLimit
-	}
-	return nil
-}
-
-func (x *UpdateLimitRequest) GetCreditUsage() *common.Decimal {
-	if x != nil {
-		return x.CreditUsage
+		return x.Limits
 	}
 	return nil
 }
@@ -1002,7 +968,7 @@ func (x *AppendLedgerEntriesRequest_LedgerEntry) GetExchangeRate() *common.Decim
 
 type AppendLedgerEntriesRequest_Transaction_PayIn struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PaymentId     string                 `protobuf:"bytes,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	PaymentId     uint64                 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1037,16 +1003,16 @@ func (*AppendLedgerEntriesRequest_Transaction_PayIn) Descriptor() ([]byte, []int
 	return file_network_provider_proto_rawDescGZIP(), []int{0, 0, 0}
 }
 
-func (x *AppendLedgerEntriesRequest_Transaction_PayIn) GetPaymentId() string {
+func (x *AppendLedgerEntriesRequest_Transaction_PayIn) GetPaymentId() uint64 {
 	if x != nil {
 		return x.PaymentId
 	}
-	return ""
+	return 0
 }
 
 type AppendLedgerEntriesRequest_Transaction_PayoutReservation struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PaymentId     string                 `protobuf:"bytes,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	PaymentId     uint64                 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1081,16 +1047,16 @@ func (*AppendLedgerEntriesRequest_Transaction_PayoutReservation) Descriptor() ([
 	return file_network_provider_proto_rawDescGZIP(), []int{0, 0, 1}
 }
 
-func (x *AppendLedgerEntriesRequest_Transaction_PayoutReservation) GetPaymentId() string {
+func (x *AppendLedgerEntriesRequest_Transaction_PayoutReservation) GetPaymentId() uint64 {
 	if x != nil {
 		return x.PaymentId
 	}
-	return ""
+	return 0
 }
 
 type AppendLedgerEntriesRequest_Transaction_Payout struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PaymentId     string                 `protobuf:"bytes,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	PaymentId     uint64                 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1125,11 +1091,11 @@ func (*AppendLedgerEntriesRequest_Transaction_Payout) Descriptor() ([]byte, []in
 	return file_network_provider_proto_rawDescGZIP(), []int{0, 0, 2}
 }
 
-func (x *AppendLedgerEntriesRequest_Transaction_Payout) GetPaymentId() string {
+func (x *AppendLedgerEntriesRequest_Transaction_Payout) GetPaymentId() uint64 {
 	if x != nil {
 		return x.PaymentId
 	}
-	return ""
+	return 0
 }
 
 type AppendLedgerEntriesRequest_Transaction_ProviderSettlement struct {
@@ -1222,7 +1188,7 @@ func (x *AppendLedgerEntriesRequest_Transaction_FeeSettlement) GetFeeSettlementI
 
 type AppendLedgerEntriesRequest_Transaction_PayoutReservationRelease struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PaymentId     string                 `protobuf:"bytes,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	PaymentId     uint64                 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1257,11 +1223,11 @@ func (*AppendLedgerEntriesRequest_Transaction_PayoutReservationRelease) Descript
 	return file_network_provider_proto_rawDescGZIP(), []int{0, 0, 5}
 }
 
-func (x *AppendLedgerEntriesRequest_Transaction_PayoutReservationRelease) GetPaymentId() string {
+func (x *AppendLedgerEntriesRequest_Transaction_PayoutReservationRelease) GetPaymentId() uint64 {
 	if x != nil {
 		return x.PaymentId
 	}
-	return ""
+	return 0
 }
 
 type UpdatePaymentRequest_Success struct {
@@ -1352,6 +1318,96 @@ func (*UpdatePaymentRequest_Failure) Descriptor() ([]byte, []int) {
 	return file_network_provider_proto_rawDescGZIP(), []int{4, 1}
 }
 
+type UpdateLimitRequest_Limit struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// *
+	// Incrementally growing for the provider - same as in Ledger.
+	Version int64 `protobuf:"varint,10,opt,name=version,proto3" json:"version,omitempty"`
+	// *
+	// the Id of the counterparty (creditor) provider, e.g. the provider that is providing the credit limit.
+	// It's usually the payOut provider, which provides the credit line to the payIn provider.
+	CreditorId int32 `protobuf:"varint,15,opt,name=creditor_id,json=creditorId,proto3" json:"creditor_id,omitempty"`
+	// *
+	// payout_limit = credit_limit - credit_usage, negative value means credit limit is exceeded,
+	// e.g. if counterparty decreased credit limit
+	PayoutLimit *common.Decimal `protobuf:"bytes,20,opt,name=payout_limit,json=payoutLimit,proto3" json:"payout_limit,omitempty"`
+	// *
+	// This is the credit limit that the counterparty is willing to extend to the provider.
+	CreditLimit *common.Decimal `protobuf:"bytes,30,opt,name=credit_limit,json=creditLimit,proto3" json:"credit_limit,omitempty"`
+	// *
+	// This is the credit usage that the provider has used so far. It is the sum of all payouts made by the provider
+	// minus the settlement net (settlement balance). It could be negative if the provider has received more
+	// in settlements than maid payouts (pre-settlement).
+	CreditUsage   *common.Decimal `protobuf:"bytes,40,opt,name=credit_usage,json=creditUsage,proto3" json:"credit_usage,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateLimitRequest_Limit) Reset() {
+	*x = UpdateLimitRequest_Limit{}
+	mi := &file_network_provider_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateLimitRequest_Limit) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateLimitRequest_Limit) ProtoMessage() {}
+
+func (x *UpdateLimitRequest_Limit) ProtoReflect() protoreflect.Message {
+	mi := &file_network_provider_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateLimitRequest_Limit.ProtoReflect.Descriptor instead.
+func (*UpdateLimitRequest_Limit) Descriptor() ([]byte, []int) {
+	return file_network_provider_proto_rawDescGZIP(), []int{6, 0}
+}
+
+func (x *UpdateLimitRequest_Limit) GetVersion() int64 {
+	if x != nil {
+		return x.Version
+	}
+	return 0
+}
+
+func (x *UpdateLimitRequest_Limit) GetCreditorId() int32 {
+	if x != nil {
+		return x.CreditorId
+	}
+	return 0
+}
+
+func (x *UpdateLimitRequest_Limit) GetPayoutLimit() *common.Decimal {
+	if x != nil {
+		return x.PayoutLimit
+	}
+	return nil
+}
+
+func (x *UpdateLimitRequest_Limit) GetCreditLimit() *common.Decimal {
+	if x != nil {
+		return x.CreditLimit
+	}
+	return nil
+}
+
+func (x *UpdateLimitRequest_Limit) GetCreditUsage() *common.Decimal {
+	if x != nil {
+		return x.CreditUsage
+	}
+	return nil
+}
+
 type CreatePayInDetailsRequest_Sender struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Sender:
@@ -1364,7 +1420,7 @@ type CreatePayInDetailsRequest_Sender struct {
 
 func (x *CreatePayInDetailsRequest_Sender) Reset() {
 	*x = CreatePayInDetailsRequest_Sender{}
-	mi := &file_network_provider_proto_msgTypes[20]
+	mi := &file_network_provider_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1376,7 +1432,7 @@ func (x *CreatePayInDetailsRequest_Sender) String() string {
 func (*CreatePayInDetailsRequest_Sender) ProtoMessage() {}
 
 func (x *CreatePayInDetailsRequest_Sender) ProtoReflect() protoreflect.Message {
-	mi := &file_network_provider_proto_msgTypes[20]
+	mi := &file_network_provider_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1427,7 +1483,7 @@ type CreatePayInDetailsRequest_Sender_PrivatePerson struct {
 
 func (x *CreatePayInDetailsRequest_Sender_PrivatePerson) Reset() {
 	*x = CreatePayInDetailsRequest_Sender_PrivatePerson{}
-	mi := &file_network_provider_proto_msgTypes[21]
+	mi := &file_network_provider_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1439,7 +1495,7 @@ func (x *CreatePayInDetailsRequest_Sender_PrivatePerson) String() string {
 func (*CreatePayInDetailsRequest_Sender_PrivatePerson) ProtoMessage() {}
 
 func (x *CreatePayInDetailsRequest_Sender_PrivatePerson) ProtoReflect() protoreflect.Message {
-	mi := &file_network_provider_proto_msgTypes[21]
+	mi := &file_network_provider_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1482,15 +1538,15 @@ const file_network_provider_proto_rawDesc = "" +
 	"\x05PayIn\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\n" +
-	" \x01(\tR\tpaymentId\x1a2\n" +
+	" \x01(\x04R\tpaymentId\x1a2\n" +
 	"\x11PayoutReservation\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\n" +
-	" \x01(\tR\tpaymentId\x1a'\n" +
+	" \x01(\x04R\tpaymentId\x1a'\n" +
 	"\x06Payout\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\n" +
-	" \x01(\tR\tpaymentId\x1a9\n" +
+	" \x01(\x04R\tpaymentId\x1a9\n" +
 	"\x12ProviderSettlement\x12#\n" +
 	"\rsettlement_id\x18\n" +
 	" \x01(\x04R\fsettlementId\x1a;\n" +
@@ -1500,7 +1556,7 @@ const file_network_provider_proto_rawDesc = "" +
 	"\x18PayoutReservationRelease\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\n" +
-	" \x01(\tR\tpaymentIdB\x15\n" +
+	" \x01(\x04R\tpaymentIdB\x15\n" +
 	"\x13transaction_details\x1a\xd4\x02\n" +
 	"\vLedgerEntry\x12(\n" +
 	"\x10account_owner_id\x18\n" +
@@ -1533,8 +1589,10 @@ const file_network_provider_proto_rawDesc = "" +
 	"\x0fclient_quote_id\x18( \x01(\tR\rclientQuoteId\x120\n" +
 	"\x06amount\x182 \x01(\v2\x18.tzero.v1.common.DecimalR\x06amount\x12C\n" +
 	"\rpayout_method\x18< \x01(\v2\x1e.tzero.v1.common.PaymentMethodR\fpayoutMethod\"\x10\n" +
-	"\x0ePayoutResponse\"\x9e\x03\n" +
-	"\x14UpdatePaymentRequest\x12*\n" +
+	"\x0ePayoutResponse\"\xbd\x03\n" +
+	"\x14UpdatePaymentRequest\x12\x1d\n" +
+	"\n" +
+	"payment_id\x18\x05 \x01(\x04R\tpaymentId\x12*\n" +
 	"\x11payment_client_id\x18\n" +
 	" \x01(\tR\x0fpaymentClientId\x12M\n" +
 	"\asuccess\x18\x14 \x01(\v21.network.v1.provider.UpdatePaymentRequest.SuccessH\x00R\asuccess\x12M\n" +
@@ -1547,12 +1605,15 @@ const file_network_provider_proto_rawDesc = "" +
 	"\x06Reason\x12\x16\n" +
 	"\x12REASON_UNSPECIFIED\x10\x00B\b\n" +
 	"\x06result\"\x17\n" +
-	"\x15UpdatePaymentResponse\"\x86\x02\n" +
-	"\x12UpdateLimitRequest\x12\x18\n" +
+	"\x15UpdatePaymentResponse\"\xd7\x02\n" +
+	"\x12UpdateLimitRequest\x12E\n" +
+	"\x06limits\x18\n" +
+	" \x03(\v2-.network.v1.provider.UpdateLimitRequest.LimitR\x06limits\x1a\xf9\x01\n" +
+	"\x05Limit\x12\x18\n" +
 	"\aversion\x18\n" +
 	" \x01(\x03R\aversion\x12\x1f\n" +
-	"\vprovider_id\x18\x0f \x01(\x05R\n" +
-	"providerId\x12;\n" +
+	"\vcreditor_id\x18\x0f \x01(\x05R\n" +
+	"creditorId\x12;\n" +
 	"\fpayout_limit\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalR\vpayoutLimit\x12;\n" +
 	"\fcredit_limit\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalR\vcreditLimit\x12;\n" +
 	"\fcredit_usage\x18( \x01(\v2\x18.tzero.v1.common.DecimalR\vcreditUsage\"\x15\n" +
@@ -1592,7 +1653,7 @@ func file_network_provider_proto_rawDescGZIP() []byte {
 }
 
 var file_network_provider_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_network_provider_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_network_provider_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_network_provider_proto_goTypes = []any{
 	(AppendLedgerEntriesRequest_AccountType)(0),                             // 0: network.v1.provider.AppendLedgerEntriesRequest.AccountType
 	(UpdatePaymentRequest_Failure_Reason)(0),                                // 1: network.v1.provider.UpdatePaymentRequest.Failure.Reason
@@ -1616,52 +1677,54 @@ var file_network_provider_proto_goTypes = []any{
 	(*AppendLedgerEntriesRequest_Transaction_PayoutReservationRelease)(nil), // 19: network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayoutReservationRelease
 	(*UpdatePaymentRequest_Success)(nil),                                    // 20: network.v1.provider.UpdatePaymentRequest.Success
 	(*UpdatePaymentRequest_Failure)(nil),                                    // 21: network.v1.provider.UpdatePaymentRequest.Failure
-	(*CreatePayInDetailsRequest_Sender)(nil),                                // 22: network.v1.provider.CreatePayInDetailsRequest.Sender
-	(*CreatePayInDetailsRequest_Sender_PrivatePerson)(nil),                  // 23: network.v1.provider.CreatePayInDetailsRequest.Sender.PrivatePerson
-	(*common.Decimal)(nil),                                                  // 24: tzero.v1.common.Decimal
-	(*common.PaymentMethod)(nil),                                            // 25: tzero.v1.common.PaymentMethod
-	(*timestamppb.Timestamp)(nil),                                           // 26: google.protobuf.Timestamp
+	(*UpdateLimitRequest_Limit)(nil),                                        // 22: network.v1.provider.UpdateLimitRequest.Limit
+	(*CreatePayInDetailsRequest_Sender)(nil),                                // 23: network.v1.provider.CreatePayInDetailsRequest.Sender
+	(*CreatePayInDetailsRequest_Sender_PrivatePerson)(nil),                  // 24: network.v1.provider.CreatePayInDetailsRequest.Sender.PrivatePerson
+	(*common.Decimal)(nil),                                                  // 25: tzero.v1.common.Decimal
+	(*common.PaymentMethod)(nil),                                            // 26: tzero.v1.common.PaymentMethod
+	(*timestamppb.Timestamp)(nil),                                           // 27: google.protobuf.Timestamp
 }
 var file_network_provider_proto_depIdxs = []int32{
 	12, // 0: network.v1.provider.AppendLedgerEntriesRequest.transactions:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction
-	24, // 1: network.v1.provider.PayoutRequest.amount:type_name -> tzero.v1.common.Decimal
-	25, // 2: network.v1.provider.PayoutRequest.payout_method:type_name -> tzero.v1.common.PaymentMethod
+	25, // 1: network.v1.provider.PayoutRequest.amount:type_name -> tzero.v1.common.Decimal
+	26, // 2: network.v1.provider.PayoutRequest.payout_method:type_name -> tzero.v1.common.PaymentMethod
 	20, // 3: network.v1.provider.UpdatePaymentRequest.success:type_name -> network.v1.provider.UpdatePaymentRequest.Success
 	21, // 4: network.v1.provider.UpdatePaymentRequest.failure:type_name -> network.v1.provider.UpdatePaymentRequest.Failure
-	24, // 5: network.v1.provider.UpdateLimitRequest.payout_limit:type_name -> tzero.v1.common.Decimal
-	24, // 6: network.v1.provider.UpdateLimitRequest.credit_limit:type_name -> tzero.v1.common.Decimal
-	24, // 7: network.v1.provider.UpdateLimitRequest.credit_usage:type_name -> tzero.v1.common.Decimal
-	22, // 8: network.v1.provider.CreatePayInDetailsRequest.sender:type_name -> network.v1.provider.CreatePayInDetailsRequest.Sender
-	25, // 9: network.v1.provider.CreatePayInDetailsResponse.pay_in_method:type_name -> tzero.v1.common.PaymentMethod
-	13, // 10: network.v1.provider.AppendLedgerEntriesRequest.Transaction.entries:type_name -> network.v1.provider.AppendLedgerEntriesRequest.LedgerEntry
-	14, // 11: network.v1.provider.AppendLedgerEntriesRequest.Transaction.pay_in:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayIn
-	15, // 12: network.v1.provider.AppendLedgerEntriesRequest.Transaction.payout_reservation:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayoutReservation
-	16, // 13: network.v1.provider.AppendLedgerEntriesRequest.Transaction.payout:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.Payout
-	17, // 14: network.v1.provider.AppendLedgerEntriesRequest.Transaction.provider_settlement:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.ProviderSettlement
-	18, // 15: network.v1.provider.AppendLedgerEntriesRequest.Transaction.fee_settlement:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.FeeSettlement
-	19, // 16: network.v1.provider.AppendLedgerEntriesRequest.Transaction.payout_reservation_release:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayoutReservationRelease
-	0,  // 17: network.v1.provider.AppendLedgerEntriesRequest.LedgerEntry.account_type:type_name -> network.v1.provider.AppendLedgerEntriesRequest.AccountType
-	24, // 18: network.v1.provider.AppendLedgerEntriesRequest.LedgerEntry.debit:type_name -> tzero.v1.common.Decimal
-	24, // 19: network.v1.provider.AppendLedgerEntriesRequest.LedgerEntry.credit:type_name -> tzero.v1.common.Decimal
-	24, // 20: network.v1.provider.AppendLedgerEntriesRequest.LedgerEntry.exchange_rate:type_name -> tzero.v1.common.Decimal
-	24, // 21: network.v1.provider.UpdatePaymentRequest.Success.payout_amount:type_name -> tzero.v1.common.Decimal
-	26, // 22: network.v1.provider.UpdatePaymentRequest.Success.paid_out_at:type_name -> google.protobuf.Timestamp
-	23, // 23: network.v1.provider.CreatePayInDetailsRequest.Sender.private_person:type_name -> network.v1.provider.CreatePayInDetailsRequest.Sender.PrivatePerson
-	4,  // 24: network.v1.provider.ProviderService.PayOut:input_type -> network.v1.provider.PayoutRequest
-	6,  // 25: network.v1.provider.ProviderService.UpdatePayment:input_type -> network.v1.provider.UpdatePaymentRequest
-	10, // 26: network.v1.provider.ProviderService.CreatePayInDetails:input_type -> network.v1.provider.CreatePayInDetailsRequest
-	8,  // 27: network.v1.provider.ProviderService.UpdateLimit:input_type -> network.v1.provider.UpdateLimitRequest
-	2,  // 28: network.v1.provider.ProviderService.AppendLedgerEntries:input_type -> network.v1.provider.AppendLedgerEntriesRequest
-	5,  // 29: network.v1.provider.ProviderService.PayOut:output_type -> network.v1.provider.PayoutResponse
-	7,  // 30: network.v1.provider.ProviderService.UpdatePayment:output_type -> network.v1.provider.UpdatePaymentResponse
-	11, // 31: network.v1.provider.ProviderService.CreatePayInDetails:output_type -> network.v1.provider.CreatePayInDetailsResponse
-	9,  // 32: network.v1.provider.ProviderService.UpdateLimit:output_type -> network.v1.provider.UpdateLimitResponse
-	3,  // 33: network.v1.provider.ProviderService.AppendLedgerEntries:output_type -> network.v1.provider.AppendLedgerEntriesResponse
-	29, // [29:34] is the sub-list for method output_type
-	24, // [24:29] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	22, // 5: network.v1.provider.UpdateLimitRequest.limits:type_name -> network.v1.provider.UpdateLimitRequest.Limit
+	23, // 6: network.v1.provider.CreatePayInDetailsRequest.sender:type_name -> network.v1.provider.CreatePayInDetailsRequest.Sender
+	26, // 7: network.v1.provider.CreatePayInDetailsResponse.pay_in_method:type_name -> tzero.v1.common.PaymentMethod
+	13, // 8: network.v1.provider.AppendLedgerEntriesRequest.Transaction.entries:type_name -> network.v1.provider.AppendLedgerEntriesRequest.LedgerEntry
+	14, // 9: network.v1.provider.AppendLedgerEntriesRequest.Transaction.pay_in:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayIn
+	15, // 10: network.v1.provider.AppendLedgerEntriesRequest.Transaction.payout_reservation:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayoutReservation
+	16, // 11: network.v1.provider.AppendLedgerEntriesRequest.Transaction.payout:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.Payout
+	17, // 12: network.v1.provider.AppendLedgerEntriesRequest.Transaction.provider_settlement:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.ProviderSettlement
+	18, // 13: network.v1.provider.AppendLedgerEntriesRequest.Transaction.fee_settlement:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.FeeSettlement
+	19, // 14: network.v1.provider.AppendLedgerEntriesRequest.Transaction.payout_reservation_release:type_name -> network.v1.provider.AppendLedgerEntriesRequest.Transaction.PayoutReservationRelease
+	0,  // 15: network.v1.provider.AppendLedgerEntriesRequest.LedgerEntry.account_type:type_name -> network.v1.provider.AppendLedgerEntriesRequest.AccountType
+	25, // 16: network.v1.provider.AppendLedgerEntriesRequest.LedgerEntry.debit:type_name -> tzero.v1.common.Decimal
+	25, // 17: network.v1.provider.AppendLedgerEntriesRequest.LedgerEntry.credit:type_name -> tzero.v1.common.Decimal
+	25, // 18: network.v1.provider.AppendLedgerEntriesRequest.LedgerEntry.exchange_rate:type_name -> tzero.v1.common.Decimal
+	25, // 19: network.v1.provider.UpdatePaymentRequest.Success.payout_amount:type_name -> tzero.v1.common.Decimal
+	27, // 20: network.v1.provider.UpdatePaymentRequest.Success.paid_out_at:type_name -> google.protobuf.Timestamp
+	25, // 21: network.v1.provider.UpdateLimitRequest.Limit.payout_limit:type_name -> tzero.v1.common.Decimal
+	25, // 22: network.v1.provider.UpdateLimitRequest.Limit.credit_limit:type_name -> tzero.v1.common.Decimal
+	25, // 23: network.v1.provider.UpdateLimitRequest.Limit.credit_usage:type_name -> tzero.v1.common.Decimal
+	24, // 24: network.v1.provider.CreatePayInDetailsRequest.Sender.private_person:type_name -> network.v1.provider.CreatePayInDetailsRequest.Sender.PrivatePerson
+	4,  // 25: network.v1.provider.ProviderService.PayOut:input_type -> network.v1.provider.PayoutRequest
+	6,  // 26: network.v1.provider.ProviderService.UpdatePayment:input_type -> network.v1.provider.UpdatePaymentRequest
+	10, // 27: network.v1.provider.ProviderService.CreatePayInDetails:input_type -> network.v1.provider.CreatePayInDetailsRequest
+	8,  // 28: network.v1.provider.ProviderService.UpdateLimit:input_type -> network.v1.provider.UpdateLimitRequest
+	2,  // 29: network.v1.provider.ProviderService.AppendLedgerEntries:input_type -> network.v1.provider.AppendLedgerEntriesRequest
+	5,  // 30: network.v1.provider.ProviderService.PayOut:output_type -> network.v1.provider.PayoutResponse
+	7,  // 31: network.v1.provider.ProviderService.UpdatePayment:output_type -> network.v1.provider.UpdatePaymentResponse
+	11, // 32: network.v1.provider.ProviderService.CreatePayInDetails:output_type -> network.v1.provider.CreatePayInDetailsResponse
+	9,  // 33: network.v1.provider.ProviderService.UpdateLimit:output_type -> network.v1.provider.UpdateLimitResponse
+	3,  // 34: network.v1.provider.ProviderService.AppendLedgerEntries:output_type -> network.v1.provider.AppendLedgerEntriesResponse
+	30, // [30:35] is the sub-list for method output_type
+	25, // [25:30] is the sub-list for method input_type
+	25, // [25:25] is the sub-list for extension type_name
+	25, // [25:25] is the sub-list for extension extendee
+	0,  // [0:25] is the sub-list for field type_name
 }
 
 func init() { file_network_provider_proto_init() }
@@ -1681,7 +1744,7 @@ func file_network_provider_proto_init() {
 		(*AppendLedgerEntriesRequest_Transaction_FeeSettlement_)(nil),
 		(*AppendLedgerEntriesRequest_Transaction_PayoutReservationRelease_)(nil),
 	}
-	file_network_provider_proto_msgTypes[20].OneofWrappers = []any{
+	file_network_provider_proto_msgTypes[21].OneofWrappers = []any{
 		(*CreatePayInDetailsRequest_Sender_PrivatePerson_)(nil),
 	}
 	type x struct{}
@@ -1690,7 +1753,7 @@ func file_network_provider_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_network_provider_proto_rawDesc), len(file_network_provider_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   22,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
