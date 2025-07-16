@@ -53,11 +53,9 @@ const (
 type ProviderServiceClient interface {
 	// *
 	// Network instructs the provider to execute a payout to the recipient.
-	// This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	PayOut(context.Context, *connect.Request[network.PayoutRequest]) (*connect.Response[network.PayoutResponse], error)
 	// *
 	// Network provides an update on the status of a payment. This can be either a success or a failure.
-	// This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdatePayment(context.Context, *connect.Request[network.UpdatePaymentRequest]) (*connect.Response[network.UpdatePaymentResponse], error)
 	// *
 	// Network asks the provider for possible pay-in options for a sender, in preparation for a pay-in process.
@@ -159,11 +157,9 @@ func (c *providerServiceClient) AppendLedgerEntries(ctx context.Context, req *co
 type ProviderServiceHandler interface {
 	// *
 	// Network instructs the provider to execute a payout to the recipient.
-	// This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	PayOut(context.Context, *connect.Request[network.PayoutRequest]) (*connect.Response[network.PayoutResponse], error)
 	// *
 	// Network provides an update on the status of a payment. This can be either a success or a failure.
-	// This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdatePayment(context.Context, *connect.Request[network.UpdatePaymentRequest]) (*connect.Response[network.UpdatePaymentResponse], error)
 	// *
 	// Network asks the provider for possible pay-in options for a sender, in preparation for a pay-in process.

@@ -15,7 +15,6 @@ service ProviderService {
 
   /**
     * Network instructs the provider to execute a payout to the recipient.
-    * This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
    */
   rpc PayOut(PayoutRequest) returns (PayoutResponse) {
     option idempotency_level = IDEMPOTENT;
@@ -23,7 +22,6 @@ service ProviderService {
 
   /**
     * Network provides an update on the status of a payment. This can be either a success or a failure.
-    * This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
    */
   rpc UpdatePayment(UpdatePaymentRequest) returns (UpdatePaymentResponse) {
     option idempotency_level = IDEMPOTENT;
@@ -86,15 +84,15 @@ message AppendLedgerEntriesRequest {
     }
 
     message PayIn {
-      string payment_id = 10;
+      uint64 payment_id = 10;
     }
 
     message PayoutReservation {
-      string payment_id = 10;
+      uint64 payment_id = 10;
     }
 
     message Payout {
-      string payment_id = 10;
+      uint64 payment_id = 10;
     }
 
     message ProviderSettlement {
@@ -106,7 +104,7 @@ message AppendLedgerEntriesRequest {
     }
 
     message PayoutReservationRelease {
-      string payment_id = 10;
+      uint64 payment_id = 10;
     }
   }
 
@@ -191,6 +189,10 @@ message PayoutResponse {}
 
 message UpdatePaymentRequest {
   /**
+   * payment_id is a payment id in the T-0 network.
+   */
+  uint64 payment_id = 5;
+  /**
    * payment_client_id is a payment id assigned by the client, this is the same id that was provided in the CreatePaymentRequest.
    */
   string payment_client_id = 10;
@@ -223,29 +225,36 @@ message UpdatePaymentResponse {}
 /* All the amounts are in USD */
 message UpdateLimitRequest {
   /**
-   * Incrementally growing for the provider - same as in Ledger. Different providers have different versions.
+   * can contain one or more Limit messages, each representing a credit limit for a specific counterparty provider.
    */
-  int64 version = 10;
-  /**
-   * the Id of the counterparty (creditor) provider, e.g. the provider that is providing the credit limit.
-   * It's usually the payOut provider, which provides the credit line to the payIn provider.
-   */
-  int32 provider_id = 15;
-  /**
-   * payout_limit = credit_limit - credit_usage, negative value means credit limit is exceeded,
-   * e.g. if counterparty decreased credit limit
-   */
-  tzero.v1.common.Decimal payout_limit = 20;
-  /**
-   * This is the credit limit that the counterparty is willing to extend to the provider.
-   */
-  tzero.v1.common.Decimal credit_limit = 30;
-  /**
-   * This is the credit usage that the provider has used so far. It is the sum of all payouts made by the provider
-   * minus the settlement net (settlement balance). It could be negative if the provider has received more settlements
-   * than payouts.
-   */
-  tzero.v1.common.Decimal credit_usage = 40;
+  repeated Limit limits = 10;
+
+  message Limit {
+    /**
+       * Incrementally growing for the provider - same as in Ledger.
+       */
+    int64 version = 10;
+    /**
+     * the Id of the counterparty (creditor) provider, e.g. the provider that is providing the credit limit.
+     * It's usually the payOut provider, which provides the credit line to the payIn provider.
+     */
+    int32 creditor_id = 15;
+    /**
+     * payout_limit = credit_limit - credit_usage, negative value means credit limit is exceeded,
+     * e.g. if counterparty decreased credit limit
+     */
+    tzero.v1.common.Decimal payout_limit = 20;
+    /**
+     * This is the credit limit that the counterparty is willing to extend to the provider.
+     */
+    tzero.v1.common.Decimal credit_limit = 30;
+    /**
+     * This is the credit usage that the provider has used so far. It is the sum of all payouts made by the provider
+     * minus the settlement net (settlement balance). It could be negative if the provider has received more
+     * in settlements than maid payouts (pre-settlement).
+     */
+    tzero.v1.common.Decimal credit_usage = 40;
+  }
 }
 
 /**
