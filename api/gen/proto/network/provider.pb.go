@@ -245,7 +245,10 @@ type PayoutRequest struct {
 	// *
 	// payout_method is the payment method for the payout, e.g. bank transfer, crypto transfer, etc.
 	// This is used to specify how the payout should be made.
-	PayoutMethod  *common.PaymentMethod `protobuf:"bytes,60,opt,name=payout_method,json=payoutMethod,proto3" json:"payout_method,omitempty"`
+	PayoutMethod *common.PaymentMethod `protobuf:"bytes,60,opt,name=payout_method,json=payoutMethod,proto3" json:"payout_method,omitempty"`
+	// *
+	// optional reference for the payment, up to 140 characters
+	Reference     *string `protobuf:"bytes,70,opt,name=reference,proto3,oneof" json:"reference,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -320,6 +323,13 @@ func (x *PayoutRequest) GetPayoutMethod() *common.PaymentMethod {
 		return x.PayoutMethod
 	}
 	return nil
+}
+
+func (x *PayoutRequest) GetReference() string {
+	if x != nil && x.Reference != nil {
+		return *x.Reference
+	}
+	return ""
 }
 
 type PayoutResponse struct {
@@ -968,7 +978,7 @@ func (x *AppendLedgerEntriesRequest_LedgerEntry) GetExchangeRate() *common.Decim
 
 type AppendLedgerEntriesRequest_Transaction_PayIn struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PaymentId     uint64                 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	PaymentId     uint64                 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"` // TODO: should we include details in the transaction?
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1579,7 +1589,7 @@ const file_network_provider_proto_rawDesc = "" +
 	"\x18ACCOUNT_TYPE_FEE_EXPENSE\x10\t\x12$\n" +
 	" ACCOUNT_TYPE_PROVIDER_SETTLEMENT\x10\n" +
 	"\"\x1d\n" +
-	"\x1bAppendLedgerEntriesResponse\"\x86\x02\n" +
+	"\x1bAppendLedgerEntriesResponse\"\xb7\x02\n" +
 	"\rPayoutRequest\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\n" +
@@ -1588,7 +1598,10 @@ const file_network_provider_proto_rawDesc = "" +
 	"\bcurrency\x18\x1e \x01(\tR\bcurrency\x12&\n" +
 	"\x0fclient_quote_id\x18( \x01(\tR\rclientQuoteId\x120\n" +
 	"\x06amount\x182 \x01(\v2\x18.tzero.v1.common.DecimalR\x06amount\x12C\n" +
-	"\rpayout_method\x18< \x01(\v2\x1e.tzero.v1.common.PaymentMethodR\fpayoutMethod\"\x10\n" +
+	"\rpayout_method\x18< \x01(\v2\x1e.tzero.v1.common.PaymentMethodR\fpayoutMethod\x12!\n" +
+	"\treference\x18F \x01(\tH\x00R\treference\x88\x01\x01B\f\n" +
+	"\n" +
+	"_reference\"\x10\n" +
 	"\x0ePayoutResponse\"\xbd\x03\n" +
 	"\x14UpdatePaymentRequest\x12\x1d\n" +
 	"\n" +
@@ -1732,6 +1745,7 @@ func file_network_provider_proto_init() {
 	if File_network_provider_proto != nil {
 		return
 	}
+	file_network_provider_proto_msgTypes[2].OneofWrappers = []any{}
 	file_network_provider_proto_msgTypes[4].OneofWrappers = []any{
 		(*UpdatePaymentRequest_Success_)(nil),
 		(*UpdatePaymentRequest_Failure_)(nil),

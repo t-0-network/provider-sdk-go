@@ -362,6 +362,10 @@ func (m *PayoutRequest) validate(all bool) error {
 		}
 	}
 
+	if m.Reference != nil {
+		// no validation rules for Reference
+	}
+
 	if len(errors) > 0 {
 		return PayoutRequestMultiError(errors)
 	}

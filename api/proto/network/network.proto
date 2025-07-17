@@ -5,6 +5,8 @@ package tzero.v1.network;
 import "common/common.proto";
 import "google/protobuf/timestamp.proto";
 
+//import "validate/validate.proto";
+
 /**
  * This service is used by provider to interact with the Network, e.g. push quotes and initiate payments.
  *
@@ -124,6 +126,8 @@ message CreatePaymentRequest{
 
   Sender sender = 50;
   Recipient recipient = 60;
+
+  optional string reference = 70; // optional reference for the payment, up to 140 characters
 
   optional QuoteId quote_id = 100; // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method
 
