@@ -748,6 +748,10 @@ func (m *CreatePaymentRequest) validate(all bool) error {
 		// no validation rules for PayinCurrency
 	}
 
+	if m.Reference != nil {
+		// no validation rules for Reference
+	}
+
 	if m.QuoteId != nil {
 
 		if all {

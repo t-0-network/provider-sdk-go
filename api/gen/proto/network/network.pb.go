@@ -335,6 +335,7 @@ type CreatePaymentRequest struct {
 	PayinCurrency   *string                         `protobuf:"bytes,40,opt,name=payin_currency,json=payinCurrency,proto3,oneof" json:"payin_currency,omitempty"`   // if not specified, USD is used for calculations
 	Sender          *CreatePaymentRequest_Sender    `protobuf:"bytes,50,opt,name=sender,proto3" json:"sender,omitempty"`
 	Recipient       *CreatePaymentRequest_Recipient `protobuf:"bytes,60,opt,name=recipient,proto3" json:"recipient,omitempty"`
+	Reference       *string                         `protobuf:"bytes,70,opt,name=reference,proto3,oneof" json:"reference,omitempty"`             // optional reference for the payment, up to 140 characters
 	QuoteId         *QuoteId                        `protobuf:"bytes,100,opt,name=quote_id,json=quoteId,proto3,oneof" json:"quote_id,omitempty"` // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -410,6 +411,13 @@ func (x *CreatePaymentRequest) GetRecipient() *CreatePaymentRequest_Recipient {
 		return x.Recipient
 	}
 	return nil
+}
+
+func (x *CreatePaymentRequest) GetReference() string {
+	if x != nil && x.Reference != nil {
+		return *x.Reference
+	}
+	return ""
 }
 
 func (x *CreatePaymentRequest) GetQuoteId() *QuoteId {
@@ -1442,7 +1450,7 @@ const file_network_network_proto_rawDesc = "" +
 	"\n" +
 	"expiration\x18\x14 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"expiration\x124\n" +
-	"\bquote_id\x18\x1e \x01(\v2\x19.tzero.v1.network.QuoteIdR\aquoteId\"\xae\x06\n" +
+	"\bquote_id\x18\x1e \x01(\v2\x19.tzero.v1.network.QuoteIdR\aquoteId\"\xdf\x06\n" +
 	"\x14CreatePaymentRequest\x12*\n" +
 	"\x11payment_client_id\x18\n" +
 	" \x01(\tR\x0fpaymentClientId\x12'\n" +
@@ -1450,8 +1458,9 @@ const file_network_network_proto_rawDesc = "" +
 	"\x06amount\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalR\x06amount\x12*\n" +
 	"\x0epayin_currency\x18( \x01(\tH\x00R\rpayinCurrency\x88\x01\x01\x12E\n" +
 	"\x06sender\x182 \x01(\v2-.tzero.v1.network.CreatePaymentRequest.SenderR\x06sender\x12N\n" +
-	"\trecipient\x18< \x01(\v20.tzero.v1.network.CreatePaymentRequest.RecipientR\trecipient\x129\n" +
-	"\bquote_id\x18d \x01(\v2\x19.tzero.v1.network.QuoteIdH\x01R\aquoteId\x88\x01\x01\x1aq\n" +
+	"\trecipient\x18< \x01(\v20.tzero.v1.network.CreatePaymentRequest.RecipientR\trecipient\x12!\n" +
+	"\treference\x18F \x01(\tH\x01R\treference\x88\x01\x01\x129\n" +
+	"\bquote_id\x18d \x01(\v2\x19.tzero.v1.network.QuoteIdH\x02R\aquoteId\x88\x01\x01\x1aq\n" +
 	"\x06Sender\x12]\n" +
 	"\x0eprivate_person\x18\n" +
 	" \x01(\v24.tzero.v1.network.CreatePaymentRequest.PrivatePersonH\x00R\rprivatePersonB\b\n" +
@@ -1466,7 +1475,9 @@ const file_network_network_proto_rawDesc = "" +
 	"\n" +
 	"first_name\x18\x14 \x01(\tR\tfirstName\x12\x1b\n" +
 	"\tlast_name\x18\x1e \x01(\tR\blastNameB\x11\n" +
-	"\x0f_payin_currencyB\v\n" +
+	"\x0f_payin_currencyB\f\n" +
+	"\n" +
+	"_referenceB\v\n" +
 	"\t_quote_id\"E\n" +
 	"\aQuoteId\x12\x19\n" +
 	"\bquote_id\x18\x1e \x01(\x03R\aquoteId\x12\x1f\n" +
