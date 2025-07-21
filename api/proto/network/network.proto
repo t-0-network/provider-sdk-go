@@ -45,7 +45,7 @@ service NetworkService {
    */
   rpc CreatePayment(CreatePaymentRequest) returns (CreatePaymentResponse) {
     option idempotency_level = IDEMPOTENT;
-  };
+  }; // TODO: rm this todo
 
   /**
    * Inform the network that a payout has been completed or failed. This endpoint is called by the payout
