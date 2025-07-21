@@ -228,4 +228,4 @@ enum QuoteType {
   QUOTE_TYPE_UNSPECIFIED = 0;
   QUOTE_TYPE_REALTIME = 1; // real-time quote must be valid at least for 30 seconds (TBD)
   //QUOTE_TYPE_GUARANTEED = 2; // real-time quote must be valid at least for N minutes (TBD)
-}
+} // TODO: remove this comment v15
