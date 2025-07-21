@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package network.v1.public;
+
+// this service is available as a part of public API
+service PaymentService {
+  // available without authentication. This will find a pair of best PayIn nad PayOut providers in order to
+  // provide best quote for payment
+  // TODO: should quote have a life time?
+  rpc GetPaymentQuote(GetPaymentQuoteRequest) returns (GetPaymentQuoteResponse);
+
+  // TODO: Get available PayIn and PayOut methods
+
+  // Creates a payment details containing all the required attributes for PayOut
+  // requires authentication and completed KYC
+  rpc CreatePaymentIntent(CreatePaymentIntentRequest) returns (CreatePaymentIntentResponse);
+
+  // Returns pay in details for the corresponding Payment
+  rpc GetPayInDetails(GetPayInDetailsRequest) returns (GetPayInDetailsResponse);
+
+  // Returns history of payments
+  rpc GetPayments(GetPaymentsRequest) returns (GetPaymentsResponse);
+}
+
+message GetPaymentQuoteRequest{}
+message GetPaymentQuoteResponse{}
+
+message CreatePaymentIntentRequest {}
+message CreatePaymentIntentResponse {}
+
+message GetPayInDetailsRequest{
+  string payment_id = 10;
+}
+message GetPayInDetailsResponse{}
+
+message GetPaymentsRequest {}
+message GetPaymentsResponse {}
+
+// this service is available as a part of public API
+service UserService {
+  rpc GetCurrentUser(GetCurrentUserRequest) returns (GetCurrentUserResponse);
+}
+
+message GetCurrentUserRequest {}
+message GetCurrentUserResponse {
+  string id = 10;
+
+  oneof kyc_status {
+    KycStatusRequired required = 100;
+    KycStatusPending pending = 110;
+    KycStatusDone done = 120;
+  }
+
+  message KycStatusDone{}
+  message KycStatusRequired{
+    string url = 10;
+    bool retry = 20; // or failed ... // to may be Kyc needs to be re-verified
+  }
+  message KycStatusPending{}
+}
