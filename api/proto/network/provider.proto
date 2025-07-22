@@ -15,6 +15,7 @@ service ProviderService {
 
   /**
     * Network instructs the provider to execute a payout to the recipient.
+    * This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
    */
   rpc PayOut(PayoutRequest) returns (PayoutResponse) {
     option idempotency_level = IDEMPOTENT;
@@ -22,6 +23,7 @@ service ProviderService {
 
   /**
     * Network provides an update on the status of a payment. This can be either a success or a failure.
+    * This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
    */
   rpc UpdatePayment(UpdatePaymentRequest) returns (UpdatePaymentResponse) {
     option idempotency_level = IDEMPOTENT;
