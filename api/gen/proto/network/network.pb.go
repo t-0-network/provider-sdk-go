@@ -1205,7 +1205,7 @@ type CreatePaymentRequest_PrivatePerson struct {
 	PrivatePersonClientId string                 `protobuf:"bytes,10,opt,name=private_person_client_id,json=privatePersonClientId,proto3" json:"private_person_client_id,omitempty"`
 	FirstName             string                 `protobuf:"bytes,20,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
 	LastName              string                 `protobuf:"bytes,30,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	Email                 string                 `protobuf:"bytes,55,opt,name=email,proto3" json:"email,omitempty"` // TODO: rm
+	Email                 string                 `protobuf:"bytes,56,opt,name=email,proto3" json:"email,omitempty"` // TODO: rm
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -1483,7 +1483,7 @@ const file_network_network_proto_rawDesc = "" +
 	"\n" +
 	"first_name\x18\x14 \x01(\tR\tfirstName\x12\x1b\n" +
 	"\tlast_name\x18\x1e \x01(\tR\blastName\x12\x14\n" +
-	"\x05email\x187 \x01(\tR\x05emailB\x11\n" +
+	"\x05email\x188 \x01(\tR\x05emailB\x11\n" +
 	"\x0f_payin_currencyB\f\n" +
 	"\n" +
 	"_referenceB\v\n" +
