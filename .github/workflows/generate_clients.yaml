@@ -39,6 +39,8 @@ jobs:
 
       - name: Commit generated files
         run: |
+          git config --local user.email "dev@t-0.network"
+          git config --local user.name {{ github.repository_owner }}
           git add api/gen
           git commit -m "Auto-generate proto clients"
           git push
