@@ -1205,7 +1205,6 @@ type CreatePaymentRequest_PrivatePerson struct {
 	PrivatePersonClientId string                 `protobuf:"bytes,10,opt,name=private_person_client_id,json=privatePersonClientId,proto3" json:"private_person_client_id,omitempty"`
 	FirstName             string                 `protobuf:"bytes,20,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
 	LastName              string                 `protobuf:"bytes,30,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	Email                 string                 `protobuf:"bytes,52,opt,name=email,proto3" json:"email,omitempty"` // TODO: rm
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -1257,13 +1256,6 @@ func (x *CreatePaymentRequest_PrivatePerson) GetFirstName() string {
 func (x *CreatePaymentRequest_PrivatePerson) GetLastName() string {
 	if x != nil {
 		return x.LastName
-	}
-	return ""
-}
-
-func (x *CreatePaymentRequest_PrivatePerson) GetEmail() string {
-	if x != nil {
-		return x.Email
 	}
 	return ""
 }
@@ -1458,7 +1450,7 @@ const file_network_network_proto_rawDesc = "" +
 	"\n" +
 	"expiration\x18\x14 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"expiration\x124\n" +
-	"\bquote_id\x18\x1e \x01(\v2\x19.tzero.v1.network.QuoteIdR\aquoteId\"\xf5\x06\n" +
+	"\bquote_id\x18\x1e \x01(\v2\x19.tzero.v1.network.QuoteIdR\aquoteId\"\xdf\x06\n" +
 	"\x14CreatePaymentRequest\x12*\n" +
 	"\x11payment_client_id\x18\n" +
 	" \x01(\tR\x0fpaymentClientId\x12'\n" +
@@ -1476,14 +1468,13 @@ const file_network_network_proto_rawDesc = "" +
 	"\tRecipient\x12]\n" +
 	"\x0eprivate_person\x18\n" +
 	" \x01(\v24.tzero.v1.network.CreatePaymentRequest.PrivatePersonH\x00R\rprivatePersonB\v\n" +
-	"\trecipient\x1a\x9a\x01\n" +
+	"\trecipient\x1a\x84\x01\n" +
 	"\rPrivatePerson\x127\n" +
 	"\x18private_person_client_id\x18\n" +
 	" \x01(\tR\x15privatePersonClientId\x12\x1d\n" +
 	"\n" +
 	"first_name\x18\x14 \x01(\tR\tfirstName\x12\x1b\n" +
-	"\tlast_name\x18\x1e \x01(\tR\blastName\x12\x14\n" +
-	"\x05email\x184 \x01(\tR\x05emailB\x11\n" +
+	"\tlast_name\x18\x1e \x01(\tR\blastNameB\x11\n" +
 	"\x0f_payin_currencyB\f\n" +
 	"\n" +
 	"_referenceB\v\n" +
