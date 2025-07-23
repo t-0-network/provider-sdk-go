@@ -37,13 +37,10 @@ jobs:
           go generate api/gen.go
 
       - name: Commit generated files
-        run: |
-          git config --local user.email "dev@t-0.network"
-          git config --local user.name ${{ github.repository_owner }}
-          git add api/gen
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Auto-generate proto clients"
-            git push
-          fi
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-generate proto clients"
+          file_pattern: "api/gen/**"
+          commit_user_name: "${{ github.repository_owner }}"
+          commit_user_email: "dev@t-0.network"
+          commit_author: "${{ github.repository_owner }} <dev@t-0.network>"
