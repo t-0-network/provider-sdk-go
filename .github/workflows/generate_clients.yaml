@@ -10,7 +10,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.user.login == 't-0-network' || github.event.pull_request.user.login == 'georlav2'
+    if: github.event.pull_request.user.login == 't-0-network' || github.event.pull_request.user.login == 'georlav'
 
     steps:
       - name: Generate GitHub APP Token
