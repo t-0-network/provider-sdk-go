@@ -1,0 +1,44 @@
+name: Generate Clients
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - "api/proto/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate GitHub APP Token
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ vars.CI_APP_ID }}
+          private-key: ${{ secrets.CI_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: provider-sdk-go
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          show-progress: true
+          token: ${{ steps.app-token.outputs.token }}
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Golang
+        uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+          cache-dependency-path: ./go.sum
+
+      - name: Generate Clients
+        run: |
+          go generate api/gen.go
+
+      - name: Commit generated files
+        run: |
+          git add api/gen
+          git commit -m "Auto-generate proto clients"
+          git push
