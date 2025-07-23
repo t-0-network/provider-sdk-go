@@ -5,6 +5,7 @@ on:
     types: [opened, synchronize]
     paths:
       - "api/proto/**"
+      - "api/gen/**"
 
 jobs:
   test:
@@ -23,7 +24,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          show-progress: true
+          show-progress: false
           token: ${{ steps.app-token.outputs.token }}
           ref: ${{ github.head_ref }}
 
