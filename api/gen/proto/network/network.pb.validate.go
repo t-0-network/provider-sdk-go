@@ -2614,6 +2614,8 @@ func (m *CreatePaymentRequest_PrivatePerson) validate(all bool) error {
 
 	// no validation rules for LastName
 
+	// no validation rules for Email
+
 	if len(errors) > 0 {
 		return CreatePaymentRequest_PrivatePersonMultiError(errors)
 	}
