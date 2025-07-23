@@ -10,6 +10,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # Trigger only if the PR is opened or synchronized by T-0 CI APP
     if: github.event.pull_request.user.login == 't-0-ci' || github.event.pull_request.user.login == 'georlav'
 
     steps:
