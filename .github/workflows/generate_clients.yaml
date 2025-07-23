@@ -25,6 +25,7 @@ jobs:
         with:
           show-progress: true
           token: ${{ steps.app-token.outputs.token }}
+          ref: ${{ github.head_ref }}
 
       - name: Setup Golang
         uses: actions/setup-go@v5
