@@ -10,8 +10,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     # Trigger only if the PR is opened or synchronized by T-0 CI APP
-    if: github.event.pull_request.user.login == 't-0-ci' || github.event.pull_request.user.login == 'georlav'
+    if: github.event.pull_request.user.login == 't-0-ci'
 
     steps:
       - name: Generate GitHub APP Token
@@ -45,6 +46,3 @@ jobs:
         with:
           commit_message: "Auto-generate proto clients"
           file_pattern: "api/gen/**"
-          # commit_user_name: "${{ github.repository_owner }}"
-          # commit_user_email: "dev@t-0.network"
-          # commit_author: "${{ github.repository_owner }} <dev@t-0.network>"
