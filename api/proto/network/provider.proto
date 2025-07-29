@@ -30,14 +30,6 @@ service ProviderService {
   };
 
   /**
-   * Network asks the provider for possible pay-in options for a sender, in preparation for a pay-in process.
-   * This is optional, but if implemented, it should return a list of available pay-in methods.
-   */
-  rpc CreatePayInDetails(CreatePayInDetailsRequest) returns (CreatePayInDetailsResponse) {
-    option idempotency_level = IDEMPOTENT;
-  };
-
-  /**
    * This rpc is used to notify the provider about the changes in credit limit and/or credit usage.
    */
   rpc UpdateLimit(UpdateLimitRequest) returns (UpdateLimitResponse) {
@@ -87,7 +79,6 @@ message AppendLedgerEntriesRequest {
 
     message PayIn {
       uint64 payment_id = 10;
-      // TODO: should we include details in the transaction?
     }
 
     message PayoutReservation {
@@ -186,12 +177,19 @@ message PayoutRequest {
    * payout_method is the payment method for the payout, e.g. bank transfer, crypto transfer, etc.
    * This is used to specify how the payout should be made.
    */
-  tzero.v1.common.PaymentMethod payout_method = 60;
+
+  optional tzero.v1.common.PaymentMethod payout_method = 60;
   /**
    * optional reference for the payment, up to 140 characters
    */
   optional string reference = 70;
+
+  /**
+   * Pay-in provider id which initiated the pay out.
+   */
+  uint32 pay_in_provider_id = 80;
 }
+
 message PayoutResponse {}
 
 message UpdatePaymentRequest {
@@ -268,32 +266,3 @@ message UpdateLimitRequest {
  * Empty message - means no response is needed.
  */
 message UpdateLimitResponse {}
-
-message CreatePayInDetailsRequest {
-  /**
-   * payment_intent_id is a unique identifier for the payment intent, which is used to create a payment later.
-   */
-  string payment_intent_id = 10;
-  /**
-   * Sender details for the pay-in process.
-   */
-  Sender sender = 40;
-
-  message Sender {
-    oneof sender {
-      PrivatePerson private_person = 10;
-    }
-
-    message PrivatePerson {
-      string private_person_id = 10; // can be used to get KYC data
-    }
-  }
-}
-
-message CreatePayInDetailsResponse {
-  /**
-   * List of available pay-in methods for the sender. This is used to present the user with options for how they can pay in.
-   */
-  repeated tzero.v1.common.PaymentMethod pay_in_method = 10;
-}
-

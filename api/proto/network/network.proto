@@ -3,6 +3,7 @@ syntax = "proto3";
 package tzero.v1.network;
 
 import "common/common.proto";
+import "common/payment_method.proto";
 import "google/protobuf/timestamp.proto";
 
 //import "validate/validate.proto";
@@ -55,22 +56,6 @@ service NetworkService {
   rpc UpdatePayout(UpdatePayoutRequest) returns (UpdatePayoutResponse)  {
     option idempotency_level = IDEMPOTENT;
   };
-
-  /**
-   * Inform the network that the provider has received a pay-in from the user.
-   * This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
-   */
-  rpc CreatePayIn(CreatePayInRequest) returns (CreatePayInResponse)  {
-    option idempotency_level = IDEMPOTENT;
-  };
-
-  /*
-    * Retrieve KYC verification data (e.g., SumSub token) for a person involved in the payment.
-    *
-   */
-  rpc GetKycData(GetKycDataRequest) returns (GetKycDataResponse)  {
-    option idempotency_level = IDEMPOTENT;
-  };
 }
 
 /*
@@ -91,6 +76,7 @@ message UpdateQuoteRequest {
   message Quote {
     string currency = 10; // BRL, EUR, GBP, etc. (ISO 4217 currency code)
     QuoteType quote_type = 20; // type of the quote, e.g. real-time or guaranteed
+    tzero.v1.common.PaymentMethodType payment_method = 25;
     repeated Band bands = 30; // list of bands for this quote
     google.protobuf.Timestamp expiration = 60; // expiration time of the quote
     google.protobuf.Timestamp timestamp = 70; // timestamp quote was created
@@ -122,10 +108,10 @@ message CreatePaymentRequest{
 
   string payout_currency = 20; // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
   tzero.v1.common.Decimal amount = 30; // amount in the payin currency, by default USD (if the payIn currency is not specified)
-  optional string payin_currency = 40; // if not specified, USD is used for calculations
+  optional string payin_currency = 40; // if not specified, USD is used
 
-  Sender sender = 50;
-  Recipient recipient = 60;
+  Sender sender = 50; // optional or option in the oneof?
+  Recipient recipient = 60; // optional or option in the oneof?
 
   optional string reference = 70; // optional reference for the payment, up to 140 characters
 
@@ -206,23 +192,6 @@ message UpdatePayoutRequest{
 
 message UpdatePayoutResponse{}
 
-message GetKycDataRequest {
-  oneof account {
-    string person_id = 10;
-  }
-}
-message GetKycDataResponse {
-  oneof kyc_data {
-    string sumsub_kyc_token = 10;
-  }
-}
-
-message CreatePayInRequest {
-  string payment_id = 10;
-  tzero.v1.common.Decimal amount = 20;
-}
-
-message CreatePayInResponse {}
 
 enum QuoteType {
   QUOTE_TYPE_UNSPECIFIED = 0;

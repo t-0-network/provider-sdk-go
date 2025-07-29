@@ -2,14 +2,35 @@ syntax = "proto3";
 
 package tzero.v1.common;
 
+import "common/common.proto";
+
 message PaymentMethod {
   oneof details {
-    tzero.v1.common.SepaPaymentMethod sepa = 10;
+    SepaPaymentMethod sepa = 10;
+    SwiftPaymentMethod swift = 30;
+    StablecoinPaymentMethod stablecoin = 40;
   }
 }
 
 message SepaPaymentMethod {
-  string iban = 10;
-  string payment_reference = 20;
-  string name = 30;
+    string iban = 20;
+    string beneficiary_name = 30;
+    string payment_reference = 40;
+}
+
+message SwiftPaymentMethod {
+
+}
+
+message StablecoinPaymentMethod {
+  tzero.v1.common.Blockchain blockchain = 10;
+  tzero.v1.common.Stablecoin stablecoin = 20;
+  string address = 30;
+}
+
+enum PaymentMethodType {
+  PAYMENT_METHOD_TYPE_UNSPECIFIED = 0;
+  PAYMENT_METHOD_TYPE_SEPA = 10;
+  PAYMENT_METHOD_TYPE_SWIFT = 20;
+  PAYMENT_METHOD_TYPE_CARD = 30; // only pay in
 }
