@@ -5,7 +5,10 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/t-0-network/provider-sdk-go/api/gen/proto/network/networkconnect"
+	paymentintent "github.com/t-0-network/provider-sdk-go/api/gen/proto/payment_intent/provider/providerconnect"
 )
+
+type BuildHandler func(options ...connect.HandlerOption) (path string, handler http.Handler)
 
 // T-ZERO Network Public Key, required for signature verification.
 type NetworkPublicKeyHexed string
@@ -23,7 +26,7 @@ type NetworkPublicKeyHexed string
 //   - *http.ServeMux: An HTTP mux with the provider service handler registered.
 func NewProviderHandler(
 	networkPublicKey NetworkPublicKeyHexed,
-	providerHandler networkconnect.ProviderServiceHandler,
+	buildHandler BuildHandler,
 	option ...HandlerOption,
 ) (http.Handler, error) {
 	handler := defaultProviderHandlerOptions
@@ -48,15 +51,30 @@ func NewProviderHandler(
 		connect.WithInterceptors(signatureErrorInterceptor()),
 	}, handler.connectHandlerOptions...)
 
-	path, provideServiceHandler := networkconnect.NewProviderServiceHandler(
-		providerHandler,
-		connectHandlerOpts...,
-	)
+	path, providerServiceHandler := buildHandler(connectHandlerOpts...)
 
 	mux := http.NewServeMux()
-	mux.Handle(path, provideServiceHandler)
+	mux.Handle(path, providerServiceHandler)
 
 	return newSignatureVerifierMiddleware(
 		handler.verifySignatureFn, handler.verifySignatureMaxBodySize,
 	)(mux), nil
+}
+
+func WithProviderServiceHandler(
+	providerHandler networkconnect.ProviderServiceHandler,
+) BuildHandler {
+	return func(options ...connect.HandlerOption) (string, http.Handler) {
+		path, handler := networkconnect.NewProviderServiceHandler(providerHandler, options...)
+		return path, handler
+	}
+}
+
+func WithPaymentIntentProviderServiceHandler(
+	paymentIntentProviderHandler paymentintent.ProviderServiceHandler,
+) BuildHandler {
+	return func(options ...connect.HandlerOption) (string, http.Handler) {
+		path, handler := paymentintent.NewProviderServiceHandler(paymentIntentProviderHandler, options...)
+		return path, handler
+	}
 }

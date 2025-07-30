@@ -34,7 +34,7 @@ func ExampleNewProviderHandler() {
 		// the signatures of incoming requests.
 		provider.NetworkPublicKeyHexed(dummyNetworkPublicKey),
 		// Your provider service implementation
-		&ProviderServiceImplementation{},
+		provider.WithProviderServiceHandler(&ProviderServiceImplementation{}),
 	)
 	if err != nil {
 		log.Fatalf("Failed to create provider service handler: %v", err)

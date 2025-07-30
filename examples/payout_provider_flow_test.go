@@ -147,7 +147,7 @@ func (p *PayOutProviderImplementation) UpdatePayment(ctx context.Context, c *con
 func startTheProviderService(providerImpl networkconnect.ProviderServiceHandler) provider.ServerShutdownFn {
 	providerServiceHandler, err := provider.NewProviderHandler(
 		provider.NetworkPublicKeyHexed(dummyNetworkPublicKey),
-		providerImpl,
+		provider.WithProviderServiceHandler(providerImpl),
 	)
 	if err != nil {
 		log.Fatalf("Failed to create provider service handler: %v", err)
