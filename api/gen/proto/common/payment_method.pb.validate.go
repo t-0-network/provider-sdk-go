@@ -99,6 +99,88 @@ func (m *PaymentMethod) validate(all bool) error {
 			}
 		}
 
+	case *PaymentMethod_Swift:
+		if v == nil {
+			err := PaymentMethodValidationError{
+				field:  "Details",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if all {
+			switch v := interface{}(m.GetSwift()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, PaymentMethodValidationError{
+						field:  "Swift",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, PaymentMethodValidationError{
+						field:  "Swift",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetSwift()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return PaymentMethodValidationError{
+					field:  "Swift",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	case *PaymentMethod_Stablecoin:
+		if v == nil {
+			err := PaymentMethodValidationError{
+				field:  "Details",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if all {
+			switch v := interface{}(m.GetStablecoin()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, PaymentMethodValidationError{
+						field:  "Stablecoin",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, PaymentMethodValidationError{
+						field:  "Stablecoin",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetStablecoin()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return PaymentMethodValidationError{
+					field:  "Stablecoin",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
 	default:
 		_ = v // ensures v is used
 	}
@@ -205,9 +287,9 @@ func (m *SepaPaymentMethod) validate(all bool) error {
 
 	// no validation rules for Iban
 
-	// no validation rules for PaymentReference
+	// no validation rules for BeneficiaryName
 
-	// no validation rules for Name
+	// no validation rules for PaymentReference
 
 	if len(errors) > 0 {
 		return SepaPaymentMethodMultiError(errors)
@@ -288,3 +370,213 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = SepaPaymentMethodValidationError{}
+
+// Validate checks the field values on SwiftPaymentMethod with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *SwiftPaymentMethod) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SwiftPaymentMethod with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// SwiftPaymentMethodMultiError, or nil if none found.
+func (m *SwiftPaymentMethod) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SwiftPaymentMethod) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return SwiftPaymentMethodMultiError(errors)
+	}
+
+	return nil
+}
+
+// SwiftPaymentMethodMultiError is an error wrapping multiple validation errors
+// returned by SwiftPaymentMethod.ValidateAll() if the designated constraints
+// aren't met.
+type SwiftPaymentMethodMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SwiftPaymentMethodMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SwiftPaymentMethodMultiError) AllErrors() []error { return m }
+
+// SwiftPaymentMethodValidationError is the validation error returned by
+// SwiftPaymentMethod.Validate if the designated constraints aren't met.
+type SwiftPaymentMethodValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SwiftPaymentMethodValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SwiftPaymentMethodValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SwiftPaymentMethodValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SwiftPaymentMethodValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SwiftPaymentMethodValidationError) ErrorName() string {
+	return "SwiftPaymentMethodValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SwiftPaymentMethodValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSwiftPaymentMethod.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SwiftPaymentMethodValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SwiftPaymentMethodValidationError{}
+
+// Validate checks the field values on StablecoinPaymentMethod with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *StablecoinPaymentMethod) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on StablecoinPaymentMethod with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// StablecoinPaymentMethodMultiError, or nil if none found.
+func (m *StablecoinPaymentMethod) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *StablecoinPaymentMethod) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Blockchain
+
+	// no validation rules for Stablecoin
+
+	// no validation rules for Address
+
+	if len(errors) > 0 {
+		return StablecoinPaymentMethodMultiError(errors)
+	}
+
+	return nil
+}
+
+// StablecoinPaymentMethodMultiError is an error wrapping multiple validation
+// errors returned by StablecoinPaymentMethod.ValidateAll() if the designated
+// constraints aren't met.
+type StablecoinPaymentMethodMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m StablecoinPaymentMethodMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m StablecoinPaymentMethodMultiError) AllErrors() []error { return m }
+
+// StablecoinPaymentMethodValidationError is the validation error returned by
+// StablecoinPaymentMethod.Validate if the designated constraints aren't met.
+type StablecoinPaymentMethodValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e StablecoinPaymentMethodValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e StablecoinPaymentMethodValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e StablecoinPaymentMethodValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e StablecoinPaymentMethodValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e StablecoinPaymentMethodValidationError) ErrorName() string {
+	return "StablecoinPaymentMethodValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e StablecoinPaymentMethodValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sStablecoinPaymentMethod.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = StablecoinPaymentMethodValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = StablecoinPaymentMethodValidationError{}

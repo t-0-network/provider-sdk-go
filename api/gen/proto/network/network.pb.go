@@ -332,11 +332,11 @@ type CreatePaymentRequest struct {
 	PaymentClientId string                          `protobuf:"bytes,10,opt,name=payment_client_id,json=paymentClientId,proto3" json:"payment_client_id,omitempty"` // unique client generated id for this payment
 	PayoutCurrency  string                          `protobuf:"bytes,20,opt,name=payout_currency,json=payoutCurrency,proto3" json:"payout_currency,omitempty"`      // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
 	Amount          *common.Decimal                 `protobuf:"bytes,30,opt,name=amount,proto3" json:"amount,omitempty"`                                            // amount in the payin currency, by default USD (if the payIn currency is not specified)
-	PayinCurrency   *string                         `protobuf:"bytes,40,opt,name=payin_currency,json=payinCurrency,proto3,oneof" json:"payin_currency,omitempty"`   // if not specified, USD is used for calculations
-	Sender          *CreatePaymentRequest_Sender    `protobuf:"bytes,50,opt,name=sender,proto3" json:"sender,omitempty"`
-	Recipient       *CreatePaymentRequest_Recipient `protobuf:"bytes,60,opt,name=recipient,proto3" json:"recipient,omitempty"`
-	Reference       *string                         `protobuf:"bytes,70,opt,name=reference,proto3,oneof" json:"reference,omitempty"`             // optional reference for the payment, up to 140 characters
-	QuoteId         *QuoteId                        `protobuf:"bytes,100,opt,name=quote_id,json=quoteId,proto3,oneof" json:"quote_id,omitempty"` // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method
+	PayinCurrency   *string                         `protobuf:"bytes,40,opt,name=payin_currency,json=payinCurrency,proto3,oneof" json:"payin_currency,omitempty"`   // if not specified, USD is used
+	Sender          *CreatePaymentRequest_Sender    `protobuf:"bytes,50,opt,name=sender,proto3" json:"sender,omitempty"`                                            // optional or option in the oneof?
+	Recipient       *CreatePaymentRequest_Recipient `protobuf:"bytes,60,opt,name=recipient,proto3" json:"recipient,omitempty"`                                      // optional or option in the oneof?
+	Reference       *string                         `protobuf:"bytes,70,opt,name=reference,proto3,oneof" json:"reference,omitempty"`                                // optional reference for the payment, up to 140 characters
+	QuoteId         *QuoteId                        `protobuf:"bytes,100,opt,name=quote_id,json=quoteId,proto3,oneof" json:"quote_id,omitempty"`                    // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -709,240 +709,21 @@ func (*UpdatePayoutResponse) Descriptor() ([]byte, []int) {
 	return file_network_network_proto_rawDescGZIP(), []int{8}
 }
 
-type GetKycDataRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Types that are valid to be assigned to Account:
-	//
-	//	*GetKycDataRequest_PersonId
-	Account       isGetKycDataRequest_Account `protobuf_oneof:"account"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetKycDataRequest) Reset() {
-	*x = GetKycDataRequest{}
-	mi := &file_network_network_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetKycDataRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetKycDataRequest) ProtoMessage() {}
-
-func (x *GetKycDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_network_network_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetKycDataRequest.ProtoReflect.Descriptor instead.
-func (*GetKycDataRequest) Descriptor() ([]byte, []int) {
-	return file_network_network_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *GetKycDataRequest) GetAccount() isGetKycDataRequest_Account {
-	if x != nil {
-		return x.Account
-	}
-	return nil
-}
-
-func (x *GetKycDataRequest) GetPersonId() string {
-	if x != nil {
-		if x, ok := x.Account.(*GetKycDataRequest_PersonId); ok {
-			return x.PersonId
-		}
-	}
-	return ""
-}
-
-type isGetKycDataRequest_Account interface {
-	isGetKycDataRequest_Account()
-}
-
-type GetKycDataRequest_PersonId struct {
-	PersonId string `protobuf:"bytes,10,opt,name=person_id,json=personId,proto3,oneof"`
-}
-
-func (*GetKycDataRequest_PersonId) isGetKycDataRequest_Account() {}
-
-type GetKycDataResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Types that are valid to be assigned to KycData:
-	//
-	//	*GetKycDataResponse_SumsubKycToken
-	KycData       isGetKycDataResponse_KycData `protobuf_oneof:"kyc_data"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetKycDataResponse) Reset() {
-	*x = GetKycDataResponse{}
-	mi := &file_network_network_proto_msgTypes[10]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetKycDataResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetKycDataResponse) ProtoMessage() {}
-
-func (x *GetKycDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_network_network_proto_msgTypes[10]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetKycDataResponse.ProtoReflect.Descriptor instead.
-func (*GetKycDataResponse) Descriptor() ([]byte, []int) {
-	return file_network_network_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *GetKycDataResponse) GetKycData() isGetKycDataResponse_KycData {
-	if x != nil {
-		return x.KycData
-	}
-	return nil
-}
-
-func (x *GetKycDataResponse) GetSumsubKycToken() string {
-	if x != nil {
-		if x, ok := x.KycData.(*GetKycDataResponse_SumsubKycToken); ok {
-			return x.SumsubKycToken
-		}
-	}
-	return ""
-}
-
-type isGetKycDataResponse_KycData interface {
-	isGetKycDataResponse_KycData()
-}
-
-type GetKycDataResponse_SumsubKycToken struct {
-	SumsubKycToken string `protobuf:"bytes,10,opt,name=sumsub_kyc_token,json=sumsubKycToken,proto3,oneof"`
-}
-
-func (*GetKycDataResponse_SumsubKycToken) isGetKycDataResponse_KycData() {}
-
-type CreatePayInRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PaymentId     string                 `protobuf:"bytes,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
-	Amount        *common.Decimal        `protobuf:"bytes,20,opt,name=amount,proto3" json:"amount,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreatePayInRequest) Reset() {
-	*x = CreatePayInRequest{}
-	mi := &file_network_network_proto_msgTypes[11]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreatePayInRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreatePayInRequest) ProtoMessage() {}
-
-func (x *CreatePayInRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_network_network_proto_msgTypes[11]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreatePayInRequest.ProtoReflect.Descriptor instead.
-func (*CreatePayInRequest) Descriptor() ([]byte, []int) {
-	return file_network_network_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *CreatePayInRequest) GetPaymentId() string {
-	if x != nil {
-		return x.PaymentId
-	}
-	return ""
-}
-
-func (x *CreatePayInRequest) GetAmount() *common.Decimal {
-	if x != nil {
-		return x.Amount
-	}
-	return nil
-}
-
-type CreatePayInResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreatePayInResponse) Reset() {
-	*x = CreatePayInResponse{}
-	mi := &file_network_network_proto_msgTypes[12]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreatePayInResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreatePayInResponse) ProtoMessage() {}
-
-func (x *CreatePayInResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_network_network_proto_msgTypes[12]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreatePayInResponse.ProtoReflect.Descriptor instead.
-func (*CreatePayInResponse) Descriptor() ([]byte, []int) {
-	return file_network_network_proto_rawDescGZIP(), []int{12}
-}
-
 type UpdateQuoteRequest_Quote struct {
 	state         protoimpl.MessageState           `protogen:"open.v1"`
 	Currency      string                           `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`                                                     // BRL, EUR, GBP, etc. (ISO 4217 currency code)
 	QuoteType     QuoteType                        `protobuf:"varint,20,opt,name=quote_type,json=quoteType,proto3,enum=tzero.v1.network.QuoteType" json:"quote_type,omitempty"` // type of the quote, e.g. real-time or guaranteed
-	Bands         []*UpdateQuoteRequest_Quote_Band `protobuf:"bytes,30,rep,name=bands,proto3" json:"bands,omitempty"`                                                           // list of bands for this quote
-	Expiration    *timestamppb.Timestamp           `protobuf:"bytes,60,opt,name=expiration,proto3" json:"expiration,omitempty"`                                                 // expiration time of the quote
-	Timestamp     *timestamppb.Timestamp           `protobuf:"bytes,70,opt,name=timestamp,proto3" json:"timestamp,omitempty"`                                                   // timestamp quote was created
+	PaymentMethod common.PaymentMethodType         `protobuf:"varint,25,opt,name=payment_method,json=paymentMethod,proto3,enum=tzero.v1.common.PaymentMethodType" json:"payment_method,omitempty"`
+	Bands         []*UpdateQuoteRequest_Quote_Band `protobuf:"bytes,30,rep,name=bands,proto3" json:"bands,omitempty"`           // list of bands for this quote
+	Expiration    *timestamppb.Timestamp           `protobuf:"bytes,60,opt,name=expiration,proto3" json:"expiration,omitempty"` // expiration time of the quote
+	Timestamp     *timestamppb.Timestamp           `protobuf:"bytes,70,opt,name=timestamp,proto3" json:"timestamp,omitempty"`   // timestamp quote was created
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdateQuoteRequest_Quote) Reset() {
 	*x = UpdateQuoteRequest_Quote{}
-	mi := &file_network_network_proto_msgTypes[13]
+	mi := &file_network_network_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -954,7 +735,7 @@ func (x *UpdateQuoteRequest_Quote) String() string {
 func (*UpdateQuoteRequest_Quote) ProtoMessage() {}
 
 func (x *UpdateQuoteRequest_Quote) ProtoReflect() protoreflect.Message {
-	mi := &file_network_network_proto_msgTypes[13]
+	mi := &file_network_network_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -982,6 +763,13 @@ func (x *UpdateQuoteRequest_Quote) GetQuoteType() QuoteType {
 		return x.QuoteType
 	}
 	return QuoteType_QUOTE_TYPE_UNSPECIFIED
+}
+
+func (x *UpdateQuoteRequest_Quote) GetPaymentMethod() common.PaymentMethodType {
+	if x != nil {
+		return x.PaymentMethod
+	}
+	return common.PaymentMethodType(0)
 }
 
 func (x *UpdateQuoteRequest_Quote) GetBands() []*UpdateQuoteRequest_Quote_Band {
@@ -1016,7 +804,7 @@ type UpdateQuoteRequest_Quote_Band struct {
 
 func (x *UpdateQuoteRequest_Quote_Band) Reset() {
 	*x = UpdateQuoteRequest_Quote_Band{}
-	mi := &file_network_network_proto_msgTypes[14]
+	mi := &file_network_network_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1028,7 +816,7 @@ func (x *UpdateQuoteRequest_Quote_Band) String() string {
 func (*UpdateQuoteRequest_Quote_Band) ProtoMessage() {}
 
 func (x *UpdateQuoteRequest_Quote_Band) ProtoReflect() protoreflect.Message {
-	mi := &file_network_network_proto_msgTypes[14]
+	mi := &file_network_network_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1078,7 +866,7 @@ type CreatePaymentRequest_Sender struct {
 
 func (x *CreatePaymentRequest_Sender) Reset() {
 	*x = CreatePaymentRequest_Sender{}
-	mi := &file_network_network_proto_msgTypes[15]
+	mi := &file_network_network_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1090,7 +878,7 @@ func (x *CreatePaymentRequest_Sender) String() string {
 func (*CreatePaymentRequest_Sender) ProtoMessage() {}
 
 func (x *CreatePaymentRequest_Sender) ProtoReflect() protoreflect.Message {
-	mi := &file_network_network_proto_msgTypes[15]
+	mi := &file_network_network_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1145,7 +933,7 @@ type CreatePaymentRequest_Recipient struct {
 
 func (x *CreatePaymentRequest_Recipient) Reset() {
 	*x = CreatePaymentRequest_Recipient{}
-	mi := &file_network_network_proto_msgTypes[16]
+	mi := &file_network_network_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1157,7 +945,7 @@ func (x *CreatePaymentRequest_Recipient) String() string {
 func (*CreatePaymentRequest_Recipient) ProtoMessage() {}
 
 func (x *CreatePaymentRequest_Recipient) ProtoReflect() protoreflect.Message {
-	mi := &file_network_network_proto_msgTypes[16]
+	mi := &file_network_network_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1211,7 +999,7 @@ type CreatePaymentRequest_PrivatePerson struct {
 
 func (x *CreatePaymentRequest_PrivatePerson) Reset() {
 	*x = CreatePaymentRequest_PrivatePerson{}
-	mi := &file_network_network_proto_msgTypes[17]
+	mi := &file_network_network_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1223,7 +1011,7 @@ func (x *CreatePaymentRequest_PrivatePerson) String() string {
 func (*CreatePaymentRequest_PrivatePerson) ProtoMessage() {}
 
 func (x *CreatePaymentRequest_PrivatePerson) ProtoReflect() protoreflect.Message {
-	mi := &file_network_network_proto_msgTypes[17]
+	mi := &file_network_network_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1269,7 +1057,7 @@ type CreatePaymentResponse_Success struct {
 
 func (x *CreatePaymentResponse_Success) Reset() {
 	*x = CreatePaymentResponse_Success{}
-	mi := &file_network_network_proto_msgTypes[18]
+	mi := &file_network_network_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1281,7 +1069,7 @@ func (x *CreatePaymentResponse_Success) String() string {
 func (*CreatePaymentResponse_Success) ProtoMessage() {}
 
 func (x *CreatePaymentResponse_Success) ProtoReflect() protoreflect.Message {
-	mi := &file_network_network_proto_msgTypes[18]
+	mi := &file_network_network_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1312,7 +1100,7 @@ type CreatePaymentResponse_Failure struct {
 
 func (x *CreatePaymentResponse_Failure) Reset() {
 	*x = CreatePaymentResponse_Failure{}
-	mi := &file_network_network_proto_msgTypes[19]
+	mi := &file_network_network_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1324,7 +1112,7 @@ func (x *CreatePaymentResponse_Failure) String() string {
 func (*CreatePaymentResponse_Failure) ProtoMessage() {}
 
 func (x *CreatePaymentResponse_Failure) ProtoReflect() protoreflect.Message {
-	mi := &file_network_network_proto_msgTypes[19]
+	mi := &file_network_network_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1348,7 +1136,7 @@ type UpdatePayoutRequest_Success struct {
 
 func (x *UpdatePayoutRequest_Success) Reset() {
 	*x = UpdatePayoutRequest_Success{}
-	mi := &file_network_network_proto_msgTypes[20]
+	mi := &file_network_network_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1360,7 +1148,7 @@ func (x *UpdatePayoutRequest_Success) String() string {
 func (*UpdatePayoutRequest_Success) ProtoMessage() {}
 
 func (x *UpdatePayoutRequest_Success) ProtoReflect() protoreflect.Message {
-	mi := &file_network_network_proto_msgTypes[20]
+	mi := &file_network_network_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1384,7 +1172,7 @@ type UpdatePayoutRequest_Failure struct {
 
 func (x *UpdatePayoutRequest_Failure) Reset() {
 	*x = UpdatePayoutRequest_Failure{}
-	mi := &file_network_network_proto_msgTypes[21]
+	mi := &file_network_network_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1396,7 +1184,7 @@ func (x *UpdatePayoutRequest_Failure) String() string {
 func (*UpdatePayoutRequest_Failure) ProtoMessage() {}
 
 func (x *UpdatePayoutRequest_Failure) ProtoReflect() protoreflect.Message {
-	mi := &file_network_network_proto_msgTypes[21]
+	mi := &file_network_network_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1416,16 +1204,17 @@ var File_network_network_proto protoreflect.FileDescriptor
 
 const file_network_network_proto_rawDesc = "" +
 	"\n" +
-	"\x15network/network.proto\x12\x10tzero.v1.network\x1a\x13common/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd3\x04\n" +
+	"\x15network/network.proto\x12\x10tzero.v1.network\x1a\x13common/common.proto\x1a\x1bcommon/payment_method.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9e\x05\n" +
 	"\x12UpdateQuoteRequest\x12C\n" +
 	"\apay_out\x18\n" +
 	" \x03(\v2*.tzero.v1.network.UpdateQuoteRequest.QuoteR\x06payOut\x12A\n" +
-	"\x06pay_in\x18\x14 \x03(\v2*.tzero.v1.network.UpdateQuoteRequest.QuoteR\x05payIn\x1a\xb4\x03\n" +
+	"\x06pay_in\x18\x14 \x03(\v2*.tzero.v1.network.UpdateQuoteRequest.QuoteR\x05payIn\x1a\xff\x03\n" +
 	"\x05Quote\x12\x1a\n" +
 	"\bcurrency\x18\n" +
 	" \x01(\tR\bcurrency\x12:\n" +
 	"\n" +
-	"quote_type\x18\x14 \x01(\x0e2\x1b.tzero.v1.network.QuoteTypeR\tquoteType\x12E\n" +
+	"quote_type\x18\x14 \x01(\x0e2\x1b.tzero.v1.network.QuoteTypeR\tquoteType\x12I\n" +
+	"\x0epayment_method\x18\x19 \x01(\x0e2\".tzero.v1.common.PaymentMethodTypeR\rpaymentMethod\x12E\n" +
 	"\x05bands\x18\x1e \x03(\v2/.tzero.v1.network.UpdateQuoteRequest.Quote.BandR\x05bands\x12:\n" +
 	"\n" +
 	"expiration\x18< \x01(\v2\x1a.google.protobuf.TimestampR\n" +
@@ -1506,33 +1295,15 @@ const file_network_network_proto_rawDesc = "" +
 	"\aSuccess\x1a\t\n" +
 	"\aFailureB\b\n" +
 	"\x06result\"\x16\n" +
-	"\x14UpdatePayoutResponse\"=\n" +
-	"\x11GetKycDataRequest\x12\x1d\n" +
-	"\tperson_id\x18\n" +
-	" \x01(\tH\x00R\bpersonIdB\t\n" +
-	"\aaccount\"L\n" +
-	"\x12GetKycDataResponse\x12*\n" +
-	"\x10sumsub_kyc_token\x18\n" +
-	" \x01(\tH\x00R\x0esumsubKycTokenB\n" +
-	"\n" +
-	"\bkyc_data\"e\n" +
-	"\x12CreatePayInRequest\x12\x1d\n" +
-	"\n" +
-	"payment_id\x18\n" +
-	" \x01(\tR\tpaymentId\x120\n" +
-	"\x06amount\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalR\x06amount\"\x15\n" +
-	"\x13CreatePayInResponse*@\n" +
+	"\x14UpdatePayoutResponse*@\n" +
 	"\tQuoteType\x12\x1a\n" +
 	"\x16QUOTE_TYPE_UNSPECIFIED\x10\x00\x12\x17\n" +
-	"\x13QUOTE_TYPE_REALTIME\x10\x012\xe5\x04\n" +
+	"\x13QUOTE_TYPE_REALTIME\x10\x012\xa6\x03\n" +
 	"\x0eNetworkService\x12_\n" +
 	"\vUpdateQuote\x12$.tzero.v1.network.UpdateQuoteRequest\x1a%.tzero.v1.network.UpdateQuoteResponse\"\x03\x90\x02\x02\x12h\n" +
 	"\x0eGetPayoutQuote\x12'.tzero.v1.network.GetPayoutQuoteRequest\x1a(.tzero.v1.network.GetPayoutQuoteResponse\"\x03\x90\x02\x01\x12e\n" +
 	"\rCreatePayment\x12&.tzero.v1.network.CreatePaymentRequest\x1a'.tzero.v1.network.CreatePaymentResponse\"\x03\x90\x02\x02\x12b\n" +
-	"\fUpdatePayout\x12%.tzero.v1.network.UpdatePayoutRequest\x1a&.tzero.v1.network.UpdatePayoutResponse\"\x03\x90\x02\x02\x12_\n" +
-	"\vCreatePayIn\x12$.tzero.v1.network.CreatePayInRequest\x1a%.tzero.v1.network.CreatePayInResponse\"\x03\x90\x02\x02\x12\\\n" +
-	"\n" +
-	"GetKycData\x12#.tzero.v1.network.GetKycDataRequest\x1a$.tzero.v1.network.GetKycDataResponse\"\x03\x90\x02\x02B\xc4\x01\n" +
+	"\fUpdatePayout\x12%.tzero.v1.network.UpdatePayoutRequest\x1a&.tzero.v1.network.UpdatePayoutResponse\"\x03\x90\x02\x02B\xc4\x01\n" +
 	"\x14com.tzero.v1.networkB\fNetworkProtoP\x01Z<github.com/t-0-network/provider-sdk-go/api/gen/proto/network\xa2\x02\x03TVN\xaa\x02\x10Tzero.V1.Network\xca\x02\x10Tzero\\V1\\Network\xe2\x02\x1cTzero\\V1\\Network\\GPBMetadata\xea\x02\x12Tzero::V1::Networkb\x06proto3"
 
 var (
@@ -1548,7 +1319,7 @@ func file_network_network_proto_rawDescGZIP() []byte {
 }
 
 var file_network_network_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_network_network_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_network_network_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_network_network_proto_goTypes = []any{
 	(QuoteType)(0), // 0: tzero.v1.network.QuoteType
 	(CreatePaymentResponse_Failure_Reason)(0),  // 1: tzero.v1.network.CreatePaymentResponse.Failure.Reason
@@ -1561,61 +1332,54 @@ var file_network_network_proto_goTypes = []any{
 	(*CreatePaymentResponse)(nil),              // 8: tzero.v1.network.CreatePaymentResponse
 	(*UpdatePayoutRequest)(nil),                // 9: tzero.v1.network.UpdatePayoutRequest
 	(*UpdatePayoutResponse)(nil),               // 10: tzero.v1.network.UpdatePayoutResponse
-	(*GetKycDataRequest)(nil),                  // 11: tzero.v1.network.GetKycDataRequest
-	(*GetKycDataResponse)(nil),                 // 12: tzero.v1.network.GetKycDataResponse
-	(*CreatePayInRequest)(nil),                 // 13: tzero.v1.network.CreatePayInRequest
-	(*CreatePayInResponse)(nil),                // 14: tzero.v1.network.CreatePayInResponse
-	(*UpdateQuoteRequest_Quote)(nil),           // 15: tzero.v1.network.UpdateQuoteRequest.Quote
-	(*UpdateQuoteRequest_Quote_Band)(nil),      // 16: tzero.v1.network.UpdateQuoteRequest.Quote.Band
-	(*CreatePaymentRequest_Sender)(nil),        // 17: tzero.v1.network.CreatePaymentRequest.Sender
-	(*CreatePaymentRequest_Recipient)(nil),     // 18: tzero.v1.network.CreatePaymentRequest.Recipient
-	(*CreatePaymentRequest_PrivatePerson)(nil), // 19: tzero.v1.network.CreatePaymentRequest.PrivatePerson
-	(*CreatePaymentResponse_Success)(nil),      // 20: tzero.v1.network.CreatePaymentResponse.Success
-	(*CreatePaymentResponse_Failure)(nil),      // 21: tzero.v1.network.CreatePaymentResponse.Failure
-	(*UpdatePayoutRequest_Success)(nil),        // 22: tzero.v1.network.UpdatePayoutRequest.Success
-	(*UpdatePayoutRequest_Failure)(nil),        // 23: tzero.v1.network.UpdatePayoutRequest.Failure
-	(*common.Decimal)(nil),                     // 24: tzero.v1.common.Decimal
-	(*timestamppb.Timestamp)(nil),              // 25: google.protobuf.Timestamp
+	(*UpdateQuoteRequest_Quote)(nil),           // 11: tzero.v1.network.UpdateQuoteRequest.Quote
+	(*UpdateQuoteRequest_Quote_Band)(nil),      // 12: tzero.v1.network.UpdateQuoteRequest.Quote.Band
+	(*CreatePaymentRequest_Sender)(nil),        // 13: tzero.v1.network.CreatePaymentRequest.Sender
+	(*CreatePaymentRequest_Recipient)(nil),     // 14: tzero.v1.network.CreatePaymentRequest.Recipient
+	(*CreatePaymentRequest_PrivatePerson)(nil), // 15: tzero.v1.network.CreatePaymentRequest.PrivatePerson
+	(*CreatePaymentResponse_Success)(nil),      // 16: tzero.v1.network.CreatePaymentResponse.Success
+	(*CreatePaymentResponse_Failure)(nil),      // 17: tzero.v1.network.CreatePaymentResponse.Failure
+	(*UpdatePayoutRequest_Success)(nil),        // 18: tzero.v1.network.UpdatePayoutRequest.Success
+	(*UpdatePayoutRequest_Failure)(nil),        // 19: tzero.v1.network.UpdatePayoutRequest.Failure
+	(*common.Decimal)(nil),                     // 20: tzero.v1.common.Decimal
+	(*timestamppb.Timestamp)(nil),              // 21: google.protobuf.Timestamp
+	(common.PaymentMethodType)(0),              // 22: tzero.v1.common.PaymentMethodType
 }
 var file_network_network_proto_depIdxs = []int32{
-	15, // 0: tzero.v1.network.UpdateQuoteRequest.pay_out:type_name -> tzero.v1.network.UpdateQuoteRequest.Quote
-	15, // 1: tzero.v1.network.UpdateQuoteRequest.pay_in:type_name -> tzero.v1.network.UpdateQuoteRequest.Quote
-	24, // 2: tzero.v1.network.GetPayoutQuoteRequest.amount:type_name -> tzero.v1.common.Decimal
+	11, // 0: tzero.v1.network.UpdateQuoteRequest.pay_out:type_name -> tzero.v1.network.UpdateQuoteRequest.Quote
+	11, // 1: tzero.v1.network.UpdateQuoteRequest.pay_in:type_name -> tzero.v1.network.UpdateQuoteRequest.Quote
+	20, // 2: tzero.v1.network.GetPayoutQuoteRequest.amount:type_name -> tzero.v1.common.Decimal
 	0,  // 3: tzero.v1.network.GetPayoutQuoteRequest.quote_type:type_name -> tzero.v1.network.QuoteType
-	24, // 4: tzero.v1.network.GetPayoutQuoteResponse.rate:type_name -> tzero.v1.common.Decimal
-	25, // 5: tzero.v1.network.GetPayoutQuoteResponse.expiration:type_name -> google.protobuf.Timestamp
+	20, // 4: tzero.v1.network.GetPayoutQuoteResponse.rate:type_name -> tzero.v1.common.Decimal
+	21, // 5: tzero.v1.network.GetPayoutQuoteResponse.expiration:type_name -> google.protobuf.Timestamp
 	7,  // 6: tzero.v1.network.GetPayoutQuoteResponse.quote_id:type_name -> tzero.v1.network.QuoteId
-	24, // 7: tzero.v1.network.CreatePaymentRequest.amount:type_name -> tzero.v1.common.Decimal
-	17, // 8: tzero.v1.network.CreatePaymentRequest.sender:type_name -> tzero.v1.network.CreatePaymentRequest.Sender
-	18, // 9: tzero.v1.network.CreatePaymentRequest.recipient:type_name -> tzero.v1.network.CreatePaymentRequest.Recipient
+	20, // 7: tzero.v1.network.CreatePaymentRequest.amount:type_name -> tzero.v1.common.Decimal
+	13, // 8: tzero.v1.network.CreatePaymentRequest.sender:type_name -> tzero.v1.network.CreatePaymentRequest.Sender
+	14, // 9: tzero.v1.network.CreatePaymentRequest.recipient:type_name -> tzero.v1.network.CreatePaymentRequest.Recipient
 	7,  // 10: tzero.v1.network.CreatePaymentRequest.quote_id:type_name -> tzero.v1.network.QuoteId
-	20, // 11: tzero.v1.network.CreatePaymentResponse.success:type_name -> tzero.v1.network.CreatePaymentResponse.Success
-	21, // 12: tzero.v1.network.CreatePaymentResponse.failure:type_name -> tzero.v1.network.CreatePaymentResponse.Failure
-	22, // 13: tzero.v1.network.UpdatePayoutRequest.success:type_name -> tzero.v1.network.UpdatePayoutRequest.Success
-	23, // 14: tzero.v1.network.UpdatePayoutRequest.failure:type_name -> tzero.v1.network.UpdatePayoutRequest.Failure
-	24, // 15: tzero.v1.network.CreatePayInRequest.amount:type_name -> tzero.v1.common.Decimal
-	0,  // 16: tzero.v1.network.UpdateQuoteRequest.Quote.quote_type:type_name -> tzero.v1.network.QuoteType
-	16, // 17: tzero.v1.network.UpdateQuoteRequest.Quote.bands:type_name -> tzero.v1.network.UpdateQuoteRequest.Quote.Band
-	25, // 18: tzero.v1.network.UpdateQuoteRequest.Quote.expiration:type_name -> google.protobuf.Timestamp
-	25, // 19: tzero.v1.network.UpdateQuoteRequest.Quote.timestamp:type_name -> google.protobuf.Timestamp
-	24, // 20: tzero.v1.network.UpdateQuoteRequest.Quote.Band.max_amount:type_name -> tzero.v1.common.Decimal
-	24, // 21: tzero.v1.network.UpdateQuoteRequest.Quote.Band.rate:type_name -> tzero.v1.common.Decimal
-	19, // 22: tzero.v1.network.CreatePaymentRequest.Sender.private_person:type_name -> tzero.v1.network.CreatePaymentRequest.PrivatePerson
-	19, // 23: tzero.v1.network.CreatePaymentRequest.Recipient.private_person:type_name -> tzero.v1.network.CreatePaymentRequest.PrivatePerson
+	16, // 11: tzero.v1.network.CreatePaymentResponse.success:type_name -> tzero.v1.network.CreatePaymentResponse.Success
+	17, // 12: tzero.v1.network.CreatePaymentResponse.failure:type_name -> tzero.v1.network.CreatePaymentResponse.Failure
+	18, // 13: tzero.v1.network.UpdatePayoutRequest.success:type_name -> tzero.v1.network.UpdatePayoutRequest.Success
+	19, // 14: tzero.v1.network.UpdatePayoutRequest.failure:type_name -> tzero.v1.network.UpdatePayoutRequest.Failure
+	0,  // 15: tzero.v1.network.UpdateQuoteRequest.Quote.quote_type:type_name -> tzero.v1.network.QuoteType
+	22, // 16: tzero.v1.network.UpdateQuoteRequest.Quote.payment_method:type_name -> tzero.v1.common.PaymentMethodType
+	12, // 17: tzero.v1.network.UpdateQuoteRequest.Quote.bands:type_name -> tzero.v1.network.UpdateQuoteRequest.Quote.Band
+	21, // 18: tzero.v1.network.UpdateQuoteRequest.Quote.expiration:type_name -> google.protobuf.Timestamp
+	21, // 19: tzero.v1.network.UpdateQuoteRequest.Quote.timestamp:type_name -> google.protobuf.Timestamp
+	20, // 20: tzero.v1.network.UpdateQuoteRequest.Quote.Band.max_amount:type_name -> tzero.v1.common.Decimal
+	20, // 21: tzero.v1.network.UpdateQuoteRequest.Quote.Band.rate:type_name -> tzero.v1.common.Decimal
+	15, // 22: tzero.v1.network.CreatePaymentRequest.Sender.private_person:type_name -> tzero.v1.network.CreatePaymentRequest.PrivatePerson
+	15, // 23: tzero.v1.network.CreatePaymentRequest.Recipient.private_person:type_name -> tzero.v1.network.CreatePaymentRequest.PrivatePerson
 	2,  // 24: tzero.v1.network.NetworkService.UpdateQuote:input_type -> tzero.v1.network.UpdateQuoteRequest
 	4,  // 25: tzero.v1.network.NetworkService.GetPayoutQuote:input_type -> tzero.v1.network.GetPayoutQuoteRequest
 	6,  // 26: tzero.v1.network.NetworkService.CreatePayment:input_type -> tzero.v1.network.CreatePaymentRequest
 	9,  // 27: tzero.v1.network.NetworkService.UpdatePayout:input_type -> tzero.v1.network.UpdatePayoutRequest
-	13, // 28: tzero.v1.network.NetworkService.CreatePayIn:input_type -> tzero.v1.network.CreatePayInRequest
-	11, // 29: tzero.v1.network.NetworkService.GetKycData:input_type -> tzero.v1.network.GetKycDataRequest
-	3,  // 30: tzero.v1.network.NetworkService.UpdateQuote:output_type -> tzero.v1.network.UpdateQuoteResponse
-	5,  // 31: tzero.v1.network.NetworkService.GetPayoutQuote:output_type -> tzero.v1.network.GetPayoutQuoteResponse
-	8,  // 32: tzero.v1.network.NetworkService.CreatePayment:output_type -> tzero.v1.network.CreatePaymentResponse
-	10, // 33: tzero.v1.network.NetworkService.UpdatePayout:output_type -> tzero.v1.network.UpdatePayoutResponse
-	14, // 34: tzero.v1.network.NetworkService.CreatePayIn:output_type -> tzero.v1.network.CreatePayInResponse
-	12, // 35: tzero.v1.network.NetworkService.GetKycData:output_type -> tzero.v1.network.GetKycDataResponse
-	30, // [30:36] is the sub-list for method output_type
-	24, // [24:30] is the sub-list for method input_type
+	3,  // 28: tzero.v1.network.NetworkService.UpdateQuote:output_type -> tzero.v1.network.UpdateQuoteResponse
+	5,  // 29: tzero.v1.network.NetworkService.GetPayoutQuote:output_type -> tzero.v1.network.GetPayoutQuoteResponse
+	8,  // 30: tzero.v1.network.NetworkService.CreatePayment:output_type -> tzero.v1.network.CreatePaymentResponse
+	10, // 31: tzero.v1.network.NetworkService.UpdatePayout:output_type -> tzero.v1.network.UpdatePayoutResponse
+	28, // [28:32] is the sub-list for method output_type
+	24, // [24:28] is the sub-list for method input_type
 	24, // [24:24] is the sub-list for extension type_name
 	24, // [24:24] is the sub-list for extension extendee
 	0,  // [0:24] is the sub-list for field type_name
@@ -1635,16 +1399,10 @@ func file_network_network_proto_init() {
 		(*UpdatePayoutRequest_Success_)(nil),
 		(*UpdatePayoutRequest_Failure_)(nil),
 	}
-	file_network_network_proto_msgTypes[9].OneofWrappers = []any{
-		(*GetKycDataRequest_PersonId)(nil),
-	}
-	file_network_network_proto_msgTypes[10].OneofWrappers = []any{
-		(*GetKycDataResponse_SumsubKycToken)(nil),
-	}
-	file_network_network_proto_msgTypes[15].OneofWrappers = []any{
+	file_network_network_proto_msgTypes[11].OneofWrappers = []any{
 		(*CreatePaymentRequest_Sender_PrivatePerson)(nil),
 	}
-	file_network_network_proto_msgTypes[16].OneofWrappers = []any{
+	file_network_network_proto_msgTypes[12].OneofWrappers = []any{
 		(*CreatePaymentRequest_Recipient_PrivatePerson)(nil),
 	}
 	type x struct{}
@@ -1653,7 +1411,7 @@ func file_network_network_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_network_network_proto_rawDesc), len(file_network_network_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   22,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

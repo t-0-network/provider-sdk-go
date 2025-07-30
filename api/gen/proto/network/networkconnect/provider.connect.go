@@ -38,9 +38,6 @@ const (
 	// ProviderServiceUpdatePaymentProcedure is the fully-qualified name of the ProviderService's
 	// UpdatePayment RPC.
 	ProviderServiceUpdatePaymentProcedure = "/network.v1.provider.ProviderService/UpdatePayment"
-	// ProviderServiceCreatePayInDetailsProcedure is the fully-qualified name of the ProviderService's
-	// CreatePayInDetails RPC.
-	ProviderServiceCreatePayInDetailsProcedure = "/network.v1.provider.ProviderService/CreatePayInDetails"
 	// ProviderServiceUpdateLimitProcedure is the fully-qualified name of the ProviderService's
 	// UpdateLimit RPC.
 	ProviderServiceUpdateLimitProcedure = "/network.v1.provider.ProviderService/UpdateLimit"
@@ -53,14 +50,12 @@ const (
 type ProviderServiceClient interface {
 	// *
 	// Network instructs the provider to execute a payout to the recipient.
+	// This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	PayOut(context.Context, *connect.Request[network.PayoutRequest]) (*connect.Response[network.PayoutResponse], error)
 	// *
 	// Network provides an update on the status of a payment. This can be either a success or a failure.
+	// This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdatePayment(context.Context, *connect.Request[network.UpdatePaymentRequest]) (*connect.Response[network.UpdatePaymentResponse], error)
-	// *
-	// Network asks the provider for possible pay-in options for a sender, in preparation for a pay-in process.
-	// This is optional, but if implemented, it should return a list of available pay-in methods.
-	CreatePayInDetails(context.Context, *connect.Request[network.CreatePayInDetailsRequest]) (*connect.Response[network.CreatePayInDetailsResponse], error)
 	// *
 	// This rpc is used to notify the provider about the changes in credit limit and/or credit usage.
 	UpdateLimit(context.Context, *connect.Request[network.UpdateLimitRequest]) (*connect.Response[network.UpdateLimitResponse], error)
@@ -95,13 +90,6 @@ func NewProviderServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithIdempotency(connect.IdempotencyIdempotent),
 			connect.WithClientOptions(opts...),
 		),
-		createPayInDetails: connect.NewClient[network.CreatePayInDetailsRequest, network.CreatePayInDetailsResponse](
-			httpClient,
-			baseURL+ProviderServiceCreatePayInDetailsProcedure,
-			connect.WithSchema(providerServiceMethods.ByName("CreatePayInDetails")),
-			connect.WithIdempotency(connect.IdempotencyIdempotent),
-			connect.WithClientOptions(opts...),
-		),
 		updateLimit: connect.NewClient[network.UpdateLimitRequest, network.UpdateLimitResponse](
 			httpClient,
 			baseURL+ProviderServiceUpdateLimitProcedure,
@@ -123,7 +111,6 @@ func NewProviderServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 type providerServiceClient struct {
 	payOut              *connect.Client[network.PayoutRequest, network.PayoutResponse]
 	updatePayment       *connect.Client[network.UpdatePaymentRequest, network.UpdatePaymentResponse]
-	createPayInDetails  *connect.Client[network.CreatePayInDetailsRequest, network.CreatePayInDetailsResponse]
 	updateLimit         *connect.Client[network.UpdateLimitRequest, network.UpdateLimitResponse]
 	appendLedgerEntries *connect.Client[network.AppendLedgerEntriesRequest, network.AppendLedgerEntriesResponse]
 }
@@ -136,11 +123,6 @@ func (c *providerServiceClient) PayOut(ctx context.Context, req *connect.Request
 // UpdatePayment calls network.v1.provider.ProviderService.UpdatePayment.
 func (c *providerServiceClient) UpdatePayment(ctx context.Context, req *connect.Request[network.UpdatePaymentRequest]) (*connect.Response[network.UpdatePaymentResponse], error) {
 	return c.updatePayment.CallUnary(ctx, req)
-}
-
-// CreatePayInDetails calls network.v1.provider.ProviderService.CreatePayInDetails.
-func (c *providerServiceClient) CreatePayInDetails(ctx context.Context, req *connect.Request[network.CreatePayInDetailsRequest]) (*connect.Response[network.CreatePayInDetailsResponse], error) {
-	return c.createPayInDetails.CallUnary(ctx, req)
 }
 
 // UpdateLimit calls network.v1.provider.ProviderService.UpdateLimit.
@@ -157,14 +139,12 @@ func (c *providerServiceClient) AppendLedgerEntries(ctx context.Context, req *co
 type ProviderServiceHandler interface {
 	// *
 	// Network instructs the provider to execute a payout to the recipient.
+	// This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	PayOut(context.Context, *connect.Request[network.PayoutRequest]) (*connect.Response[network.PayoutResponse], error)
 	// *
 	// Network provides an update on the status of a payment. This can be either a success or a failure.
+	// This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdatePayment(context.Context, *connect.Request[network.UpdatePaymentRequest]) (*connect.Response[network.UpdatePaymentResponse], error)
-	// *
-	// Network asks the provider for possible pay-in options for a sender, in preparation for a pay-in process.
-	// This is optional, but if implemented, it should return a list of available pay-in methods.
-	CreatePayInDetails(context.Context, *connect.Request[network.CreatePayInDetailsRequest]) (*connect.Response[network.CreatePayInDetailsResponse], error)
 	// *
 	// This rpc is used to notify the provider about the changes in credit limit and/or credit usage.
 	UpdateLimit(context.Context, *connect.Request[network.UpdateLimitRequest]) (*connect.Response[network.UpdateLimitResponse], error)
@@ -195,13 +175,6 @@ func NewProviderServiceHandler(svc ProviderServiceHandler, opts ...connect.Handl
 		connect.WithIdempotency(connect.IdempotencyIdempotent),
 		connect.WithHandlerOptions(opts...),
 	)
-	providerServiceCreatePayInDetailsHandler := connect.NewUnaryHandler(
-		ProviderServiceCreatePayInDetailsProcedure,
-		svc.CreatePayInDetails,
-		connect.WithSchema(providerServiceMethods.ByName("CreatePayInDetails")),
-		connect.WithIdempotency(connect.IdempotencyIdempotent),
-		connect.WithHandlerOptions(opts...),
-	)
 	providerServiceUpdateLimitHandler := connect.NewUnaryHandler(
 		ProviderServiceUpdateLimitProcedure,
 		svc.UpdateLimit,
@@ -222,8 +195,6 @@ func NewProviderServiceHandler(svc ProviderServiceHandler, opts ...connect.Handl
 			providerServicePayOutHandler.ServeHTTP(w, r)
 		case ProviderServiceUpdatePaymentProcedure:
 			providerServiceUpdatePaymentHandler.ServeHTTP(w, r)
-		case ProviderServiceCreatePayInDetailsProcedure:
-			providerServiceCreatePayInDetailsHandler.ServeHTTP(w, r)
 		case ProviderServiceUpdateLimitProcedure:
 			providerServiceUpdateLimitHandler.ServeHTTP(w, r)
 		case ProviderServiceAppendLedgerEntriesProcedure:
@@ -243,10 +214,6 @@ func (UnimplementedProviderServiceHandler) PayOut(context.Context, *connect.Requ
 
 func (UnimplementedProviderServiceHandler) UpdatePayment(context.Context, *connect.Request[network.UpdatePaymentRequest]) (*connect.Response[network.UpdatePaymentResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("network.v1.provider.ProviderService.UpdatePayment is not implemented"))
-}
-
-func (UnimplementedProviderServiceHandler) CreatePayInDetails(context.Context, *connect.Request[network.CreatePayInDetailsRequest]) (*connect.Response[network.CreatePayInDetailsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("network.v1.provider.ProviderService.CreatePayInDetails is not implemented"))
 }
 
 func (UnimplementedProviderServiceHandler) UpdateLimit(context.Context, *connect.Request[network.UpdateLimitRequest]) (*connect.Response[network.UpdateLimitResponse], error) {

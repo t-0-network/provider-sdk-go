@@ -45,12 +45,6 @@ const (
 	// NetworkServiceUpdatePayoutProcedure is the fully-qualified name of the NetworkService's
 	// UpdatePayout RPC.
 	NetworkServiceUpdatePayoutProcedure = "/tzero.v1.network.NetworkService/UpdatePayout"
-	// NetworkServiceCreatePayInProcedure is the fully-qualified name of the NetworkService's
-	// CreatePayIn RPC.
-	NetworkServiceCreatePayInProcedure = "/tzero.v1.network.NetworkService/CreatePayIn"
-	// NetworkServiceGetKycDataProcedure is the fully-qualified name of the NetworkService's GetKycData
-	// RPC.
-	NetworkServiceGetKycDataProcedure = "/tzero.v1.network.NetworkService/GetKycData"
 )
 
 // NetworkServiceClient is a client for the tzero.v1.network.NetworkService service.
@@ -81,12 +75,6 @@ type NetworkServiceClient interface {
 	// provider, specifying the payment ID and payout ID, which was provided when the payout request was made to this provider.
 	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdatePayout(context.Context, *connect.Request[network.UpdatePayoutRequest]) (*connect.Response[network.UpdatePayoutResponse], error)
-	// *
-	// Inform the network that the provider has received a pay-in from the user.
-	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
-	CreatePayIn(context.Context, *connect.Request[network.CreatePayInRequest]) (*connect.Response[network.CreatePayInResponse], error)
-	// Retrieve KYC verification data (e.g., SumSub token) for a person involved in the payment.
-	GetKycData(context.Context, *connect.Request[network.GetKycDataRequest]) (*connect.Response[network.GetKycDataResponse], error)
 }
 
 // NewNetworkServiceClient constructs a client for the tzero.v1.network.NetworkService service. By
@@ -128,20 +116,6 @@ func NewNetworkServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithIdempotency(connect.IdempotencyIdempotent),
 			connect.WithClientOptions(opts...),
 		),
-		createPayIn: connect.NewClient[network.CreatePayInRequest, network.CreatePayInResponse](
-			httpClient,
-			baseURL+NetworkServiceCreatePayInProcedure,
-			connect.WithSchema(networkServiceMethods.ByName("CreatePayIn")),
-			connect.WithIdempotency(connect.IdempotencyIdempotent),
-			connect.WithClientOptions(opts...),
-		),
-		getKycData: connect.NewClient[network.GetKycDataRequest, network.GetKycDataResponse](
-			httpClient,
-			baseURL+NetworkServiceGetKycDataProcedure,
-			connect.WithSchema(networkServiceMethods.ByName("GetKycData")),
-			connect.WithIdempotency(connect.IdempotencyIdempotent),
-			connect.WithClientOptions(opts...),
-		),
 	}
 }
 
@@ -151,8 +125,6 @@ type networkServiceClient struct {
 	getPayoutQuote *connect.Client[network.GetPayoutQuoteRequest, network.GetPayoutQuoteResponse]
 	createPayment  *connect.Client[network.CreatePaymentRequest, network.CreatePaymentResponse]
 	updatePayout   *connect.Client[network.UpdatePayoutRequest, network.UpdatePayoutResponse]
-	createPayIn    *connect.Client[network.CreatePayInRequest, network.CreatePayInResponse]
-	getKycData     *connect.Client[network.GetKycDataRequest, network.GetKycDataResponse]
 }
 
 // UpdateQuote calls tzero.v1.network.NetworkService.UpdateQuote.
@@ -173,16 +145,6 @@ func (c *networkServiceClient) CreatePayment(ctx context.Context, req *connect.R
 // UpdatePayout calls tzero.v1.network.NetworkService.UpdatePayout.
 func (c *networkServiceClient) UpdatePayout(ctx context.Context, req *connect.Request[network.UpdatePayoutRequest]) (*connect.Response[network.UpdatePayoutResponse], error) {
 	return c.updatePayout.CallUnary(ctx, req)
-}
-
-// CreatePayIn calls tzero.v1.network.NetworkService.CreatePayIn.
-func (c *networkServiceClient) CreatePayIn(ctx context.Context, req *connect.Request[network.CreatePayInRequest]) (*connect.Response[network.CreatePayInResponse], error) {
-	return c.createPayIn.CallUnary(ctx, req)
-}
-
-// GetKycData calls tzero.v1.network.NetworkService.GetKycData.
-func (c *networkServiceClient) GetKycData(ctx context.Context, req *connect.Request[network.GetKycDataRequest]) (*connect.Response[network.GetKycDataResponse], error) {
-	return c.getKycData.CallUnary(ctx, req)
 }
 
 // NetworkServiceHandler is an implementation of the tzero.v1.network.NetworkService service.
@@ -213,12 +175,6 @@ type NetworkServiceHandler interface {
 	// provider, specifying the payment ID and payout ID, which was provided when the payout request was made to this provider.
 	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdatePayout(context.Context, *connect.Request[network.UpdatePayoutRequest]) (*connect.Response[network.UpdatePayoutResponse], error)
-	// *
-	// Inform the network that the provider has received a pay-in from the user.
-	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
-	CreatePayIn(context.Context, *connect.Request[network.CreatePayInRequest]) (*connect.Response[network.CreatePayInResponse], error)
-	// Retrieve KYC verification data (e.g., SumSub token) for a person involved in the payment.
-	GetKycData(context.Context, *connect.Request[network.GetKycDataRequest]) (*connect.Response[network.GetKycDataResponse], error)
 }
 
 // NewNetworkServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -256,20 +212,6 @@ func NewNetworkServiceHandler(svc NetworkServiceHandler, opts ...connect.Handler
 		connect.WithIdempotency(connect.IdempotencyIdempotent),
 		connect.WithHandlerOptions(opts...),
 	)
-	networkServiceCreatePayInHandler := connect.NewUnaryHandler(
-		NetworkServiceCreatePayInProcedure,
-		svc.CreatePayIn,
-		connect.WithSchema(networkServiceMethods.ByName("CreatePayIn")),
-		connect.WithIdempotency(connect.IdempotencyIdempotent),
-		connect.WithHandlerOptions(opts...),
-	)
-	networkServiceGetKycDataHandler := connect.NewUnaryHandler(
-		NetworkServiceGetKycDataProcedure,
-		svc.GetKycData,
-		connect.WithSchema(networkServiceMethods.ByName("GetKycData")),
-		connect.WithIdempotency(connect.IdempotencyIdempotent),
-		connect.WithHandlerOptions(opts...),
-	)
 	return "/tzero.v1.network.NetworkService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case NetworkServiceUpdateQuoteProcedure:
@@ -280,10 +222,6 @@ func NewNetworkServiceHandler(svc NetworkServiceHandler, opts ...connect.Handler
 			networkServiceCreatePaymentHandler.ServeHTTP(w, r)
 		case NetworkServiceUpdatePayoutProcedure:
 			networkServiceUpdatePayoutHandler.ServeHTTP(w, r)
-		case NetworkServiceCreatePayInProcedure:
-			networkServiceCreatePayInHandler.ServeHTTP(w, r)
-		case NetworkServiceGetKycDataProcedure:
-			networkServiceGetKycDataHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -307,12 +245,4 @@ func (UnimplementedNetworkServiceHandler) CreatePayment(context.Context, *connec
 
 func (UnimplementedNetworkServiceHandler) UpdatePayout(context.Context, *connect.Request[network.UpdatePayoutRequest]) (*connect.Response[network.UpdatePayoutResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.network.NetworkService.UpdatePayout is not implemented"))
-}
-
-func (UnimplementedNetworkServiceHandler) CreatePayIn(context.Context, *connect.Request[network.CreatePayInRequest]) (*connect.Response[network.CreatePayInResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.network.NetworkService.CreatePayIn is not implemented"))
-}
-
-func (UnimplementedNetworkServiceHandler) GetKycData(context.Context, *connect.Request[network.GetKycDataRequest]) (*connect.Response[network.GetKycDataResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.network.NetworkService.GetKycData is not implemented"))
 }
