@@ -217,5 +217,6 @@ if err != nil {
 ## Examples
 
 Comprehensive examples are available in:
+- [Payout Provider flow Example](examples/payout_provider_flow_test.go)
 - [Provider Service Example](examples/provider_service_test.go)
 - [Network Client Example](examples/network_client_test.go)

@@ -7,3 +7,14 @@ message Decimal {
   int64 unscaled = 10;
   int32 exponent = 20;
 }
+
+enum Blockchain {
+  BLOCKCHAIN_UNSPECIFIED = 0;
+  BLOCKCHAIN_BSC = 10;
+  BLOCKCHAIN_TRON = 100;
+}
+
+enum Stablecoin {
+  STABLECOIN_UNSPECIFIED = 0;
+  STABLECOIN_USDT = 10;
+}

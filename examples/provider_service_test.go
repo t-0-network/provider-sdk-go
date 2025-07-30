@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/common"
 	networkproto "github.com/t-0-network/provider-sdk-go/api/gen/proto/network"
 	"github.com/t-0-network/provider-sdk-go/api/gen/proto/network/networkconnect"
 	"github.com/t-0-network/provider-sdk-go/pkg/constant"
@@ -33,7 +34,7 @@ func ExampleNewProviderHandler() {
 		// the signatures of incoming requests.
 		provider.NetworkPublicKeyHexed(dummyNetworkPublicKey),
 		// Your provider service implementation
-		&ProviderServiceImplementation{},
+		provider.WithProviderServiceHandler(&ProviderServiceImplementation{}),
 	)
 	if err != nil {
 		log.Fatalf("Failed to create provider service handler: %v", err)
@@ -52,12 +53,28 @@ func ExampleNewProviderHandler() {
 	}
 
 	// Build a CreatePayInDetails request
-	req := connect.NewRequest(&networkproto.CreatePayInDetailsRequest{
-		PaymentIntentId: "a-payment-unique-identifier",
+	req := connect.NewRequest(&networkproto.UpdateLimitRequest{
+		Limits: []*networkproto.UpdateLimitRequest_Limit{
+			{
+				Version:    1,
+				CreditorId: 3,
+				PayoutLimit: &common.Decimal{
+					Unscaled: 100,
+					Exponent: 0,
+				},
+				CreditLimit: &common.Decimal{
+					Unscaled: 1000,
+					Exponent: 0,
+				},
+				CreditUsage: &common.Decimal{
+					Unscaled: 900,
+					Exponent: 0,
+				},
+			}},
 	})
 
-	// Use the providerClient to call the CreatePayInDetails method
-	_, err = providerClient.CreatePayInDetails(context.Background(), req)
+	// Use the providerClient to call the UpdateLimit method
+	_, err = providerClient.UpdateLimit(context.Background(), req)
 	if err != nil {
 		log.Fatalf("Failed to create pay in details: %v", err)
 	}
@@ -100,12 +117,6 @@ func (s *ProviderServiceImplementation) AppendLedgerEntries(
 	ctx context.Context, req *connect.Request[networkproto.AppendLedgerEntriesRequest],
 ) (*connect.Response[networkproto.AppendLedgerEntriesResponse], error) {
 	return connect.NewResponse(&networkproto.AppendLedgerEntriesResponse{}), nil
-}
-
-func (s *ProviderServiceImplementation) CreatePayInDetails(
-	ctx context.Context, req *connect.Request[networkproto.CreatePayInDetailsRequest],
-) (*connect.Response[networkproto.CreatePayInDetailsResponse], error) {
-	return connect.NewResponse(&networkproto.CreatePayInDetailsResponse{}), nil
 }
 
 func (s *ProviderServiceImplementation) PayOut(ctx context.Context, req *connect.Request[networkproto.PayoutRequest],

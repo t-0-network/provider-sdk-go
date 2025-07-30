@@ -10,8 +10,16 @@ import (
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	networkreq "github.com/t-0-network/provider-sdk-go/api/gen/proto/network"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/network/networkconnect"
 	"github.com/t-0-network/provider-sdk-go/examples/utils"
+	"github.com/t-0-network/provider-sdk-go/pkg/network"
+	"github.com/t-0-network/provider-sdk-go/pkg/provider"
 	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+var (
+	payInCurrency  = "EUR"
+	payoutCurrency = "BRL"
 )
 
 func _ExamplePayoutProviderBasicFlow() {
@@ -131,12 +139,39 @@ func (p *PayOutProviderImplementation) AppendLedgerEntries(ctx context.Context, 
 	return connect.NewResponse(&networkreq.AppendLedgerEntriesResponse{}), nil
 }
 
-func (p *PayOutProviderImplementation) CreatePayInDetails(ctx context.Context, c *connect.Request[networkreq.CreatePayInDetailsRequest]) (*connect.Response[networkreq.CreatePayInDetailsResponse], error) {
-	// this function is not required for the pay-out provider flow, but it can be implemented if provider wants to participate as pay-in provider as well.
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("CreatePayInDetails is not implemented for PayOutProviderImplementation"))
-}
-
 func (p *PayOutProviderImplementation) UpdatePayment(ctx context.Context, c *connect.Request[networkreq.UpdatePaymentRequest]) (*connect.Response[networkreq.UpdatePaymentResponse], error) {
 	// this function is not required for the pay-out provider flow, but it can be implemented if provider wants to participate as pay-in provider as well.
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("UpdatePayment is not implemented for PayOutProviderImplementation"))
+}
+
+func startTheProviderService(providerImpl networkconnect.ProviderServiceHandler) provider.ServerShutdownFn {
+	providerServiceHandler, err := provider.NewProviderHandler(
+		provider.NetworkPublicKeyHexed(dummyNetworkPublicKey),
+		provider.WithProviderServiceHandler(providerImpl),
+	)
+	if err != nil {
+		log.Fatalf("Failed to create provider service handler: %v", err)
+	}
+
+	// Start an HTTP server with the provider service handler,
+	shutdownFunc := provider.StartServer(
+		providerServiceHandler,
+		provider.WithAddr(":8080"),
+	)
+	return shutdownFunc
+}
+
+func createClientToInteractWithNetwork() networkconnect.NetworkServiceClient {
+	// Replace with your actual private key in hex format.
+	yourPrivateKey := network.PrivateKeyHexed("0x7795db2f4499c04d80062c1f1614ff1e427c148e47ed23e387d62829f437b5d8")
+
+	networkClient, err := network.NewServiceClient(
+		yourPrivateKey,
+		// Optional configuration for the network service client.
+		network.WithBaseURL("http://0.0.0.0:8080"), // No need to set, defaults to t-zero network
+	)
+	if err != nil {
+		log.Fatalf("Failed to create network service client: %v", err)
+	}
+	return networkClient
 }

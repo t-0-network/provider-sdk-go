@@ -21,6 +21,101 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type Blockchain int32
+
+const (
+	Blockchain_BLOCKCHAIN_UNSPECIFIED Blockchain = 0
+	Blockchain_BLOCKCHAIN_BSC         Blockchain = 10
+	Blockchain_BLOCKCHAIN_TRON        Blockchain = 100
+)
+
+// Enum value maps for Blockchain.
+var (
+	Blockchain_name = map[int32]string{
+		0:   "BLOCKCHAIN_UNSPECIFIED",
+		10:  "BLOCKCHAIN_BSC",
+		100: "BLOCKCHAIN_TRON",
+	}
+	Blockchain_value = map[string]int32{
+		"BLOCKCHAIN_UNSPECIFIED": 0,
+		"BLOCKCHAIN_BSC":         10,
+		"BLOCKCHAIN_TRON":        100,
+	}
+)
+
+func (x Blockchain) Enum() *Blockchain {
+	p := new(Blockchain)
+	*p = x
+	return p
+}
+
+func (x Blockchain) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Blockchain) Descriptor() protoreflect.EnumDescriptor {
+	return file_common_common_proto_enumTypes[0].Descriptor()
+}
+
+func (Blockchain) Type() protoreflect.EnumType {
+	return &file_common_common_proto_enumTypes[0]
+}
+
+func (x Blockchain) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Blockchain.Descriptor instead.
+func (Blockchain) EnumDescriptor() ([]byte, []int) {
+	return file_common_common_proto_rawDescGZIP(), []int{0}
+}
+
+type Stablecoin int32
+
+const (
+	Stablecoin_STABLECOIN_UNSPECIFIED Stablecoin = 0
+	Stablecoin_STABLECOIN_USDT        Stablecoin = 10
+)
+
+// Enum value maps for Stablecoin.
+var (
+	Stablecoin_name = map[int32]string{
+		0:  "STABLECOIN_UNSPECIFIED",
+		10: "STABLECOIN_USDT",
+	}
+	Stablecoin_value = map[string]int32{
+		"STABLECOIN_UNSPECIFIED": 0,
+		"STABLECOIN_USDT":        10,
+	}
+)
+
+func (x Stablecoin) Enum() *Stablecoin {
+	p := new(Stablecoin)
+	*p = x
+	return p
+}
+
+func (x Stablecoin) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Stablecoin) Descriptor() protoreflect.EnumDescriptor {
+	return file_common_common_proto_enumTypes[1].Descriptor()
+}
+
+func (Stablecoin) Type() protoreflect.EnumType {
+	return &file_common_common_proto_enumTypes[1]
+}
+
+func (x Stablecoin) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Stablecoin.Descriptor instead.
+func (Stablecoin) EnumDescriptor() ([]byte, []int) {
+	return file_common_common_proto_rawDescGZIP(), []int{1}
+}
+
 // Decimal 123.45 equals to unscaled=12345 and exponent=-2 (e.g. unscaled * 10^exponent, 123.45 = 12345 * 10^-2)
 type Decimal struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -82,7 +177,18 @@ const file_common_common_proto_rawDesc = "" +
 	"\aDecimal\x12\x1a\n" +
 	"\bunscaled\x18\n" +
 	" \x01(\x03R\bunscaled\x12\x1a\n" +
-	"\bexponent\x18\x14 \x01(\x05R\bexponentB\xbd\x01\n" +
+	"\bexponent\x18\x14 \x01(\x05R\bexponent*Q\n" +
+	"\n" +
+	"Blockchain\x12\x1a\n" +
+	"\x16BLOCKCHAIN_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eBLOCKCHAIN_BSC\x10\n" +
+	"\x12\x13\n" +
+	"\x0fBLOCKCHAIN_TRON\x10d*=\n" +
+	"\n" +
+	"Stablecoin\x12\x1a\n" +
+	"\x16STABLECOIN_UNSPECIFIED\x10\x00\x12\x13\n" +
+	"\x0fSTABLECOIN_USDT\x10\n" +
+	"B\xbd\x01\n" +
 	"\x13com.tzero.v1.commonB\vCommonProtoP\x01Z;github.com/t-0-network/provider-sdk-go/api/gen/proto/common\xa2\x02\x03TVC\xaa\x02\x0fTzero.V1.Common\xca\x02\x0fTzero\\V1\\Common\xe2\x02\x1bTzero\\V1\\Common\\GPBMetadata\xea\x02\x11Tzero::V1::Commonb\x06proto3"
 
 var (
@@ -97,9 +203,12 @@ func file_common_common_proto_rawDescGZIP() []byte {
 	return file_common_common_proto_rawDescData
 }
 
+var file_common_common_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_common_common_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_common_common_proto_goTypes = []any{
-	(*Decimal)(nil), // 0: tzero.v1.common.Decimal
+	(Blockchain)(0), // 0: tzero.v1.common.Blockchain
+	(Stablecoin)(0), // 1: tzero.v1.common.Stablecoin
+	(*Decimal)(nil), // 2: tzero.v1.common.Decimal
 }
 var file_common_common_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -119,13 +228,14 @@ func file_common_common_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_common_proto_rawDesc), len(file_common_common_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      2,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_common_common_proto_goTypes,
 		DependencyIndexes: file_common_common_proto_depIdxs,
+		EnumInfos:         file_common_common_proto_enumTypes,
 		MessageInfos:      file_common_common_proto_msgTypes,
 	}.Build()
 	File_common_common_proto = out.File
