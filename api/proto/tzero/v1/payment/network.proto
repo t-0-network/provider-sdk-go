@@ -1,0 +1,200 @@
+syntax = "proto3";
+
+package tzero.v1.payment;
+
+import "tzero/v1/common/common.proto";
+import "tzero/v1/common/payment_method.proto";
+import "google/protobuf/timestamp.proto";
+
+//import "validate/validate.proto";
+
+/**
+ * This service is used by provider to interact with the Network, e.g. push quotes and initiate payments.
+ *
+ * All methods of this service are idempotent, meaning they are safe to retry and multiple calls with the same parameters will have no additional effect.
+ */
+service NetworkService {
+
+  /**
+    * Used by the provider to publish pay-in and pay-out quotes (FX rates) into the network.
+    * These quotes include tiered pricing bands and an expiration timestamp.
+    * This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
+   */
+  rpc UpdateQuote(UpdateQuoteRequest) returns (UpdateQuoteResponse)  {
+    option idempotency_level = IDEMPOTENT;
+  };
+
+  /**
+   * Request the best available quote for a payout in a specific currency, for a given amount.
+   * If the payout quote exists, but the credit limit is exceeded, this quote will not be considered.
+   */
+  rpc GetPayoutQuote(GetPayoutQuoteRequest) returns (GetPayoutQuoteResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  };
+
+  /**
+    * Submit a request to create a new payment. PayIn currency and QuoteId are the optional parameters.
+    * If the payIn currency is not specified, the network will use USD as the default payIn currency, and considering
+    * the amount in USD.
+    * If specified, it must be a valid currency code - in this case the network will try to find the payIn quote for the
+    * specified currency and considering the band from the provider initiated this request. So this is only possible, if
+    * this provider already submitted the payIn quote for the specified currency using UpdateQuote rpc.
+    * If the quoteID is specified, it must be a valid quoteId that was previously returned by the GetPayoutQuote method.
+    * If the quoteId is not specified, the network will try to find a suitable quote for the payout currency and amount,
+    * same way as GetPayoutQuote rpc.
+    * This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
+   */
+  rpc CreatePayment(CreatePaymentRequest) returns (CreatePaymentResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+
+  /**
+   * Inform the network that a payout has been completed or failed. This endpoint is called by the payout
+   * provider, specifying the payment ID and payout ID, which was provided when the payout request was made to this provider.
+   * This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
+   */
+  rpc UpdatePayout(UpdatePayoutRequest) returns (UpdatePayoutResponse)  {
+    option idempotency_level = IDEMPOTENT;
+  };
+}
+
+/*
+ * Base currency is always USD, so the quotes are always in USD/currency format.
+ */
+message UpdateQuoteRequest {
+  /**
+   * Zero or more quotes for pay-out operations, each quote must have a unique currency, and one or more bands, with the
+   * unique client_quote_id for each band.
+   */
+  repeated Quote pay_out = 10;
+  /**
+   * Zero or more quotes for pay-in operations, each quote must have a unique currency, and one or more bands, with the
+   * unique client_quote_id for each band.
+   */
+  repeated Quote pay_in = 20;
+
+  message Quote {
+    string currency = 10; // BRL, EUR, GBP, etc. (ISO 4217 currency code)
+    QuoteType quote_type = 20; // type of the quote, e.g. real-time or guaranteed
+    tzero.v1.common.PaymentMethodType payment_method = 25;
+    repeated Band bands = 30; // list of bands for this quote
+    google.protobuf.Timestamp expiration = 60; // expiration time of the quote
+    google.protobuf.Timestamp timestamp = 70; // timestamp quote was created
+
+    message Band {
+      string client_quote_id = 10; // unique client generated id for this band
+      tzero.v1.common.Decimal max_amount = 40; // max amount of USD this quote is applicable for. Please look into documentation for valid amounts.
+      tzero.v1.common.Decimal rate = 50; // USD/currency rate
+    }
+  }
+}
+
+message UpdateQuoteResponse {}
+
+message GetPayoutQuoteRequest {
+  string payout_currency = 10; // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
+  tzero.v1.common.Decimal amount = 20; // amount in quote currency, only USD is supported
+  QuoteType quote_type = 30; // type of the quote, e.g. real-time or guaranteed
+}
+
+message GetPayoutQuoteResponse {
+  tzero.v1.common.Decimal rate = 10; // rate in USD/currency, e.g. 1.2345 for 1 USD = 1.2345 EUR
+  google.protobuf.Timestamp expiration = 20; // expiration time of the quote
+  QuoteId quote_id = 30; //
+}
+
+message CreatePaymentRequest{
+  string payment_client_id = 10; // unique client generated id for this payment
+
+  string payout_currency = 20; // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
+  tzero.v1.common.Decimal amount = 30; // amount in the payin currency, by default USD (if the payIn currency is not specified)
+  optional string payin_currency = 40; // if not specified, USD is used
+
+  Sender sender = 50; // optional or option in the oneof?
+  Recipient recipient = 60; // optional or option in the oneof?
+
+  optional string reference = 70; // optional reference for the payment, up to 140 characters
+
+  optional QuoteId quote_id = 100; // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method
+
+  // Work in progress
+  message Sender {
+    oneof sender {
+      PrivatePerson private_person = 10;
+    }
+  }
+
+  // Work in progress
+  message Recipient {
+    oneof recipient {
+      PrivatePerson private_person = 10;
+    }
+  }
+
+  // Work in progress
+  message PrivatePerson {
+    string private_person_client_id = 10;
+    string first_name = 20;
+    string last_name = 30;
+  }
+}
+
+message QuoteId {
+  int64 quote_id = 30; // unique identifier of the quote within the specified provider
+  int32 provider_id = 40; // provider id of the quote
+}
+
+message CreatePaymentResponse {
+  string payment_client_id = 10; // client generated id supplied in the request
+
+  oneof result {
+    /**
+     * Success response - means the payment was accepted, but the payout is not yet completed. This means, the network found
+     * a suitable quote for the payout currency and amount, and instructed the payout provider to process the payout.
+     */
+    Success success = 20;
+    /**
+     * Failure response - means the payment was not accepted, e.g. the network could not find a suitable quote for the
+     * payout currency and amount, or the credit limit is exceeded for the available quotes.
+     */
+    Failure failure = 30;
+  }
+
+  message Success {
+    int64 payment_id = 10; // payment id assigned by the network
+  }
+
+  message Failure {
+    enum Reason {
+      REASON_UNSPECIFIED = 0;
+
+    }
+  }
+}
+
+message UpdatePayoutRequest{
+  int64 payment_id = 10; // payment id assigned by the network, this is the same payment id that was provided in the PayoutRequest
+  int64 payout_id = 20; // payout id assigned by the payout provider, this is the same payout id that was provided in the PayoutRequest
+
+  oneof result {
+    Success success = 30; // success response with the details of the payout
+    Failure failure = 40; // failure response with the reason of the failure
+  }
+
+  message Success {
+
+  }
+
+  message Failure {
+
+  }
+}
+
+message UpdatePayoutResponse{}
+
+
+enum QuoteType {
+  QUOTE_TYPE_UNSPECIFIED = 0;
+  QUOTE_TYPE_REALTIME = 1; // real-time quote must be valid at least for 30 seconds (TBD)
+  //QUOTE_TYPE_GUARANTEED = 2; // real-time quote must be valid at least for N minutes (TBD)
+}
