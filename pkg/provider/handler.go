@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/network/networkconnect"
-	paymentintent "github.com/t-0-network/provider-sdk-go/api/gen/proto/payment_intent/provider/providerconnect"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment/paymentconnect"
+	paymentintent "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment_intent/provider/providerconnect"
 )
 
 type BuildHandler func(options ...connect.HandlerOption) (path string, handler http.Handler)
@@ -62,10 +62,10 @@ func NewProviderHandler(
 }
 
 func WithProviderServiceHandler(
-	providerHandler networkconnect.ProviderServiceHandler,
+	providerHandler paymentconnect.ProviderServiceHandler,
 ) BuildHandler {
 	return func(options ...connect.HandlerOption) (string, http.Handler) {
-		path, handler := networkconnect.NewProviderServiceHandler(providerHandler, options...)
+		path, handler := paymentconnect.NewProviderServiceHandler(providerHandler, options...)
 		return path, handler
 	}
 }

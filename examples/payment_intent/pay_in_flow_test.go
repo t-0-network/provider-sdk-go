@@ -7,9 +7,9 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/common"
-	. "github.com/t-0-network/provider-sdk-go/api/gen/proto/payment_intent/provider"
-	. "github.com/t-0-network/provider-sdk-go/api/gen/proto/payment_intent/provider/providerconnect"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/common"
+	. "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment_intent/provider"
+	. "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment_intent/provider/providerconnect"
 	"github.com/t-0-network/provider-sdk-go/pkg/provider"
 )
 

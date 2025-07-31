@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/network/networkconnect"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment/paymentconnect"
 	"github.com/t-0-network/provider-sdk-go/pkg/crypto"
 )
 
@@ -14,7 +14,7 @@ type PrivateKeyHexed string
 
 func NewServiceClient(
 	privateKey PrivateKeyHexed, opts ...ClientOption,
-) (networkconnect.NetworkServiceClient, error) {
+) (paymentconnect.NetworkServiceClient, error) {
 	options := defaultClientOptions
 	for _, opt := range opts {
 		opt(&options)
@@ -44,5 +44,5 @@ func NewServiceClient(
 		),
 	}
 
-	return networkconnect.NewNetworkServiceClient(&client, options.baseURL), nil
+	return paymentconnect.NewNetworkServiceClient(&client, options.baseURL), nil
 }
