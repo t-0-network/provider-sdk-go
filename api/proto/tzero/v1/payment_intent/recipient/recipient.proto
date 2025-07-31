@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package tzero.v1.payment_intent.recipient;
+
+import "tzero/v1/common/common.proto";
+import "tzero/v1/common/payment_method.proto";
+
+/**
+* NetworkService is used by recipient to create a payment intents
+*/
+service NetworkService {
+  rpc CreatePaymentIntent(CreatePaymentIntentRequest) returns (CreatePaymentIntentResponse){
+    option idempotency_level = IDEMPOTENT;
+  };
+}
+
+/**
+* RecipientService is implemented by recipient in order to get updates on payment intents
+*/
+service RecipientService {
+  /**
+  * notifies recipient about successful payment
+  */
+  rpc ConfirmPayment(ConfirmPaymentRequest) returns (ConfirmPaymentIntentResponse){
+    option idempotency_level = IDEMPOTENT;
+  };
+
+  /**
+  * notifies recipient about failed payment
+  */
+  rpc RejectPaymentIntent(RejectPaymentIntentRequest) returns (RejectPaymentIntentResponse){
+    option idempotency_level = IDEMPOTENT;
+  };
+}
+
+message CreatePaymentIntentRequest {
+  /**
+  * Idempotency Key
+  * payment reference to identify payment by client.
+  */
+  string payment_reference = 10; // idempotency key
+  /**
+  * Pay-in currency
+  **/
+  string pay_in_currency = 20; // pay-in currency
+  /**
+  * Amount denominated in the pay-in currency
+  **/
+  tzero.v1.common.Decimal pay_in_amount = 30;
+  /**
+  * Payout currency
+  **/
+  string pay_out_currency = 40; // pay-out currency
+  /**
+  * Payout payment method
+  **/
+  tzero.v1.common.PaymentMethod pay_out_method = 50;
+}
+
+message CreatePaymentIntentResponse {
+  uint64 payment_intent_id = 10;
+  repeated PaymentMethod pay_in_payment_methods = 20;
+
+  message PaymentMethod {
+    string payment_url = 10;
+    uint32 provider_id = 20;
+    tzero.v1.common.PaymentMethodType payment_method = 30;
+  }
+}
+
+message ConfirmPaymentRequest {
+  uint64 payment_intent_id = 10; // payment_intent_id from the CreatePaymentIntentRequest
+  string payment_reference = 20;
+  tzero.v1.common.PaymentMethodType payment_method = 30;
+}
+
+message ConfirmPaymentIntentResponse {
+
+}
+
+message RejectPaymentIntentRequest {
+  uint64 payment_intent_id = 10; // payment_intent_id from the CreatePaymentIntentRequest
+  string payment_reference = 20; // payment_reference from the CreatePaymentIntentRequest
+  string reason = 30;
+}
+
+message RejectPaymentIntentResponse {
+
+}

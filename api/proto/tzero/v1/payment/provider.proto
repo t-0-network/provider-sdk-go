@@ -1,0 +1,268 @@
+syntax = "proto3";
+
+package tzero.v1.payment;
+
+import "tzero/v1/common/payment_method.proto";
+import "tzero/v1/common/common.proto";
+import "google/protobuf/timestamp.proto";
+
+/**
+ * This service must be implemented by the provider.
+ *
+ * All methods of this service must be idempotent, meaning they are safe to retry and multiple calls with the same parameters must not have additional effect.
+ */
+service ProviderService {
+
+  /**
+    * Network instructs the provider to execute a payout to the recipient.
+    * This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
+   */
+  rpc PayOut(PayoutRequest) returns (PayoutResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+
+  /**
+    * Network provides an update on the status of a payment. This can be either a success or a failure.
+    * This method should be idempotent, meaning that multiple calls with the same parameters will have no additional effect.
+   */
+  rpc UpdatePayment(UpdatePaymentRequest) returns (UpdatePaymentResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+
+  /**
+   * This rpc is used to notify the provider about the changes in credit limit and/or credit usage.
+   */
+  rpc UpdateLimit(UpdateLimitRequest) returns (UpdateLimitResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+
+  /**
+    * Network can send all the updates about ledger entries of the provider's accounts. It can be used to
+    * keep track of the provider's exposure to other participants and other important financial events. (see the list in the message below)
+   */
+  rpc AppendLedgerEntries(AppendLedgerEntriesRequest) returns (AppendLedgerEntriesResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+}
+
+message AppendLedgerEntriesRequest {
+  /**
+    * This is a list of transactions that were appended to the ledger of the provider.
+    * The transaction_id should be used to identify the transaction and ensure that it is processed only once.
+   */
+  repeated Transaction transactions = 20;
+
+  message Transaction {
+    /**
+      * transaction_id is an incrementally growing identifier for the transaction.
+      * It could have gaps and could be out of order, but it is unique for each transaction.
+     */
+    uint64 transaction_id = 10;
+    /**
+      * entries is a list of ledger entries that were appended to the ledger of the provider.
+      * Each entry represents a financial event that occurred in the provider's accounts.
+      */
+    repeated LedgerEntry entries = 30;
+
+    /**
+     * transaction_details is a oneof field that contains details about the transaction.
+     * It can be one of the following: PayIn, PayoutReservation, Payout, ProviderSettlement, FeeSettlement, PayoutReservationRelease.
+     */
+    oneof transaction_details {
+      PayIn pay_in = 110;
+      PayoutReservation payout_reservation = 120;
+      Payout payout = 130;
+      ProviderSettlement provider_settlement = 140;
+      FeeSettlement fee_settlement = 150;
+      PayoutReservationRelease payout_reservation_release = 160;
+    }
+
+    message PayIn {
+      uint64 payment_id = 10;
+    }
+
+    message PayoutReservation {
+      uint64 payment_id = 10;
+    }
+
+    message Payout {
+      uint64 payment_id = 10;
+    }
+
+    message ProviderSettlement {
+      uint64 settlement_id = 10;
+    }
+
+    message FeeSettlement {
+      uint64 fee_settlement_id = 10;
+    }
+
+    message PayoutReservationRelease {
+      uint64 payment_id = 10;
+    }
+  }
+
+  message LedgerEntry {
+    /* 1 is network account, others are ids of participants */
+    uint32 account_owner_id = 10;
+    /**
+     * account_type is the type of the account that the entry belongs to.
+     * It is used to categorize the entries and understand the nature of the financial event.
+     */
+    AccountType account_type = 20;
+    /**
+     * It is the currency of the entry. If the transaction contains entries with multiple currencies, the exchange_rate
+     * field should be provided to be used to convert the amounts to USD.
+     */
+    string currency = 30;
+    /**
+     * debit is the amount that was debited from the account.
+     * If the entry is a credit, this field should be 0.
+     */
+    tzero.v1.common.Decimal debit = 40;
+    /**
+     * credit is the amount that was credited to the account.
+     * If the entry is a debit, this field should be 0.
+     */
+    tzero.v1.common.Decimal credit = 50;
+    /**
+     * exchange_rate is the exchange rate of the currency to USD if the currency is not USD and the transaction contains
+     * entries with multiple currencies. Exchange rate for the base currency USD and the quote currency provided in the entry.
+     */
+    tzero.v1.common.Decimal exchange_rate = 60;
+  }
+
+  enum AccountType {
+    ACCOUNT_TYPE_UNSPECIFIED = 0;
+    ACCOUNT_TYPE_USER_PAYABLE = 1; // Reflects the user's payable balance, the amount that the provider owes to the user.
+    ACCOUNT_TYPE_CASH = 2; // Reflects the cash balance of the provider.
+    ACCOUNT_TYPE_RESERVE = 3; // This is the reserve account of the provider, which reflects the reserve of balance to reduce the limit available from one provider to another.
+    ACCOUNT_TYPE_RESERVE_USAGE = 4; // This is the mirror account for the reserve. To keep the double entry accounting principle.
+    ACCOUNT_TYPE_PROVIDER_PAYABLE = 5; // Reflects how much the provider owes to the network or other participants.
+    ACCOUNT_TYPE_PROVIDER_RECEIVABLE = 6; // Reflects how much the provider is owed by the network or other participants.
+    ACCOUNT_TYPE_FEE_PAYABLE = 7; // Reflects the fees that the provider owes to the network.
+    ACCOUNT_TYPE_FEE_RECEIVABLE = 8; // Reflects the fees that the network is owed by the provider.
+    ACCOUNT_TYPE_FEE_EXPENSE = 9; // Reflects the fees that the provider has to pay for the services provided by the network.
+    ACCOUNT_TYPE_PROVIDER_SETTLEMENT = 10; // Reflects the settlement balance of the provider with the network or other participants.
+  }
+}
+
+message AppendLedgerEntriesResponse {}
+
+message PayoutRequest {
+  /**
+   * payment id assigned by the network (provider should store this id to provide details in UpdatePayout later)
+   */
+  int64 payment_id = 10;
+  /**
+   * payout id assigned by the network (provider should store this id to provide details in UpdatePayout later)
+   */
+  int64 payout_id = 20;
+  /**
+   * currency of the payout (participant could support multiple currencies)
+   * This is the currency in which the payout should be made.
+   */
+  string currency = 30;
+  /**
+   * client quote id of the quote used for this payout (the provider provides the quote IDs in the UpdateQuote rpc)
+   * This is the identifier of the quote that was used to calculate the payout amount.
+   */
+  string client_quote_id = 40;
+  /**
+   * amount in currency of the payout
+   * This is the amount that should be paid out to the recipient.
+   */
+  tzero.v1.common.Decimal amount = 50;
+  /**
+   * payout_method is the payment method for the payout, e.g. bank transfer, crypto transfer, etc.
+   * This is used to specify how the payout should be made.
+   */
+
+  optional tzero.v1.common.PaymentMethod payout_method = 60;
+  /**
+   * optional reference for the payment, up to 140 characters
+   */
+  optional string reference = 70;
+
+  /**
+   * Pay-in provider id which initiated the pay out.
+   */
+  uint32 pay_in_provider_id = 80;
+}
+
+message PayoutResponse {}
+
+message UpdatePaymentRequest {
+  /**
+   * payment_id is a payment id in the T-0 network.
+   */
+  uint64 payment_id = 5;
+  /**
+   * payment_client_id is a payment id assigned by the client, this is the same id that was provided in the CreatePaymentRequest.
+   */
+  string payment_client_id = 10;
+
+  oneof result {
+    /**
+     * Success response - means the payout was executed successfully and the payment is now complete. This happens when
+     * the payout is successfully processed by the payout provider, and the payment was made to the recipient.
+     */
+    Success success = 20;
+    /**
+     * Failure response - means the payout was not executed successfully, e.g. the payout provider could not process the payout.
+     */
+    Failure failure = 30;
+  }
+
+  message Success {
+    tzero.v1.common.Decimal payout_amount = 10; // amount in currency of the payout
+    google.protobuf.Timestamp paid_out_at = 50; // time of the payout
+  }
+
+  message Failure {
+    enum Reason {
+      REASON_UNSPECIFIED = 0;
+    }
+  }
+}
+message UpdatePaymentResponse {}
+
+/* All the amounts are in USD */
+message UpdateLimitRequest {
+  /**
+   * can contain one or more Limit messages, each representing a credit limit for a specific counterparty provider.
+   */
+  repeated Limit limits = 10;
+
+  message Limit {
+    /**
+       * Incrementally growing for the provider - same as in Ledger.
+       */
+    int64 version = 10;
+    /**
+     * the Id of the counterparty (creditor) provider, e.g. the provider that is providing the credit limit.
+     * It's usually the payOut provider, which provides the credit line to the payIn provider.
+     */
+    int32 creditor_id = 15;
+    /**
+     * payout_limit = credit_limit - credit_usage, negative value means credit limit is exceeded,
+     * e.g. if counterparty decreased credit limit
+     */
+    tzero.v1.common.Decimal payout_limit = 20;
+    /**
+     * This is the credit limit that the counterparty is willing to extend to the provider.
+     */
+    tzero.v1.common.Decimal credit_limit = 30;
+    /**
+     * This is the credit usage that the provider has used so far. It is the sum of all payouts made by the provider
+     * minus the settlement net (settlement balance). It could be negative if the provider has received more
+     * in settlements than maid payouts (pre-settlement).
+     */
+    tzero.v1.common.Decimal credit_usage = 40;
+  }
+}
+
+/**
+ * Empty message - means no response is needed.
+ */
+message UpdateLimitResponse {}
