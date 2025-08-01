@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/common"
-	networkproto "github.com/t-0-network/provider-sdk-go/api/gen/proto/network"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/common"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment"
 	"github.com/t-0-network/provider-sdk-go/pkg/network"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -29,12 +29,12 @@ func ExampleNewServiceClient() {
 	}
 
 	// Example request
-	req := networkproto.UpdateQuoteRequest{
-		PayOut: []*networkproto.UpdateQuoteRequest_Quote{
+	req := payment.UpdateQuoteRequest{
+		PayOut: []*payment.UpdateQuoteRequest_Quote{
 			{
 				Currency:  "BRL",
-				QuoteType: networkproto.QuoteType_QUOTE_TYPE_REALTIME,
-				Bands: []*networkproto.UpdateQuoteRequest_Quote_Band{
+				QuoteType: payment.QuoteType_QUOTE_TYPE_REALTIME,
+				Bands: []*payment.UpdateQuoteRequest_Quote_Band{
 					{
 						ClientQuoteId: "quote-id-1",
 						MaxAmount: &common.Decimal{
@@ -73,11 +73,11 @@ func ExampleNewServiceClient() {
 				Timestamp:  timestamppb.Now(),
 			},
 		},
-		PayIn: []*networkproto.UpdateQuoteRequest_Quote{
+		PayIn: []*payment.UpdateQuoteRequest_Quote{
 			{
 				Currency:  "EUR",
-				QuoteType: networkproto.QuoteType_QUOTE_TYPE_REALTIME,
-				Bands: []*networkproto.UpdateQuoteRequest_Quote_Band{
+				QuoteType: payment.QuoteType_QUOTE_TYPE_REALTIME,
+				Bands: []*payment.UpdateQuoteRequest_Quote_Band{
 					{
 						ClientQuoteId: "eur-quote-id-1",
 						MaxAmount: &common.Decimal{

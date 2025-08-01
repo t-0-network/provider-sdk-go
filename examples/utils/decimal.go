@@ -2,7 +2,7 @@ package utils
 
 import (
 	"github.com/shopspring/decimal"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/common"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/common"
 )
 
 func DecimalFromProto(amount *common.Decimal) decimal.Decimal {

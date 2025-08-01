@@ -9,8 +9,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
-	networkreq "github.com/t-0-network/provider-sdk-go/api/gen/proto/network"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/network/networkconnect"
+	networkreq "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment/paymentconnect"
 	"github.com/t-0-network/provider-sdk-go/examples/utils"
 	"github.com/t-0-network/provider-sdk-go/pkg/network"
 	"github.com/t-0-network/provider-sdk-go/pkg/provider"
@@ -144,7 +144,7 @@ func (p *PayOutProviderImplementation) UpdatePayment(ctx context.Context, c *con
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("UpdatePayment is not implemented for PayOutProviderImplementation"))
 }
 
-func startTheProviderService(providerImpl networkconnect.ProviderServiceHandler) provider.ServerShutdownFn {
+func startTheProviderService(providerImpl paymentconnect.ProviderServiceHandler) provider.ServerShutdownFn {
 	providerServiceHandler, err := provider.NewProviderHandler(
 		provider.NetworkPublicKeyHexed(dummyNetworkPublicKey),
 		provider.WithProviderServiceHandler(providerImpl),
@@ -161,7 +161,7 @@ func startTheProviderService(providerImpl networkconnect.ProviderServiceHandler)
 	return shutdownFunc
 }
 
-func createClientToInteractWithNetwork() networkconnect.NetworkServiceClient {
+func createClientToInteractWithNetwork() paymentconnect.NetworkServiceClient {
 	// Replace with your actual private key in hex format.
 	yourPrivateKey := network.PrivateKeyHexed("0x7795db2f4499c04d80062c1f1614ff1e427c148e47ed23e387d62829f437b5d8")
 

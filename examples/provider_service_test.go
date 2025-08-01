@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/common"
-	networkproto "github.com/t-0-network/provider-sdk-go/api/gen/proto/network"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/network/networkconnect"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/common"
+	networkproto "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment/paymentconnect"
 	"github.com/t-0-network/provider-sdk-go/pkg/constant"
 	"github.com/t-0-network/provider-sdk-go/pkg/crypto"
 	"github.com/t-0-network/provider-sdk-go/pkg/provider"
@@ -89,7 +89,7 @@ func ExampleNewProviderHandler() {
 	// Successfully created pay in details
 }
 
-func newProviderClient(privateKey string) (networkconnect.ProviderServiceClient, error) {
+func newProviderClient(privateKey string) (paymentconnect.ProviderServiceClient, error) {
 	// Create an http client with a custom transport which signs the raw
 	// request body using the dummy network private key.
 	signFn, err := crypto.NewSignerFromHex(privateKey)
@@ -108,7 +108,7 @@ func newProviderClient(privateKey string) (networkconnect.ProviderServiceClient,
 	}
 
 	// Initialize the provider service client using custom HTTP client.
-	return networkconnect.NewProviderServiceClient(&httpClient, "http://127.0.0.1:8080"), nil
+	return paymentconnect.NewProviderServiceClient(&httpClient, "http://127.0.0.1:8080"), nil
 }
 
 type ProviderServiceImplementation struct{}
