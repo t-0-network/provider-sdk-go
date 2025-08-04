@@ -28,6 +28,7 @@ const (
 	PaymentMethodType_PAYMENT_METHOD_TYPE_SEPA        PaymentMethodType = 10
 	PaymentMethodType_PAYMENT_METHOD_TYPE_SWIFT       PaymentMethodType = 20
 	PaymentMethodType_PAYMENT_METHOD_TYPE_CARD        PaymentMethodType = 30 // only pay in
+	PaymentMethodType_PAYMENT_METHOD_TYPE_STABLECOIN  PaymentMethodType = 40 // only pay out
 )
 
 // Enum value maps for PaymentMethodType.
@@ -37,12 +38,14 @@ var (
 		10: "PAYMENT_METHOD_TYPE_SEPA",
 		20: "PAYMENT_METHOD_TYPE_SWIFT",
 		30: "PAYMENT_METHOD_TYPE_CARD",
+		40: "PAYMENT_METHOD_TYPE_STABLECOIN",
 	}
 	PaymentMethodType_value = map[string]int32{
 		"PAYMENT_METHOD_TYPE_UNSPECIFIED": 0,
 		"PAYMENT_METHOD_TYPE_SEPA":        10,
 		"PAYMENT_METHOD_TYPE_SWIFT":       20,
 		"PAYMENT_METHOD_TYPE_CARD":        30,
+		"PAYMENT_METHOD_TYPE_STABLECOIN":  40,
 	}
 )
 
@@ -353,13 +356,14 @@ const file_tzero_v1_common_payment_method_proto_rawDesc = "" +
 	"\n" +
 	"stablecoin\x18\x14 \x01(\x0e2\x1b.tzero.v1.common.StablecoinR\n" +
 	"stablecoin\x12\x18\n" +
-	"\aaddress\x18\x1e \x01(\tR\aaddress*\x93\x01\n" +
+	"\aaddress\x18\x1e \x01(\tR\aaddress*\xb7\x01\n" +
 	"\x11PaymentMethodType\x12#\n" +
 	"\x1fPAYMENT_METHOD_TYPE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18PAYMENT_METHOD_TYPE_SEPA\x10\n" +
 	"\x12\x1d\n" +
 	"\x19PAYMENT_METHOD_TYPE_SWIFT\x10\x14\x12\x1c\n" +
-	"\x18PAYMENT_METHOD_TYPE_CARD\x10\x1eB\xcd\x01\n" +
+	"\x18PAYMENT_METHOD_TYPE_CARD\x10\x1e\x12\"\n" +
+	"\x1ePAYMENT_METHOD_TYPE_STABLECOIN\x10(B\xcd\x01\n" +
 	"\x13com.tzero.v1.commonB\x12PaymentMethodProtoP\x01ZDgithub.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/common\xa2\x02\x03TVC\xaa\x02\x0fTzero.V1.Common\xca\x02\x0fTzero\\V1\\Common\xe2\x02\x1bTzero\\V1\\Common\\GPBMetadata\xea\x02\x11Tzero::V1::Commonb\x06proto3"
 
 var (
