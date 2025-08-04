@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Trigger only if the PR is opened or synchronized by T-0 CI APP (sync proto files)
-    if: github.event.pull_request.user.login == 't-0-ci'
+    if: github.event.pull_request.user.login == 't-0-ci[bot]'
 
     steps:
       - name: Generate GitHub APP Token
