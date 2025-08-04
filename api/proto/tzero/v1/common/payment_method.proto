@@ -33,4 +33,5 @@ enum PaymentMethodType {
   PAYMENT_METHOD_TYPE_SEPA = 10;
   PAYMENT_METHOD_TYPE_SWIFT = 20;
   PAYMENT_METHOD_TYPE_CARD = 30; // only pay in
+  PAYMENT_METHOD_TYPE_STABLECOIN = 40; // only pay out
 }
