@@ -38,6 +38,11 @@ const (
 	// NetworkServiceCreatePaymentIntentProcedure is the fully-qualified name of the NetworkService's
 	// CreatePaymentIntent RPC.
 	NetworkServiceCreatePaymentIntentProcedure = "/tzero.v1.payment_intent.recipient.NetworkService/CreatePaymentIntent"
+	// NetworkServiceGetQuoteProcedure is the fully-qualified name of the NetworkService's GetQuote RPC.
+	NetworkServiceGetQuoteProcedure = "/tzero.v1.payment_intent.recipient.NetworkService/GetQuote"
+	// RecipientServiceConfirmPayInProcedure is the fully-qualified name of the RecipientService's
+	// ConfirmPayIn RPC.
+	RecipientServiceConfirmPayInProcedure = "/tzero.v1.payment_intent.recipient.RecipientService/ConfirmPayIn"
 	// RecipientServiceConfirmPaymentProcedure is the fully-qualified name of the RecipientService's
 	// ConfirmPayment RPC.
 	RecipientServiceConfirmPaymentProcedure = "/tzero.v1.payment_intent.recipient.RecipientService/ConfirmPayment"
@@ -50,6 +55,7 @@ const (
 // service.
 type NetworkServiceClient interface {
 	CreatePaymentIntent(context.Context, *connect.Request[recipient.CreatePaymentIntentRequest]) (*connect.Response[recipient.CreatePaymentIntentResponse], error)
+	GetQuote(context.Context, *connect.Request[recipient.GetQuoteRequest]) (*connect.Response[recipient.GetQuoteResponse], error)
 }
 
 // NewNetworkServiceClient constructs a client for the
@@ -71,12 +77,20 @@ func NewNetworkServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithIdempotency(connect.IdempotencyIdempotent),
 			connect.WithClientOptions(opts...),
 		),
+		getQuote: connect.NewClient[recipient.GetQuoteRequest, recipient.GetQuoteResponse](
+			httpClient,
+			baseURL+NetworkServiceGetQuoteProcedure,
+			connect.WithSchema(networkServiceMethods.ByName("GetQuote")),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // networkServiceClient implements NetworkServiceClient.
 type networkServiceClient struct {
 	createPaymentIntent *connect.Client[recipient.CreatePaymentIntentRequest, recipient.CreatePaymentIntentResponse]
+	getQuote            *connect.Client[recipient.GetQuoteRequest, recipient.GetQuoteResponse]
 }
 
 // CreatePaymentIntent calls tzero.v1.payment_intent.recipient.NetworkService.CreatePaymentIntent.
@@ -84,10 +98,16 @@ func (c *networkServiceClient) CreatePaymentIntent(ctx context.Context, req *con
 	return c.createPaymentIntent.CallUnary(ctx, req)
 }
 
+// GetQuote calls tzero.v1.payment_intent.recipient.NetworkService.GetQuote.
+func (c *networkServiceClient) GetQuote(ctx context.Context, req *connect.Request[recipient.GetQuoteRequest]) (*connect.Response[recipient.GetQuoteResponse], error) {
+	return c.getQuote.CallUnary(ctx, req)
+}
+
 // NetworkServiceHandler is an implementation of the
 // tzero.v1.payment_intent.recipient.NetworkService service.
 type NetworkServiceHandler interface {
 	CreatePaymentIntent(context.Context, *connect.Request[recipient.CreatePaymentIntentRequest]) (*connect.Response[recipient.CreatePaymentIntentResponse], error)
+	GetQuote(context.Context, *connect.Request[recipient.GetQuoteRequest]) (*connect.Response[recipient.GetQuoteResponse], error)
 }
 
 // NewNetworkServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -104,10 +124,19 @@ func NewNetworkServiceHandler(svc NetworkServiceHandler, opts ...connect.Handler
 		connect.WithIdempotency(connect.IdempotencyIdempotent),
 		connect.WithHandlerOptions(opts...),
 	)
+	networkServiceGetQuoteHandler := connect.NewUnaryHandler(
+		NetworkServiceGetQuoteProcedure,
+		svc.GetQuote,
+		connect.WithSchema(networkServiceMethods.ByName("GetQuote")),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tzero.v1.payment_intent.recipient.NetworkService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case NetworkServiceCreatePaymentIntentProcedure:
 			networkServiceCreatePaymentIntentHandler.ServeHTTP(w, r)
+		case NetworkServiceGetQuoteProcedure:
+			networkServiceGetQuoteHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -121,12 +150,19 @@ func (UnimplementedNetworkServiceHandler) CreatePaymentIntent(context.Context, *
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment_intent.recipient.NetworkService.CreatePaymentIntent is not implemented"))
 }
 
+func (UnimplementedNetworkServiceHandler) GetQuote(context.Context, *connect.Request[recipient.GetQuoteRequest]) (*connect.Response[recipient.GetQuoteResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment_intent.recipient.NetworkService.GetQuote is not implemented"))
+}
+
 // RecipientServiceClient is a client for the tzero.v1.payment_intent.recipient.RecipientService
 // service.
 type RecipientServiceClient interface {
 	// *
+	// notifies recipient that pay-in providers received payment from payer
+	ConfirmPayIn(context.Context, *connect.Request[recipient.ConfirmPayInRequest]) (*connect.Response[recipient.ConfirmPayInResponse], error)
+	// *
 	// notifies recipient about successful payment
-	ConfirmPayment(context.Context, *connect.Request[recipient.ConfirmPaymentRequest]) (*connect.Response[recipient.ConfirmPaymentIntentResponse], error)
+	ConfirmPayment(context.Context, *connect.Request[recipient.ConfirmPaymentRequest]) (*connect.Response[recipient.ConfirmPaymentResponse], error)
 	// *
 	// notifies recipient about failed payment
 	RejectPaymentIntent(context.Context, *connect.Request[recipient.RejectPaymentIntentRequest]) (*connect.Response[recipient.RejectPaymentIntentResponse], error)
@@ -144,7 +180,14 @@ func NewRecipientServiceClient(httpClient connect.HTTPClient, baseURL string, op
 	baseURL = strings.TrimRight(baseURL, "/")
 	recipientServiceMethods := recipient.File_tzero_v1_payment_intent_recipient_recipient_proto.Services().ByName("RecipientService").Methods()
 	return &recipientServiceClient{
-		confirmPayment: connect.NewClient[recipient.ConfirmPaymentRequest, recipient.ConfirmPaymentIntentResponse](
+		confirmPayIn: connect.NewClient[recipient.ConfirmPayInRequest, recipient.ConfirmPayInResponse](
+			httpClient,
+			baseURL+RecipientServiceConfirmPayInProcedure,
+			connect.WithSchema(recipientServiceMethods.ByName("ConfirmPayIn")),
+			connect.WithIdempotency(connect.IdempotencyIdempotent),
+			connect.WithClientOptions(opts...),
+		),
+		confirmPayment: connect.NewClient[recipient.ConfirmPaymentRequest, recipient.ConfirmPaymentResponse](
 			httpClient,
 			baseURL+RecipientServiceConfirmPaymentProcedure,
 			connect.WithSchema(recipientServiceMethods.ByName("ConfirmPayment")),
@@ -163,12 +206,18 @@ func NewRecipientServiceClient(httpClient connect.HTTPClient, baseURL string, op
 
 // recipientServiceClient implements RecipientServiceClient.
 type recipientServiceClient struct {
-	confirmPayment      *connect.Client[recipient.ConfirmPaymentRequest, recipient.ConfirmPaymentIntentResponse]
+	confirmPayIn        *connect.Client[recipient.ConfirmPayInRequest, recipient.ConfirmPayInResponse]
+	confirmPayment      *connect.Client[recipient.ConfirmPaymentRequest, recipient.ConfirmPaymentResponse]
 	rejectPaymentIntent *connect.Client[recipient.RejectPaymentIntentRequest, recipient.RejectPaymentIntentResponse]
 }
 
+// ConfirmPayIn calls tzero.v1.payment_intent.recipient.RecipientService.ConfirmPayIn.
+func (c *recipientServiceClient) ConfirmPayIn(ctx context.Context, req *connect.Request[recipient.ConfirmPayInRequest]) (*connect.Response[recipient.ConfirmPayInResponse], error) {
+	return c.confirmPayIn.CallUnary(ctx, req)
+}
+
 // ConfirmPayment calls tzero.v1.payment_intent.recipient.RecipientService.ConfirmPayment.
-func (c *recipientServiceClient) ConfirmPayment(ctx context.Context, req *connect.Request[recipient.ConfirmPaymentRequest]) (*connect.Response[recipient.ConfirmPaymentIntentResponse], error) {
+func (c *recipientServiceClient) ConfirmPayment(ctx context.Context, req *connect.Request[recipient.ConfirmPaymentRequest]) (*connect.Response[recipient.ConfirmPaymentResponse], error) {
 	return c.confirmPayment.CallUnary(ctx, req)
 }
 
@@ -181,8 +230,11 @@ func (c *recipientServiceClient) RejectPaymentIntent(ctx context.Context, req *c
 // tzero.v1.payment_intent.recipient.RecipientService service.
 type RecipientServiceHandler interface {
 	// *
+	// notifies recipient that pay-in providers received payment from payer
+	ConfirmPayIn(context.Context, *connect.Request[recipient.ConfirmPayInRequest]) (*connect.Response[recipient.ConfirmPayInResponse], error)
+	// *
 	// notifies recipient about successful payment
-	ConfirmPayment(context.Context, *connect.Request[recipient.ConfirmPaymentRequest]) (*connect.Response[recipient.ConfirmPaymentIntentResponse], error)
+	ConfirmPayment(context.Context, *connect.Request[recipient.ConfirmPaymentRequest]) (*connect.Response[recipient.ConfirmPaymentResponse], error)
 	// *
 	// notifies recipient about failed payment
 	RejectPaymentIntent(context.Context, *connect.Request[recipient.RejectPaymentIntentRequest]) (*connect.Response[recipient.RejectPaymentIntentResponse], error)
@@ -195,6 +247,13 @@ type RecipientServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewRecipientServiceHandler(svc RecipientServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	recipientServiceMethods := recipient.File_tzero_v1_payment_intent_recipient_recipient_proto.Services().ByName("RecipientService").Methods()
+	recipientServiceConfirmPayInHandler := connect.NewUnaryHandler(
+		RecipientServiceConfirmPayInProcedure,
+		svc.ConfirmPayIn,
+		connect.WithSchema(recipientServiceMethods.ByName("ConfirmPayIn")),
+		connect.WithIdempotency(connect.IdempotencyIdempotent),
+		connect.WithHandlerOptions(opts...),
+	)
 	recipientServiceConfirmPaymentHandler := connect.NewUnaryHandler(
 		RecipientServiceConfirmPaymentProcedure,
 		svc.ConfirmPayment,
@@ -211,6 +270,8 @@ func NewRecipientServiceHandler(svc RecipientServiceHandler, opts ...connect.Han
 	)
 	return "/tzero.v1.payment_intent.recipient.RecipientService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case RecipientServiceConfirmPayInProcedure:
+			recipientServiceConfirmPayInHandler.ServeHTTP(w, r)
 		case RecipientServiceConfirmPaymentProcedure:
 			recipientServiceConfirmPaymentHandler.ServeHTTP(w, r)
 		case RecipientServiceRejectPaymentIntentProcedure:
@@ -224,7 +285,11 @@ func NewRecipientServiceHandler(svc RecipientServiceHandler, opts ...connect.Han
 // UnimplementedRecipientServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedRecipientServiceHandler struct{}
 
-func (UnimplementedRecipientServiceHandler) ConfirmPayment(context.Context, *connect.Request[recipient.ConfirmPaymentRequest]) (*connect.Response[recipient.ConfirmPaymentIntentResponse], error) {
+func (UnimplementedRecipientServiceHandler) ConfirmPayIn(context.Context, *connect.Request[recipient.ConfirmPayInRequest]) (*connect.Response[recipient.ConfirmPayInResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment_intent.recipient.RecipientService.ConfirmPayIn is not implemented"))
+}
+
+func (UnimplementedRecipientServiceHandler) ConfirmPayment(context.Context, *connect.Request[recipient.ConfirmPaymentRequest]) (*connect.Response[recipient.ConfirmPaymentResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment_intent.recipient.RecipientService.ConfirmPayment is not implemented"))
 }
 

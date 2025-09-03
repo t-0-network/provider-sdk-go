@@ -344,6 +344,540 @@ var _ interface {
 	ErrorName() string
 } = CreatePaymentIntentResponseValidationError{}
 
+// Validate checks the field values on GetQuoteRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetQuoteRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetQuoteRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetQuoteRequestMultiError, or nil if none found.
+func (m *GetQuoteRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetQuoteRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for PayInCurrency
+
+	if all {
+		switch v := interface{}(m.GetPayInAmount()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetQuoteRequestValidationError{
+					field:  "PayInAmount",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetQuoteRequestValidationError{
+					field:  "PayInAmount",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPayInAmount()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetQuoteRequestValidationError{
+				field:  "PayInAmount",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for PayOutCurrency
+
+	// no validation rules for PayInPaymentMethod
+
+	// no validation rules for PayOutPaymentMethod
+
+	if len(errors) > 0 {
+		return GetQuoteRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetQuoteRequestMultiError is an error wrapping multiple validation errors
+// returned by GetQuoteRequest.ValidateAll() if the designated constraints
+// aren't met.
+type GetQuoteRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetQuoteRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetQuoteRequestMultiError) AllErrors() []error { return m }
+
+// GetQuoteRequestValidationError is the validation error returned by
+// GetQuoteRequest.Validate if the designated constraints aren't met.
+type GetQuoteRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetQuoteRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetQuoteRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetQuoteRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetQuoteRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetQuoteRequestValidationError) ErrorName() string { return "GetQuoteRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e GetQuoteRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetQuoteRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetQuoteRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetQuoteRequestValidationError{}
+
+// Validate checks the field values on GetQuoteResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetQuoteResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetQuoteResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetQuoteResponseMultiError, or nil if none found.
+func (m *GetQuoteResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetQuoteResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	switch v := m.Result.(type) {
+	case *GetQuoteResponse_Quote_:
+		if v == nil {
+			err := GetQuoteResponseValidationError{
+				field:  "Result",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if all {
+			switch v := interface{}(m.GetQuote()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetQuoteResponseValidationError{
+						field:  "Quote",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetQuoteResponseValidationError{
+						field:  "Quote",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetQuote()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetQuoteResponseValidationError{
+					field:  "Quote",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	case *GetQuoteResponse_NotFound_:
+		if v == nil {
+			err := GetQuoteResponseValidationError{
+				field:  "Result",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if all {
+			switch v := interface{}(m.GetNotFound()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetQuoteResponseValidationError{
+						field:  "NotFound",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetQuoteResponseValidationError{
+						field:  "NotFound",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetNotFound()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetQuoteResponseValidationError{
+					field:  "NotFound",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	default:
+		_ = v // ensures v is used
+	}
+
+	if len(errors) > 0 {
+		return GetQuoteResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetQuoteResponseMultiError is an error wrapping multiple validation errors
+// returned by GetQuoteResponse.ValidateAll() if the designated constraints
+// aren't met.
+type GetQuoteResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetQuoteResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetQuoteResponseMultiError) AllErrors() []error { return m }
+
+// GetQuoteResponseValidationError is the validation error returned by
+// GetQuoteResponse.Validate if the designated constraints aren't met.
+type GetQuoteResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetQuoteResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetQuoteResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetQuoteResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetQuoteResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetQuoteResponseValidationError) ErrorName() string { return "GetQuoteResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e GetQuoteResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetQuoteResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetQuoteResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetQuoteResponseValidationError{}
+
+// Validate checks the field values on ConfirmPayInRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ConfirmPayInRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ConfirmPayInRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ConfirmPayInRequestMultiError, or nil if none found.
+func (m *ConfirmPayInRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ConfirmPayInRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for PaymentIntentId
+
+	// no validation rules for PaymentReference
+
+	// no validation rules for PaymentMethod
+
+	if len(errors) > 0 {
+		return ConfirmPayInRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ConfirmPayInRequestMultiError is an error wrapping multiple validation
+// errors returned by ConfirmPayInRequest.ValidateAll() if the designated
+// constraints aren't met.
+type ConfirmPayInRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ConfirmPayInRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ConfirmPayInRequestMultiError) AllErrors() []error { return m }
+
+// ConfirmPayInRequestValidationError is the validation error returned by
+// ConfirmPayInRequest.Validate if the designated constraints aren't met.
+type ConfirmPayInRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ConfirmPayInRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ConfirmPayInRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ConfirmPayInRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ConfirmPayInRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ConfirmPayInRequestValidationError) ErrorName() string {
+	return "ConfirmPayInRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ConfirmPayInRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sConfirmPayInRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ConfirmPayInRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ConfirmPayInRequestValidationError{}
+
+// Validate checks the field values on ConfirmPayInResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ConfirmPayInResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ConfirmPayInResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ConfirmPayInResponseMultiError, or nil if none found.
+func (m *ConfirmPayInResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ConfirmPayInResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return ConfirmPayInResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ConfirmPayInResponseMultiError is an error wrapping multiple validation
+// errors returned by ConfirmPayInResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ConfirmPayInResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ConfirmPayInResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ConfirmPayInResponseMultiError) AllErrors() []error { return m }
+
+// ConfirmPayInResponseValidationError is the validation error returned by
+// ConfirmPayInResponse.Validate if the designated constraints aren't met.
+type ConfirmPayInResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ConfirmPayInResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ConfirmPayInResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ConfirmPayInResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ConfirmPayInResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ConfirmPayInResponseValidationError) ErrorName() string {
+	return "ConfirmPayInResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ConfirmPayInResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sConfirmPayInResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ConfirmPayInResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ConfirmPayInResponseValidationError{}
+
 // Validate checks the field values on ConfirmPaymentRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -371,6 +905,64 @@ func (m *ConfirmPaymentRequest) validate(all bool) error {
 	// no validation rules for PaymentReference
 
 	// no validation rules for PaymentMethod
+
+	if all {
+		switch v := interface{}(m.GetPayOutAmount()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ConfirmPaymentRequestValidationError{
+					field:  "PayOutAmount",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ConfirmPaymentRequestValidationError{
+					field:  "PayOutAmount",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPayOutAmount()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ConfirmPaymentRequestValidationError{
+				field:  "PayOutAmount",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetReceipt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ConfirmPaymentRequestValidationError{
+					field:  "Receipt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ConfirmPaymentRequestValidationError{
+					field:  "Receipt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetReceipt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ConfirmPaymentRequestValidationError{
+				field:  "Receipt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return ConfirmPaymentRequestMultiError(errors)
@@ -452,22 +1044,22 @@ var _ interface {
 	ErrorName() string
 } = ConfirmPaymentRequestValidationError{}
 
-// Validate checks the field values on ConfirmPaymentIntentResponse with the
-// rules defined in the proto definition for this message. If any rules are
+// Validate checks the field values on ConfirmPaymentResponse with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ConfirmPaymentIntentResponse) Validate() error {
+func (m *ConfirmPaymentResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ConfirmPaymentIntentResponse with the
-// rules defined in the proto definition for this message. If any rules are
+// ValidateAll checks the field values on ConfirmPaymentResponse with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// ConfirmPaymentIntentResponseMultiError, or nil if none found.
-func (m *ConfirmPaymentIntentResponse) ValidateAll() error {
+// ConfirmPaymentResponseMultiError, or nil if none found.
+func (m *ConfirmPaymentResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ConfirmPaymentIntentResponse) validate(all bool) error {
+func (m *ConfirmPaymentResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -475,19 +1067,19 @@ func (m *ConfirmPaymentIntentResponse) validate(all bool) error {
 	var errors []error
 
 	if len(errors) > 0 {
-		return ConfirmPaymentIntentResponseMultiError(errors)
+		return ConfirmPaymentResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// ConfirmPaymentIntentResponseMultiError is an error wrapping multiple
-// validation errors returned by ConfirmPaymentIntentResponse.ValidateAll() if
-// the designated constraints aren't met.
-type ConfirmPaymentIntentResponseMultiError []error
+// ConfirmPaymentResponseMultiError is an error wrapping multiple validation
+// errors returned by ConfirmPaymentResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ConfirmPaymentResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ConfirmPaymentIntentResponseMultiError) Error() string {
+func (m ConfirmPaymentResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -496,12 +1088,11 @@ func (m ConfirmPaymentIntentResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ConfirmPaymentIntentResponseMultiError) AllErrors() []error { return m }
+func (m ConfirmPaymentResponseMultiError) AllErrors() []error { return m }
 
-// ConfirmPaymentIntentResponseValidationError is the validation error returned
-// by ConfirmPaymentIntentResponse.Validate if the designated constraints
-// aren't met.
-type ConfirmPaymentIntentResponseValidationError struct {
+// ConfirmPaymentResponseValidationError is the validation error returned by
+// ConfirmPaymentResponse.Validate if the designated constraints aren't met.
+type ConfirmPaymentResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -509,24 +1100,24 @@ type ConfirmPaymentIntentResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e ConfirmPaymentIntentResponseValidationError) Field() string { return e.field }
+func (e ConfirmPaymentResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ConfirmPaymentIntentResponseValidationError) Reason() string { return e.reason }
+func (e ConfirmPaymentResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ConfirmPaymentIntentResponseValidationError) Cause() error { return e.cause }
+func (e ConfirmPaymentResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ConfirmPaymentIntentResponseValidationError) Key() bool { return e.key }
+func (e ConfirmPaymentResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ConfirmPaymentIntentResponseValidationError) ErrorName() string {
-	return "ConfirmPaymentIntentResponseValidationError"
+func (e ConfirmPaymentResponseValidationError) ErrorName() string {
+	return "ConfirmPaymentResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ConfirmPaymentIntentResponseValidationError) Error() string {
+func (e ConfirmPaymentResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -538,14 +1129,14 @@ func (e ConfirmPaymentIntentResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sConfirmPaymentIntentResponse.%s: %s%s",
+		"invalid %sConfirmPaymentResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ConfirmPaymentIntentResponseValidationError{}
+var _ error = ConfirmPaymentResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -553,7 +1144,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ConfirmPaymentIntentResponseValidationError{}
+} = ConfirmPaymentResponseValidationError{}
 
 // Validate checks the field values on RejectPaymentIntentRequest with the
 // rules defined in the proto definition for this message. If any rules are
@@ -877,3 +1468,265 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CreatePaymentIntentResponse_PaymentMethodValidationError{}
+
+// Validate checks the field values on GetQuoteResponse_Quote with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetQuoteResponse_Quote) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetQuoteResponse_Quote with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetQuoteResponse_QuoteMultiError, or nil if none found.
+func (m *GetQuoteResponse_Quote) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetQuoteResponse_Quote) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetRate()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetQuoteResponse_QuoteValidationError{
+					field:  "Rate",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetQuoteResponse_QuoteValidationError{
+					field:  "Rate",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetRate()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetQuoteResponse_QuoteValidationError{
+				field:  "Rate",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetExpiration()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetQuoteResponse_QuoteValidationError{
+					field:  "Expiration",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetQuoteResponse_QuoteValidationError{
+					field:  "Expiration",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetExpiration()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetQuoteResponse_QuoteValidationError{
+				field:  "Expiration",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return GetQuoteResponse_QuoteMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetQuoteResponse_QuoteMultiError is an error wrapping multiple validation
+// errors returned by GetQuoteResponse_Quote.ValidateAll() if the designated
+// constraints aren't met.
+type GetQuoteResponse_QuoteMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetQuoteResponse_QuoteMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetQuoteResponse_QuoteMultiError) AllErrors() []error { return m }
+
+// GetQuoteResponse_QuoteValidationError is the validation error returned by
+// GetQuoteResponse_Quote.Validate if the designated constraints aren't met.
+type GetQuoteResponse_QuoteValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetQuoteResponse_QuoteValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetQuoteResponse_QuoteValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetQuoteResponse_QuoteValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetQuoteResponse_QuoteValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetQuoteResponse_QuoteValidationError) ErrorName() string {
+	return "GetQuoteResponse_QuoteValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetQuoteResponse_QuoteValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetQuoteResponse_Quote.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetQuoteResponse_QuoteValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetQuoteResponse_QuoteValidationError{}
+
+// Validate checks the field values on GetQuoteResponse_NotFound with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetQuoteResponse_NotFound) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetQuoteResponse_NotFound with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetQuoteResponse_NotFoundMultiError, or nil if none found.
+func (m *GetQuoteResponse_NotFound) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetQuoteResponse_NotFound) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return GetQuoteResponse_NotFoundMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetQuoteResponse_NotFoundMultiError is an error wrapping multiple validation
+// errors returned by GetQuoteResponse_NotFound.ValidateAll() if the
+// designated constraints aren't met.
+type GetQuoteResponse_NotFoundMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetQuoteResponse_NotFoundMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetQuoteResponse_NotFoundMultiError) AllErrors() []error { return m }
+
+// GetQuoteResponse_NotFoundValidationError is the validation error returned by
+// GetQuoteResponse_NotFound.Validate if the designated constraints aren't met.
+type GetQuoteResponse_NotFoundValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetQuoteResponse_NotFoundValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetQuoteResponse_NotFoundValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetQuoteResponse_NotFoundValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetQuoteResponse_NotFoundValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetQuoteResponse_NotFoundValidationError) ErrorName() string {
+	return "GetQuoteResponse_NotFoundValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetQuoteResponse_NotFoundValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetQuoteResponse_NotFound.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetQuoteResponse_NotFoundValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetQuoteResponse_NotFoundValidationError{}

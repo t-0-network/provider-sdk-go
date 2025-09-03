@@ -329,6 +329,7 @@ func (*RejectPaymentIntentResponse) Descriptor() ([]byte, []int) {
 type ConfirmPayoutRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	PaymentIntentId uint64                 `protobuf:"varint,10,opt,name=payment_intent_id,json=paymentIntentId,proto3" json:"payment_intent_id,omitempty"` // payment_intent_id from CreatePaymentIntentRequest
+	PaymentId       uint64                 `protobuf:"varint,20,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`                     // corresponding payment_id for this payment intent
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -366,6 +367,13 @@ func (*ConfirmPayoutRequest) Descriptor() ([]byte, []int) {
 func (x *ConfirmPayoutRequest) GetPaymentIntentId() uint64 {
 	if x != nil {
 		return x.PaymentIntentId
+	}
+	return 0
+}
+
+func (x *ConfirmPayoutRequest) GetPaymentId() uint64 {
+	if x != nil {
+		return x.PaymentId
 	}
 	return 0
 }
@@ -651,10 +659,12 @@ const file_tzero_v1_payment_intent_provider_provider_proto_rawDesc = "" +
 	"\x11payment_intent_id\x18\n" +
 	" \x01(\x04R\x0fpaymentIntentId\x12\x16\n" +
 	"\x06reason\x18\x14 \x01(\tR\x06reason\"\x1d\n" +
-	"\x1bRejectPaymentIntentResponse\"B\n" +
+	"\x1bRejectPaymentIntentResponse\"a\n" +
 	"\x14ConfirmPayoutRequest\x12*\n" +
 	"\x11payment_intent_id\x18\n" +
-	" \x01(\x04R\x0fpaymentIntentId\"\x17\n" +
+	" \x01(\x04R\x0fpaymentIntentId\x12\x1d\n" +
+	"\n" +
+	"payment_id\x18\x14 \x01(\x04R\tpaymentId\"\x17\n" +
 	"\x15ConfirmPayoutResponse\"\x9c\x01\n" +
 	"\x18ConfirmSettlementRequest\x12;\n" +
 	"\n" +

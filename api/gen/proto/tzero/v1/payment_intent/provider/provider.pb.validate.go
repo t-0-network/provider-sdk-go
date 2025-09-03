@@ -817,6 +817,8 @@ func (m *ConfirmPayoutRequest) validate(all bool) error {
 
 	// no validation rules for PaymentIntentId
 
+	// no validation rules for PaymentId
+
 	if len(errors) > 0 {
 		return ConfirmPayoutRequestMultiError(errors)
 	}
