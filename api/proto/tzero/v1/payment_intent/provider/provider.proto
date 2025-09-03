@@ -94,6 +94,7 @@ message RejectPaymentIntentResponse {
 
 message ConfirmPayoutRequest {
   uint64 payment_intent_id = 10; // payment_intent_id from CreatePaymentIntentRequest
+  uint64 payment_id = 20; // corresponding payment_id for this payment intent
 }
 
 message ConfirmPayoutResponse {

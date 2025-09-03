@@ -4,34 +4,34 @@ package tzero.v1.common;
 
 import "tzero/v1/common/common.proto";
 
-message PaymentMethod {
-  oneof details {
-    SepaPaymentMethod sepa = 10;
-    SwiftPaymentMethod swift = 30;
-    StablecoinPaymentMethod stablecoin = 40;
-  }
-}
-
-message SepaPaymentMethod {
-    string iban = 20;
-    string beneficiary_name = 30;
-    string payment_reference = 40;
-}
-
-message SwiftPaymentMethod {
-
-}
-
-message StablecoinPaymentMethod {
-  tzero.v1.common.Blockchain blockchain = 10;
-  tzero.v1.common.Stablecoin stablecoin = 20;
-  string address = 30;
-}
-
 enum PaymentMethodType {
   PAYMENT_METHOD_TYPE_UNSPECIFIED = 0;
   PAYMENT_METHOD_TYPE_SEPA = 10;
   PAYMENT_METHOD_TYPE_SWIFT = 20;
   PAYMENT_METHOD_TYPE_CARD = 30; // only pay in
   PAYMENT_METHOD_TYPE_STABLECOIN = 40; // only pay out
+}
+
+message PaymentMethod {
+  oneof details {
+    SepaPaymentDetails sepa = 10;
+    SwiftPaymentDetails swift = 30;
+    StablecoinPaymentDetails stablecoin = 40;
+  }
+}
+
+message SepaPaymentDetails {
+  string iban = 20;
+  string beneficiary_name = 30;
+  string payment_reference = 40;
+}
+
+message SwiftPaymentDetails {
+
+}
+
+message StablecoinPaymentDetails {
+  tzero.v1.common.Blockchain blockchain = 10;
+  tzero.v1.common.Stablecoin stablecoin = 20;
+  string address = 30;
 }
