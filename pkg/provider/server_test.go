@@ -373,27 +373,6 @@ func TestStartServerNilHandler(t *testing.T) {
 	assert.Contains(t, err.Error(), "handler cannot be nil")
 }
 
-func TestStartServerNilContextShutdown(t *testing.T) {
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
-
-	shutdownFn, err := StartServer(handler, WithAddr(":0"))
-	require.NoError(t, err)
-	require.NotNil(t, shutdownFn)
-
-	// Try to shutdown with nil context
-	err = shutdownFn(nil)
-	assert.Error(t, err)
-	assert.Equal(t, ErrNilContext, err)
-
-	// Properly shutdown
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	err = shutdownFn(ctx)
-	assert.NoError(t, err)
-}
-
 func TestStartServerCancelledContextShutdown(t *testing.T) {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

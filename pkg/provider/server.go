@@ -14,13 +14,6 @@ import (
 	"golang.org/x/net/http2/h2c"
 )
 
-// Various server errors
-var (
-	ErrServerStartTimeout = errors.New("server startup timeout")
-	ErrNilContext         = errors.New("shutdown context cannot be nil")
-	ErrInvalidTimeout     = errors.New("invalid timeout value")
-)
-
 // Default timeout values
 const (
 	DefaultAddr              = ":8080"
@@ -232,10 +225,6 @@ func StartServer(handler http.Handler, serverOptions ...ServerOption) (ServerShu
 
 	// Create a reusable shutdown function that can be called concurrently
 	serverShutdown := func(ctx context.Context) error {
-		if ctx == nil {
-			return ErrNilContext
-		}
-
 		// Check if context is already cancelled
 		if err := ctx.Err(); err != nil {
 			return fmt.Errorf("shutdown context already done: %w", err)
