@@ -27,45 +27,48 @@ type AppendLedgerEntriesRequest_AccountType int32
 
 const (
 	AppendLedgerEntriesRequest_ACCOUNT_TYPE_UNSPECIFIED         AppendLedgerEntriesRequest_AccountType = 0
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_USER_PAYABLE        AppendLedgerEntriesRequest_AccountType = 1  // Reflects the user's payable balance, the amount that the provider owes to the user.
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_CASH                AppendLedgerEntriesRequest_AccountType = 2  // Reflects the cash balance of the provider.
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_RESERVE             AppendLedgerEntriesRequest_AccountType = 3  // This is the reserve account of the provider, which reflects the reserve of balance to reduce the limit available from one provider to another.
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_RESERVE_USAGE       AppendLedgerEntriesRequest_AccountType = 4  // This is the mirror account for the reserve. To keep the double entry accounting principle.
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PROVIDER_PAYABLE    AppendLedgerEntriesRequest_AccountType = 5  // Reflects how much the provider owes to the network or other participants.
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PROVIDER_RECEIVABLE AppendLedgerEntriesRequest_AccountType = 6  // Reflects how much the provider is owed by the network or other participants.
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_FEE_PAYABLE         AppendLedgerEntriesRequest_AccountType = 7  // Reflects the fees that the provider owes to the network.
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_FEE_RECEIVABLE      AppendLedgerEntriesRequest_AccountType = 8  // Reflects the fees that the network is owed by the provider.
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_FEE_EXPENSE         AppendLedgerEntriesRequest_AccountType = 9  // Reflects the fees that the provider has to pay for the services provided by the network.
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PROVIDER_SETTLEMENT AppendLedgerEntriesRequest_AccountType = 10 // Reflects the settlement balance of the provider with the network or other participants.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_USER_PAYABLE        AppendLedgerEntriesRequest_AccountType = 10  // Reflects the user's payable balance, the amount that the provider owes to the user.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_CASH                AppendLedgerEntriesRequest_AccountType = 20  // Reflects the cash balance of the provider.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_RESERVE             AppendLedgerEntriesRequest_AccountType = 30  // This is the reserve account of the provider, which reflects the reserve of balance to reduce the limit available from one provider to another.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_RESERVE_USAGE       AppendLedgerEntriesRequest_AccountType = 40  // This is the mirror account for the reserve. To keep the double entry accounting principle.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PROVIDER_PAYABLE    AppendLedgerEntriesRequest_AccountType = 50  // Reflects how much the provider owes to the network or other participants.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PROVIDER_RECEIVABLE AppendLedgerEntriesRequest_AccountType = 60  // Reflects how much the provider is owed by the network or other participants.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PROVIDER_SETTLEMENT AppendLedgerEntriesRequest_AccountType = 70  // Reflects the settlement balance of the provider with the network or other participants.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_FEE_PAYABLE         AppendLedgerEntriesRequest_AccountType = 80  // Reflects the fees that the provider owes to the network.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_FEE_RECEIVABLE      AppendLedgerEntriesRequest_AccountType = 90  // Reflects the fees that the network is owed by the provider.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_FEE_EXPENSE         AppendLedgerEntriesRequest_AccountType = 100 // Reflects the fees that the provider has to pay for the services provided by the network.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_FEE_SETTLEMENT      AppendLedgerEntriesRequest_AccountType = 110
 )
 
 // Enum value maps for AppendLedgerEntriesRequest_AccountType.
 var (
 	AppendLedgerEntriesRequest_AccountType_name = map[int32]string{
-		0:  "ACCOUNT_TYPE_UNSPECIFIED",
-		1:  "ACCOUNT_TYPE_USER_PAYABLE",
-		2:  "ACCOUNT_TYPE_CASH",
-		3:  "ACCOUNT_TYPE_RESERVE",
-		4:  "ACCOUNT_TYPE_RESERVE_USAGE",
-		5:  "ACCOUNT_TYPE_PROVIDER_PAYABLE",
-		6:  "ACCOUNT_TYPE_PROVIDER_RECEIVABLE",
-		7:  "ACCOUNT_TYPE_FEE_PAYABLE",
-		8:  "ACCOUNT_TYPE_FEE_RECEIVABLE",
-		9:  "ACCOUNT_TYPE_FEE_EXPENSE",
-		10: "ACCOUNT_TYPE_PROVIDER_SETTLEMENT",
+		0:   "ACCOUNT_TYPE_UNSPECIFIED",
+		10:  "ACCOUNT_TYPE_USER_PAYABLE",
+		20:  "ACCOUNT_TYPE_CASH",
+		30:  "ACCOUNT_TYPE_RESERVE",
+		40:  "ACCOUNT_TYPE_RESERVE_USAGE",
+		50:  "ACCOUNT_TYPE_PROVIDER_PAYABLE",
+		60:  "ACCOUNT_TYPE_PROVIDER_RECEIVABLE",
+		70:  "ACCOUNT_TYPE_PROVIDER_SETTLEMENT",
+		80:  "ACCOUNT_TYPE_FEE_PAYABLE",
+		90:  "ACCOUNT_TYPE_FEE_RECEIVABLE",
+		100: "ACCOUNT_TYPE_FEE_EXPENSE",
+		110: "ACCOUNT_TYPE_FEE_SETTLEMENT",
 	}
 	AppendLedgerEntriesRequest_AccountType_value = map[string]int32{
 		"ACCOUNT_TYPE_UNSPECIFIED":         0,
-		"ACCOUNT_TYPE_USER_PAYABLE":        1,
-		"ACCOUNT_TYPE_CASH":                2,
-		"ACCOUNT_TYPE_RESERVE":             3,
-		"ACCOUNT_TYPE_RESERVE_USAGE":       4,
-		"ACCOUNT_TYPE_PROVIDER_PAYABLE":    5,
-		"ACCOUNT_TYPE_PROVIDER_RECEIVABLE": 6,
-		"ACCOUNT_TYPE_FEE_PAYABLE":         7,
-		"ACCOUNT_TYPE_FEE_RECEIVABLE":      8,
-		"ACCOUNT_TYPE_FEE_EXPENSE":         9,
-		"ACCOUNT_TYPE_PROVIDER_SETTLEMENT": 10,
+		"ACCOUNT_TYPE_USER_PAYABLE":        10,
+		"ACCOUNT_TYPE_CASH":                20,
+		"ACCOUNT_TYPE_RESERVE":             30,
+		"ACCOUNT_TYPE_RESERVE_USAGE":       40,
+		"ACCOUNT_TYPE_PROVIDER_PAYABLE":    50,
+		"ACCOUNT_TYPE_PROVIDER_RECEIVABLE": 60,
+		"ACCOUNT_TYPE_PROVIDER_SETTLEMENT": 70,
+		"ACCOUNT_TYPE_FEE_PAYABLE":         80,
+		"ACCOUNT_TYPE_FEE_RECEIVABLE":      90,
+		"ACCOUNT_TYPE_FEE_EXPENSE":         100,
+		"ACCOUNT_TYPE_FEE_SETTLEMENT":      110,
 	}
 )
 
@@ -96,46 +99,89 @@ func (AppendLedgerEntriesRequest_AccountType) EnumDescriptor() ([]byte, []int) {
 	return file_tzero_v1_payment_provider_proto_rawDescGZIP(), []int{0, 0}
 }
 
-type UpdatePaymentRequest_Failure_Reason int32
+type PayoutResponse_Failed_Reason int32
 
 const (
-	UpdatePaymentRequest_Failure_REASON_UNSPECIFIED UpdatePaymentRequest_Failure_Reason = 0
+	PayoutResponse_Failed_REASON_UNSPECIFIED PayoutResponse_Failed_Reason = 0
 )
 
-// Enum value maps for UpdatePaymentRequest_Failure_Reason.
+// Enum value maps for PayoutResponse_Failed_Reason.
 var (
-	UpdatePaymentRequest_Failure_Reason_name = map[int32]string{
+	PayoutResponse_Failed_Reason_name = map[int32]string{
 		0: "REASON_UNSPECIFIED",
 	}
-	UpdatePaymentRequest_Failure_Reason_value = map[string]int32{
+	PayoutResponse_Failed_Reason_value = map[string]int32{
 		"REASON_UNSPECIFIED": 0,
 	}
 )
 
-func (x UpdatePaymentRequest_Failure_Reason) Enum() *UpdatePaymentRequest_Failure_Reason {
-	p := new(UpdatePaymentRequest_Failure_Reason)
+func (x PayoutResponse_Failed_Reason) Enum() *PayoutResponse_Failed_Reason {
+	p := new(PayoutResponse_Failed_Reason)
 	*p = x
 	return p
 }
 
-func (x UpdatePaymentRequest_Failure_Reason) String() string {
+func (x PayoutResponse_Failed_Reason) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (UpdatePaymentRequest_Failure_Reason) Descriptor() protoreflect.EnumDescriptor {
+func (PayoutResponse_Failed_Reason) Descriptor() protoreflect.EnumDescriptor {
 	return file_tzero_v1_payment_provider_proto_enumTypes[1].Descriptor()
 }
 
-func (UpdatePaymentRequest_Failure_Reason) Type() protoreflect.EnumType {
+func (PayoutResponse_Failed_Reason) Type() protoreflect.EnumType {
 	return &file_tzero_v1_payment_provider_proto_enumTypes[1]
 }
 
-func (x UpdatePaymentRequest_Failure_Reason) Number() protoreflect.EnumNumber {
+func (x PayoutResponse_Failed_Reason) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use UpdatePaymentRequest_Failure_Reason.Descriptor instead.
-func (UpdatePaymentRequest_Failure_Reason) EnumDescriptor() ([]byte, []int) {
+// Deprecated: Use PayoutResponse_Failed_Reason.Descriptor instead.
+func (PayoutResponse_Failed_Reason) EnumDescriptor() ([]byte, []int) {
+	return file_tzero_v1_payment_provider_proto_rawDescGZIP(), []int{3, 1, 0}
+}
+
+type UpdatePaymentRequest_Failed_Reason int32
+
+const (
+	UpdatePaymentRequest_Failed_REASON_UNSPECIFIED UpdatePaymentRequest_Failed_Reason = 0
+)
+
+// Enum value maps for UpdatePaymentRequest_Failed_Reason.
+var (
+	UpdatePaymentRequest_Failed_Reason_name = map[int32]string{
+		0: "REASON_UNSPECIFIED",
+	}
+	UpdatePaymentRequest_Failed_Reason_value = map[string]int32{
+		"REASON_UNSPECIFIED": 0,
+	}
+)
+
+func (x UpdatePaymentRequest_Failed_Reason) Enum() *UpdatePaymentRequest_Failed_Reason {
+	p := new(UpdatePaymentRequest_Failed_Reason)
+	*p = x
+	return p
+}
+
+func (x UpdatePaymentRequest_Failed_Reason) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (UpdatePaymentRequest_Failed_Reason) Descriptor() protoreflect.EnumDescriptor {
+	return file_tzero_v1_payment_provider_proto_enumTypes[2].Descriptor()
+}
+
+func (UpdatePaymentRequest_Failed_Reason) Type() protoreflect.EnumType {
+	return &file_tzero_v1_payment_provider_proto_enumTypes[2]
+}
+
+func (x UpdatePaymentRequest_Failed_Reason) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use UpdatePaymentRequest_Failed_Reason.Descriptor instead.
+func (UpdatePaymentRequest_Failed_Reason) EnumDescriptor() ([]byte, []int) {
 	return file_tzero_v1_payment_provider_proto_rawDescGZIP(), []int{4, 1, 0}
 }
 
@@ -340,7 +386,12 @@ func (x *PayoutRequest) GetPayInProviderId() uint32 {
 }
 
 type PayoutResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Result:
+	//
+	//	*PayoutResponse_Accepted_
+	//	*PayoutResponse_Failed_
+	Result        isPayoutResponse_Result `protobuf_oneof:"result"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -375,6 +426,52 @@ func (*PayoutResponse) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_payment_provider_proto_rawDescGZIP(), []int{3}
 }
 
+func (x *PayoutResponse) GetResult() isPayoutResponse_Result {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+
+func (x *PayoutResponse) GetAccepted() *PayoutResponse_Accepted {
+	if x != nil {
+		if x, ok := x.Result.(*PayoutResponse_Accepted_); ok {
+			return x.Accepted
+		}
+	}
+	return nil
+}
+
+func (x *PayoutResponse) GetFailed() *PayoutResponse_Failed {
+	if x != nil {
+		if x, ok := x.Result.(*PayoutResponse_Failed_); ok {
+			return x.Failed
+		}
+	}
+	return nil
+}
+
+type isPayoutResponse_Result interface {
+	isPayoutResponse_Result()
+}
+
+type PayoutResponse_Accepted_ struct {
+	// *
+	// Success response - means the payout was executed successfully and the payment is now complete. This happens when
+	// the payout is successfully processed by the payout provider, and the payment was made to the recipient.
+	Accepted *PayoutResponse_Accepted `protobuf:"bytes,20,opt,name=accepted,proto3,oneof"`
+}
+
+type PayoutResponse_Failed_ struct {
+	// *
+	// Failure response - means the payout was not executed successfully, e.g. the payout provider could not process the payout.
+	Failed *PayoutResponse_Failed `protobuf:"bytes,30,opt,name=failed,proto3,oneof"`
+}
+
+func (*PayoutResponse_Accepted_) isPayoutResponse_Result() {}
+
+func (*PayoutResponse_Failed_) isPayoutResponse_Result() {}
+
 type UpdatePaymentRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// *
@@ -385,8 +482,9 @@ type UpdatePaymentRequest struct {
 	PaymentClientId string `protobuf:"bytes,10,opt,name=payment_client_id,json=paymentClientId,proto3" json:"payment_client_id,omitempty"`
 	// Types that are valid to be assigned to Result:
 	//
-	//	*UpdatePaymentRequest_Success_
-	//	*UpdatePaymentRequest_Failure_
+	//	*UpdatePaymentRequest_Accepted_
+	//	*UpdatePaymentRequest_Failed_
+	//	*UpdatePaymentRequest_Confirmed_
 	Result        isUpdatePaymentRequest_Result `protobuf_oneof:"result"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -443,19 +541,28 @@ func (x *UpdatePaymentRequest) GetResult() isUpdatePaymentRequest_Result {
 	return nil
 }
 
-func (x *UpdatePaymentRequest) GetSuccess() *UpdatePaymentRequest_Success {
+func (x *UpdatePaymentRequest) GetAccepted() *UpdatePaymentRequest_Accepted {
 	if x != nil {
-		if x, ok := x.Result.(*UpdatePaymentRequest_Success_); ok {
-			return x.Success
+		if x, ok := x.Result.(*UpdatePaymentRequest_Accepted_); ok {
+			return x.Accepted
 		}
 	}
 	return nil
 }
 
-func (x *UpdatePaymentRequest) GetFailure() *UpdatePaymentRequest_Failure {
+func (x *UpdatePaymentRequest) GetFailed() *UpdatePaymentRequest_Failed {
 	if x != nil {
-		if x, ok := x.Result.(*UpdatePaymentRequest_Failure_); ok {
-			return x.Failure
+		if x, ok := x.Result.(*UpdatePaymentRequest_Failed_); ok {
+			return x.Failed
+		}
+	}
+	return nil
+}
+
+func (x *UpdatePaymentRequest) GetConfirmed() *UpdatePaymentRequest_Confirmed {
+	if x != nil {
+		if x, ok := x.Result.(*UpdatePaymentRequest_Confirmed_); ok {
+			return x.Confirmed
 		}
 	}
 	return nil
@@ -465,22 +572,31 @@ type isUpdatePaymentRequest_Result interface {
 	isUpdatePaymentRequest_Result()
 }
 
-type UpdatePaymentRequest_Success_ struct {
+type UpdatePaymentRequest_Accepted_ struct {
 	// *
-	// Success response - means the payout was executed successfully and the payment is now complete. This happens when
-	// the payout is successfully processed by the payout provider, and the payment was made to the recipient.
-	Success *UpdatePaymentRequest_Success `protobuf:"bytes,20,opt,name=success,proto3,oneof"`
+	// Accepted response - means the payout was accepted by the pay-out provider and pay-out provider is obligated to
+	// make a pay-out.
+	Accepted *UpdatePaymentRequest_Accepted `protobuf:"bytes,20,opt,name=accepted,proto3,oneof"`
 }
 
-type UpdatePaymentRequest_Failure_ struct {
+type UpdatePaymentRequest_Failed_ struct {
 	// *
-	// Failure response - means the payout was not executed successfully, e.g. the payout provider could not process the payout.
-	Failure *UpdatePaymentRequest_Failure `protobuf:"bytes,30,opt,name=failure,proto3,oneof"`
+	// Payment failed and would not be retried.
+	Failed *UpdatePaymentRequest_Failed `protobuf:"bytes,30,opt,name=failed,proto3,oneof"`
 }
 
-func (*UpdatePaymentRequest_Success_) isUpdatePaymentRequest_Result() {}
+type UpdatePaymentRequest_Confirmed_ struct {
+	// *
+	// Confirmed response - final state meaning the payout was executed successfully and the payment is now complete.
+	// This happens when the payout is successfully processed by the payout provider, and the payment was made to the recipient.
+	Confirmed *UpdatePaymentRequest_Confirmed `protobuf:"bytes,40,opt,name=confirmed,proto3,oneof"`
+}
 
-func (*UpdatePaymentRequest_Failure_) isUpdatePaymentRequest_Result() {}
+func (*UpdatePaymentRequest_Accepted_) isUpdatePaymentRequest_Result() {}
+
+func (*UpdatePaymentRequest_Failed_) isUpdatePaymentRequest_Result() {}
+
+func (*UpdatePaymentRequest_Confirmed_) isUpdatePaymentRequest_Result() {}
 
 type UpdatePaymentResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -1145,28 +1261,26 @@ func (x *AppendLedgerEntriesRequest_Transaction_PayoutReservationRelease) GetPay
 	return 0
 }
 
-type UpdatePaymentRequest_Success struct {
+type PayoutResponse_Accepted struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PayoutAmount  *common.Decimal        `protobuf:"bytes,10,opt,name=payout_amount,json=payoutAmount,proto3" json:"payout_amount,omitempty"` // amount in currency of the payout
-	PaidOutAt     *timestamppb.Timestamp `protobuf:"bytes,50,opt,name=paid_out_at,json=paidOutAt,proto3" json:"paid_out_at,omitempty"`        // time of the payout
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *UpdatePaymentRequest_Success) Reset() {
-	*x = UpdatePaymentRequest_Success{}
+func (x *PayoutResponse_Accepted) Reset() {
+	*x = PayoutResponse_Accepted{}
 	mi := &file_tzero_v1_payment_provider_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UpdatePaymentRequest_Success) String() string {
+func (x *PayoutResponse_Accepted) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UpdatePaymentRequest_Success) ProtoMessage() {}
+func (*PayoutResponse_Accepted) ProtoMessage() {}
 
-func (x *UpdatePaymentRequest_Success) ProtoReflect() protoreflect.Message {
+func (x *PayoutResponse_Accepted) ProtoReflect() protoreflect.Message {
 	mi := &file_tzero_v1_payment_provider_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1178,46 +1292,121 @@ func (x *UpdatePaymentRequest_Success) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdatePaymentRequest_Success.ProtoReflect.Descriptor instead.
-func (*UpdatePaymentRequest_Success) Descriptor() ([]byte, []int) {
+// Deprecated: Use PayoutResponse_Accepted.ProtoReflect.Descriptor instead.
+func (*PayoutResponse_Accepted) Descriptor() ([]byte, []int) {
+	return file_tzero_v1_payment_provider_proto_rawDescGZIP(), []int{3, 0}
+}
+
+type PayoutResponse_Failed struct {
+	state         protoimpl.MessageState       `protogen:"open.v1"`
+	Reason        PayoutResponse_Failed_Reason `protobuf:"varint,10,opt,name=reason,proto3,enum=tzero.v1.payment.PayoutResponse_Failed_Reason" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PayoutResponse_Failed) Reset() {
+	*x = PayoutResponse_Failed{}
+	mi := &file_tzero_v1_payment_provider_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PayoutResponse_Failed) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PayoutResponse_Failed) ProtoMessage() {}
+
+func (x *PayoutResponse_Failed) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_payment_provider_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PayoutResponse_Failed.ProtoReflect.Descriptor instead.
+func (*PayoutResponse_Failed) Descriptor() ([]byte, []int) {
+	return file_tzero_v1_payment_provider_proto_rawDescGZIP(), []int{3, 1}
+}
+
+func (x *PayoutResponse_Failed) GetReason() PayoutResponse_Failed_Reason {
+	if x != nil {
+		return x.Reason
+	}
+	return PayoutResponse_Failed_REASON_UNSPECIFIED
+}
+
+type UpdatePaymentRequest_Accepted struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PayoutAmount  *common.Decimal        `protobuf:"bytes,10,opt,name=payout_amount,json=payoutAmount,proto3" json:"payout_amount,omitempty"` // amount in currency of the payout
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdatePaymentRequest_Accepted) Reset() {
+	*x = UpdatePaymentRequest_Accepted{}
+	mi := &file_tzero_v1_payment_provider_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdatePaymentRequest_Accepted) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdatePaymentRequest_Accepted) ProtoMessage() {}
+
+func (x *UpdatePaymentRequest_Accepted) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_payment_provider_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdatePaymentRequest_Accepted.ProtoReflect.Descriptor instead.
+func (*UpdatePaymentRequest_Accepted) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_payment_provider_proto_rawDescGZIP(), []int{4, 0}
 }
 
-func (x *UpdatePaymentRequest_Success) GetPayoutAmount() *common.Decimal {
+func (x *UpdatePaymentRequest_Accepted) GetPayoutAmount() *common.Decimal {
 	if x != nil {
 		return x.PayoutAmount
 	}
 	return nil
 }
 
-func (x *UpdatePaymentRequest_Success) GetPaidOutAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.PaidOutAt
-	}
-	return nil
-}
-
-type UpdatePaymentRequest_Failure struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+type UpdatePaymentRequest_Failed struct {
+	state         protoimpl.MessageState             `protogen:"open.v1"`
+	Reason        UpdatePaymentRequest_Failed_Reason `protobuf:"varint,10,opt,name=reason,proto3,enum=tzero.v1.payment.UpdatePaymentRequest_Failed_Reason" json:"reason,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *UpdatePaymentRequest_Failure) Reset() {
-	*x = UpdatePaymentRequest_Failure{}
-	mi := &file_tzero_v1_payment_provider_proto_msgTypes[17]
+func (x *UpdatePaymentRequest_Failed) Reset() {
+	*x = UpdatePaymentRequest_Failed{}
+	mi := &file_tzero_v1_payment_provider_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UpdatePaymentRequest_Failure) String() string {
+func (x *UpdatePaymentRequest_Failed) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UpdatePaymentRequest_Failure) ProtoMessage() {}
+func (*UpdatePaymentRequest_Failed) ProtoMessage() {}
 
-func (x *UpdatePaymentRequest_Failure) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_payment_provider_proto_msgTypes[17]
+func (x *UpdatePaymentRequest_Failed) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_payment_provider_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1228,9 +1417,70 @@ func (x *UpdatePaymentRequest_Failure) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdatePaymentRequest_Failure.ProtoReflect.Descriptor instead.
-func (*UpdatePaymentRequest_Failure) Descriptor() ([]byte, []int) {
+// Deprecated: Use UpdatePaymentRequest_Failed.ProtoReflect.Descriptor instead.
+func (*UpdatePaymentRequest_Failed) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_payment_provider_proto_rawDescGZIP(), []int{4, 1}
+}
+
+func (x *UpdatePaymentRequest_Failed) GetReason() UpdatePaymentRequest_Failed_Reason {
+	if x != nil {
+		return x.Reason
+	}
+	return UpdatePaymentRequest_Failed_REASON_UNSPECIFIED
+}
+
+type UpdatePaymentRequest_Confirmed struct {
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	PaidOutAt *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=paid_out_at,json=paidOutAt,proto3" json:"paid_out_at,omitempty"` // time of the payout
+	// *
+	// Payment receipt might contain metadata about payment recognizable by pay-in provider.
+	Receipt       *common.PaymentReceipt `protobuf:"bytes,20,opt,name=receipt,proto3" json:"receipt,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdatePaymentRequest_Confirmed) Reset() {
+	*x = UpdatePaymentRequest_Confirmed{}
+	mi := &file_tzero_v1_payment_provider_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdatePaymentRequest_Confirmed) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdatePaymentRequest_Confirmed) ProtoMessage() {}
+
+func (x *UpdatePaymentRequest_Confirmed) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_payment_provider_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdatePaymentRequest_Confirmed.ProtoReflect.Descriptor instead.
+func (*UpdatePaymentRequest_Confirmed) Descriptor() ([]byte, []int) {
+	return file_tzero_v1_payment_provider_proto_rawDescGZIP(), []int{4, 2}
+}
+
+func (x *UpdatePaymentRequest_Confirmed) GetPaidOutAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.PaidOutAt
+	}
+	return nil
+}
+
+func (x *UpdatePaymentRequest_Confirmed) GetReceipt() *common.PaymentReceipt {
+	if x != nil {
+		return x.Receipt
+	}
+	return nil
 }
 
 type UpdateLimitRequest_Limit struct {
@@ -1252,7 +1502,7 @@ type UpdateLimitRequest_Limit struct {
 	// *
 	// This is the credit usage that the provider has used so far. It is the sum of all payouts made by the provider
 	// minus the settlement net (settlement balance). It could be negative if the provider has received more
-	// in settlements than maid payouts (pre-settlement).
+	// in settlements than made payouts (pre-settlement).
 	CreditUsage   *common.Decimal `protobuf:"bytes,40,opt,name=credit_usage,json=creditUsage,proto3" json:"credit_usage,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1260,7 +1510,7 @@ type UpdateLimitRequest_Limit struct {
 
 func (x *UpdateLimitRequest_Limit) Reset() {
 	*x = UpdateLimitRequest_Limit{}
-	mi := &file_tzero_v1_payment_provider_proto_msgTypes[18]
+	mi := &file_tzero_v1_payment_provider_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1272,7 +1522,7 @@ func (x *UpdateLimitRequest_Limit) String() string {
 func (*UpdateLimitRequest_Limit) ProtoMessage() {}
 
 func (x *UpdateLimitRequest_Limit) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_payment_provider_proto_msgTypes[18]
+	mi := &file_tzero_v1_payment_provider_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1327,7 +1577,7 @@ var File_tzero_v1_payment_provider_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\n" +
-	"\x1ftzero/v1/payment/provider.proto\x12\x10tzero.v1.payment\x1a$tzero/v1/common/payment_method.proto\x1a\x1ctzero/v1/common/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcc\x0f\n" +
+	"\x1ftzero/v1/payment/provider.proto\x12\x10tzero.v1.payment\x1a$tzero/v1/common/payment_method.proto\x1a%tzero/v1/common/payment_receipt.proto\x1a\x1ctzero/v1/common/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xed\x0f\n" +
 	"\x1aAppendLedgerEntriesRequest\x12\\\n" +
 	"\ftransactions\x18\x14 \x03(\v28.tzero.v1.payment.AppendLedgerEntriesRequest.TransactionR\ftransactions\x1a\x91\t\n" +
 	"\vTransaction\x12%\n" +
@@ -1370,20 +1620,21 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\bcurrency\x18\x1e \x01(\tR\bcurrency\x12.\n" +
 	"\x05debit\x18( \x01(\v2\x18.tzero.v1.common.DecimalR\x05debit\x120\n" +
 	"\x06credit\x182 \x01(\v2\x18.tzero.v1.common.DecimalR\x06credit\x12=\n" +
-	"\rexchange_rate\x18< \x01(\v2\x18.tzero.v1.common.DecimalR\fexchangeRate\"\xe7\x02\n" +
+	"\rexchange_rate\x18< \x01(\v2\x18.tzero.v1.common.DecimalR\fexchangeRate\"\x88\x03\n" +
 	"\vAccountType\x12\x1c\n" +
 	"\x18ACCOUNT_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
-	"\x19ACCOUNT_TYPE_USER_PAYABLE\x10\x01\x12\x15\n" +
-	"\x11ACCOUNT_TYPE_CASH\x10\x02\x12\x18\n" +
-	"\x14ACCOUNT_TYPE_RESERVE\x10\x03\x12\x1e\n" +
-	"\x1aACCOUNT_TYPE_RESERVE_USAGE\x10\x04\x12!\n" +
-	"\x1dACCOUNT_TYPE_PROVIDER_PAYABLE\x10\x05\x12$\n" +
-	" ACCOUNT_TYPE_PROVIDER_RECEIVABLE\x10\x06\x12\x1c\n" +
-	"\x18ACCOUNT_TYPE_FEE_PAYABLE\x10\a\x12\x1f\n" +
-	"\x1bACCOUNT_TYPE_FEE_RECEIVABLE\x10\b\x12\x1c\n" +
-	"\x18ACCOUNT_TYPE_FEE_EXPENSE\x10\t\x12$\n" +
-	" ACCOUNT_TYPE_PROVIDER_SETTLEMENT\x10\n" +
-	"\"\x1d\n" +
+	"\x19ACCOUNT_TYPE_USER_PAYABLE\x10\n" +
+	"\x12\x15\n" +
+	"\x11ACCOUNT_TYPE_CASH\x10\x14\x12\x18\n" +
+	"\x14ACCOUNT_TYPE_RESERVE\x10\x1e\x12\x1e\n" +
+	"\x1aACCOUNT_TYPE_RESERVE_USAGE\x10(\x12!\n" +
+	"\x1dACCOUNT_TYPE_PROVIDER_PAYABLE\x102\x12$\n" +
+	" ACCOUNT_TYPE_PROVIDER_RECEIVABLE\x10<\x12$\n" +
+	" ACCOUNT_TYPE_PROVIDER_SETTLEMENT\x10F\x12\x1c\n" +
+	"\x18ACCOUNT_TYPE_FEE_PAYABLE\x10P\x12\x1f\n" +
+	"\x1bACCOUNT_TYPE_FEE_RECEIVABLE\x10Z\x12\x1c\n" +
+	"\x18ACCOUNT_TYPE_FEE_EXPENSE\x10d\x12\x1f\n" +
+	"\x1bACCOUNT_TYPE_FEE_SETTLEMENT\x10n\"\x1d\n" +
 	"\x1bAppendLedgerEntriesResponse\"\xfb\x02\n" +
 	"\rPayoutRequest\x12\x1d\n" +
 	"\n" +
@@ -1398,22 +1649,38 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\x12pay_in_provider_id\x18P \x01(\rR\x0fpayInProviderIdB\x10\n" +
 	"\x0e_payout_methodB\f\n" +
 	"\n" +
-	"_reference\"\x10\n" +
-	"\x0ePayoutResponse\"\xb7\x03\n" +
+	"_reference\"\xa6\x02\n" +
+	"\x0ePayoutResponse\x12G\n" +
+	"\baccepted\x18\x14 \x01(\v2).tzero.v1.payment.PayoutResponse.AcceptedH\x00R\baccepted\x12A\n" +
+	"\x06failed\x18\x1e \x01(\v2'.tzero.v1.payment.PayoutResponse.FailedH\x00R\x06failed\x1a\n" +
+	"\n" +
+	"\bAccepted\x1ar\n" +
+	"\x06Failed\x12F\n" +
+	"\x06reason\x18\n" +
+	" \x01(\x0e2..tzero.v1.payment.PayoutResponse.Failed.ReasonR\x06reason\" \n" +
+	"\x06Reason\x12\x16\n" +
+	"\x12REASON_UNSPECIFIED\x10\x00B\b\n" +
+	"\x06result\"\x9f\x05\n" +
 	"\x14UpdatePaymentRequest\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\x05 \x01(\x04R\tpaymentId\x12*\n" +
 	"\x11payment_client_id\x18\n" +
-	" \x01(\tR\x0fpaymentClientId\x12J\n" +
-	"\asuccess\x18\x14 \x01(\v2..tzero.v1.payment.UpdatePaymentRequest.SuccessH\x00R\asuccess\x12J\n" +
-	"\afailure\x18\x1e \x01(\v2..tzero.v1.payment.UpdatePaymentRequest.FailureH\x00R\afailure\x1a\x84\x01\n" +
-	"\aSuccess\x12=\n" +
+	" \x01(\tR\x0fpaymentClientId\x12M\n" +
+	"\baccepted\x18\x14 \x01(\v2/.tzero.v1.payment.UpdatePaymentRequest.AcceptedH\x00R\baccepted\x12G\n" +
+	"\x06failed\x18\x1e \x01(\v2-.tzero.v1.payment.UpdatePaymentRequest.FailedH\x00R\x06failed\x12P\n" +
+	"\tconfirmed\x18( \x01(\v20.tzero.v1.payment.UpdatePaymentRequest.ConfirmedH\x00R\tconfirmed\x1aI\n" +
+	"\bAccepted\x12=\n" +
 	"\rpayout_amount\x18\n" +
-	" \x01(\v2\x18.tzero.v1.common.DecimalR\fpayoutAmount\x12:\n" +
-	"\vpaid_out_at\x182 \x01(\v2\x1a.google.protobuf.TimestampR\tpaidOutAt\x1a+\n" +
-	"\aFailure\" \n" +
+	" \x01(\v2\x18.tzero.v1.common.DecimalR\fpayoutAmount\x1ax\n" +
+	"\x06Failed\x12L\n" +
+	"\x06reason\x18\n" +
+	" \x01(\x0e24.tzero.v1.payment.UpdatePaymentRequest.Failed.ReasonR\x06reason\" \n" +
 	"\x06Reason\x12\x16\n" +
-	"\x12REASON_UNSPECIFIED\x10\x00B\b\n" +
+	"\x12REASON_UNSPECIFIED\x10\x00\x1a\x82\x01\n" +
+	"\tConfirmed\x12:\n" +
+	"\vpaid_out_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tpaidOutAt\x129\n" +
+	"\areceipt\x18\x14 \x01(\v2\x1f.tzero.v1.common.PaymentReceiptR\areceiptB\b\n" +
 	"\x06result\"\x17\n" +
 	"\x15UpdatePaymentResponse\"\xd4\x02\n" +
 	"\x12UpdateLimitRequest\x12B\n" +
@@ -1447,70 +1714,81 @@ func file_tzero_v1_payment_provider_proto_rawDescGZIP() []byte {
 	return file_tzero_v1_payment_provider_proto_rawDescData
 }
 
-var file_tzero_v1_payment_provider_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_tzero_v1_payment_provider_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_tzero_v1_payment_provider_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_tzero_v1_payment_provider_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_tzero_v1_payment_provider_proto_goTypes = []any{
 	(AppendLedgerEntriesRequest_AccountType)(0),                             // 0: tzero.v1.payment.AppendLedgerEntriesRequest.AccountType
-	(UpdatePaymentRequest_Failure_Reason)(0),                                // 1: tzero.v1.payment.UpdatePaymentRequest.Failure.Reason
-	(*AppendLedgerEntriesRequest)(nil),                                      // 2: tzero.v1.payment.AppendLedgerEntriesRequest
-	(*AppendLedgerEntriesResponse)(nil),                                     // 3: tzero.v1.payment.AppendLedgerEntriesResponse
-	(*PayoutRequest)(nil),                                                   // 4: tzero.v1.payment.PayoutRequest
-	(*PayoutResponse)(nil),                                                  // 5: tzero.v1.payment.PayoutResponse
-	(*UpdatePaymentRequest)(nil),                                            // 6: tzero.v1.payment.UpdatePaymentRequest
-	(*UpdatePaymentResponse)(nil),                                           // 7: tzero.v1.payment.UpdatePaymentResponse
-	(*UpdateLimitRequest)(nil),                                              // 8: tzero.v1.payment.UpdateLimitRequest
-	(*UpdateLimitResponse)(nil),                                             // 9: tzero.v1.payment.UpdateLimitResponse
-	(*AppendLedgerEntriesRequest_Transaction)(nil),                          // 10: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction
-	(*AppendLedgerEntriesRequest_LedgerEntry)(nil),                          // 11: tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntry
-	(*AppendLedgerEntriesRequest_Transaction_PayIn)(nil),                    // 12: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayIn
-	(*AppendLedgerEntriesRequest_Transaction_PayoutReservation)(nil),        // 13: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayoutReservation
-	(*AppendLedgerEntriesRequest_Transaction_Payout)(nil),                   // 14: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.Payout
-	(*AppendLedgerEntriesRequest_Transaction_ProviderSettlement)(nil),       // 15: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.ProviderSettlement
-	(*AppendLedgerEntriesRequest_Transaction_FeeSettlement)(nil),            // 16: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.FeeSettlement
-	(*AppendLedgerEntriesRequest_Transaction_PayoutReservationRelease)(nil), // 17: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayoutReservationRelease
-	(*UpdatePaymentRequest_Success)(nil),                                    // 18: tzero.v1.payment.UpdatePaymentRequest.Success
-	(*UpdatePaymentRequest_Failure)(nil),                                    // 19: tzero.v1.payment.UpdatePaymentRequest.Failure
-	(*UpdateLimitRequest_Limit)(nil),                                        // 20: tzero.v1.payment.UpdateLimitRequest.Limit
-	(*common.Decimal)(nil),                                                  // 21: tzero.v1.common.Decimal
-	(*common.PaymentMethod)(nil),                                            // 22: tzero.v1.common.PaymentMethod
-	(*timestamppb.Timestamp)(nil),                                           // 23: google.protobuf.Timestamp
+	(PayoutResponse_Failed_Reason)(0),                                       // 1: tzero.v1.payment.PayoutResponse.Failed.Reason
+	(UpdatePaymentRequest_Failed_Reason)(0),                                 // 2: tzero.v1.payment.UpdatePaymentRequest.Failed.Reason
+	(*AppendLedgerEntriesRequest)(nil),                                      // 3: tzero.v1.payment.AppendLedgerEntriesRequest
+	(*AppendLedgerEntriesResponse)(nil),                                     // 4: tzero.v1.payment.AppendLedgerEntriesResponse
+	(*PayoutRequest)(nil),                                                   // 5: tzero.v1.payment.PayoutRequest
+	(*PayoutResponse)(nil),                                                  // 6: tzero.v1.payment.PayoutResponse
+	(*UpdatePaymentRequest)(nil),                                            // 7: tzero.v1.payment.UpdatePaymentRequest
+	(*UpdatePaymentResponse)(nil),                                           // 8: tzero.v1.payment.UpdatePaymentResponse
+	(*UpdateLimitRequest)(nil),                                              // 9: tzero.v1.payment.UpdateLimitRequest
+	(*UpdateLimitResponse)(nil),                                             // 10: tzero.v1.payment.UpdateLimitResponse
+	(*AppendLedgerEntriesRequest_Transaction)(nil),                          // 11: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction
+	(*AppendLedgerEntriesRequest_LedgerEntry)(nil),                          // 12: tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntry
+	(*AppendLedgerEntriesRequest_Transaction_PayIn)(nil),                    // 13: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayIn
+	(*AppendLedgerEntriesRequest_Transaction_PayoutReservation)(nil),        // 14: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayoutReservation
+	(*AppendLedgerEntriesRequest_Transaction_Payout)(nil),                   // 15: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.Payout
+	(*AppendLedgerEntriesRequest_Transaction_ProviderSettlement)(nil),       // 16: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.ProviderSettlement
+	(*AppendLedgerEntriesRequest_Transaction_FeeSettlement)(nil),            // 17: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.FeeSettlement
+	(*AppendLedgerEntriesRequest_Transaction_PayoutReservationRelease)(nil), // 18: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayoutReservationRelease
+	(*PayoutResponse_Accepted)(nil),                                         // 19: tzero.v1.payment.PayoutResponse.Accepted
+	(*PayoutResponse_Failed)(nil),                                           // 20: tzero.v1.payment.PayoutResponse.Failed
+	(*UpdatePaymentRequest_Accepted)(nil),                                   // 21: tzero.v1.payment.UpdatePaymentRequest.Accepted
+	(*UpdatePaymentRequest_Failed)(nil),                                     // 22: tzero.v1.payment.UpdatePaymentRequest.Failed
+	(*UpdatePaymentRequest_Confirmed)(nil),                                  // 23: tzero.v1.payment.UpdatePaymentRequest.Confirmed
+	(*UpdateLimitRequest_Limit)(nil),                                        // 24: tzero.v1.payment.UpdateLimitRequest.Limit
+	(*common.Decimal)(nil),                                                  // 25: tzero.v1.common.Decimal
+	(*common.PaymentMethod)(nil),                                            // 26: tzero.v1.common.PaymentMethod
+	(*timestamppb.Timestamp)(nil),                                           // 27: google.protobuf.Timestamp
+	(*common.PaymentReceipt)(nil),                                           // 28: tzero.v1.common.PaymentReceipt
 }
 var file_tzero_v1_payment_provider_proto_depIdxs = []int32{
-	10, // 0: tzero.v1.payment.AppendLedgerEntriesRequest.transactions:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction
-	21, // 1: tzero.v1.payment.PayoutRequest.amount:type_name -> tzero.v1.common.Decimal
-	22, // 2: tzero.v1.payment.PayoutRequest.payout_method:type_name -> tzero.v1.common.PaymentMethod
-	18, // 3: tzero.v1.payment.UpdatePaymentRequest.success:type_name -> tzero.v1.payment.UpdatePaymentRequest.Success
-	19, // 4: tzero.v1.payment.UpdatePaymentRequest.failure:type_name -> tzero.v1.payment.UpdatePaymentRequest.Failure
-	20, // 5: tzero.v1.payment.UpdateLimitRequest.limits:type_name -> tzero.v1.payment.UpdateLimitRequest.Limit
-	11, // 6: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.entries:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntry
-	12, // 7: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.pay_in:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayIn
-	13, // 8: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.payout_reservation:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayoutReservation
-	14, // 9: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.payout:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.Payout
-	15, // 10: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.provider_settlement:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.ProviderSettlement
-	16, // 11: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.fee_settlement:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.FeeSettlement
-	17, // 12: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.payout_reservation_release:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayoutReservationRelease
-	0,  // 13: tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntry.account_type:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.AccountType
-	21, // 14: tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntry.debit:type_name -> tzero.v1.common.Decimal
-	21, // 15: tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntry.credit:type_name -> tzero.v1.common.Decimal
-	21, // 16: tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntry.exchange_rate:type_name -> tzero.v1.common.Decimal
-	21, // 17: tzero.v1.payment.UpdatePaymentRequest.Success.payout_amount:type_name -> tzero.v1.common.Decimal
-	23, // 18: tzero.v1.payment.UpdatePaymentRequest.Success.paid_out_at:type_name -> google.protobuf.Timestamp
-	21, // 19: tzero.v1.payment.UpdateLimitRequest.Limit.payout_limit:type_name -> tzero.v1.common.Decimal
-	21, // 20: tzero.v1.payment.UpdateLimitRequest.Limit.credit_limit:type_name -> tzero.v1.common.Decimal
-	21, // 21: tzero.v1.payment.UpdateLimitRequest.Limit.credit_usage:type_name -> tzero.v1.common.Decimal
-	4,  // 22: tzero.v1.payment.ProviderService.PayOut:input_type -> tzero.v1.payment.PayoutRequest
-	6,  // 23: tzero.v1.payment.ProviderService.UpdatePayment:input_type -> tzero.v1.payment.UpdatePaymentRequest
-	8,  // 24: tzero.v1.payment.ProviderService.UpdateLimit:input_type -> tzero.v1.payment.UpdateLimitRequest
-	2,  // 25: tzero.v1.payment.ProviderService.AppendLedgerEntries:input_type -> tzero.v1.payment.AppendLedgerEntriesRequest
-	5,  // 26: tzero.v1.payment.ProviderService.PayOut:output_type -> tzero.v1.payment.PayoutResponse
-	7,  // 27: tzero.v1.payment.ProviderService.UpdatePayment:output_type -> tzero.v1.payment.UpdatePaymentResponse
-	9,  // 28: tzero.v1.payment.ProviderService.UpdateLimit:output_type -> tzero.v1.payment.UpdateLimitResponse
-	3,  // 29: tzero.v1.payment.ProviderService.AppendLedgerEntries:output_type -> tzero.v1.payment.AppendLedgerEntriesResponse
-	26, // [26:30] is the sub-list for method output_type
-	22, // [22:26] is the sub-list for method input_type
-	22, // [22:22] is the sub-list for extension type_name
-	22, // [22:22] is the sub-list for extension extendee
-	0,  // [0:22] is the sub-list for field type_name
+	11, // 0: tzero.v1.payment.AppendLedgerEntriesRequest.transactions:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction
+	25, // 1: tzero.v1.payment.PayoutRequest.amount:type_name -> tzero.v1.common.Decimal
+	26, // 2: tzero.v1.payment.PayoutRequest.payout_method:type_name -> tzero.v1.common.PaymentMethod
+	19, // 3: tzero.v1.payment.PayoutResponse.accepted:type_name -> tzero.v1.payment.PayoutResponse.Accepted
+	20, // 4: tzero.v1.payment.PayoutResponse.failed:type_name -> tzero.v1.payment.PayoutResponse.Failed
+	21, // 5: tzero.v1.payment.UpdatePaymentRequest.accepted:type_name -> tzero.v1.payment.UpdatePaymentRequest.Accepted
+	22, // 6: tzero.v1.payment.UpdatePaymentRequest.failed:type_name -> tzero.v1.payment.UpdatePaymentRequest.Failed
+	23, // 7: tzero.v1.payment.UpdatePaymentRequest.confirmed:type_name -> tzero.v1.payment.UpdatePaymentRequest.Confirmed
+	24, // 8: tzero.v1.payment.UpdateLimitRequest.limits:type_name -> tzero.v1.payment.UpdateLimitRequest.Limit
+	12, // 9: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.entries:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntry
+	13, // 10: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.pay_in:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayIn
+	14, // 11: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.payout_reservation:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayoutReservation
+	15, // 12: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.payout:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.Payout
+	16, // 13: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.provider_settlement:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.ProviderSettlement
+	17, // 14: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.fee_settlement:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.FeeSettlement
+	18, // 15: tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.payout_reservation_release:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayoutReservationRelease
+	0,  // 16: tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntry.account_type:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.AccountType
+	25, // 17: tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntry.debit:type_name -> tzero.v1.common.Decimal
+	25, // 18: tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntry.credit:type_name -> tzero.v1.common.Decimal
+	25, // 19: tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntry.exchange_rate:type_name -> tzero.v1.common.Decimal
+	1,  // 20: tzero.v1.payment.PayoutResponse.Failed.reason:type_name -> tzero.v1.payment.PayoutResponse.Failed.Reason
+	25, // 21: tzero.v1.payment.UpdatePaymentRequest.Accepted.payout_amount:type_name -> tzero.v1.common.Decimal
+	2,  // 22: tzero.v1.payment.UpdatePaymentRequest.Failed.reason:type_name -> tzero.v1.payment.UpdatePaymentRequest.Failed.Reason
+	27, // 23: tzero.v1.payment.UpdatePaymentRequest.Confirmed.paid_out_at:type_name -> google.protobuf.Timestamp
+	28, // 24: tzero.v1.payment.UpdatePaymentRequest.Confirmed.receipt:type_name -> tzero.v1.common.PaymentReceipt
+	25, // 25: tzero.v1.payment.UpdateLimitRequest.Limit.payout_limit:type_name -> tzero.v1.common.Decimal
+	25, // 26: tzero.v1.payment.UpdateLimitRequest.Limit.credit_limit:type_name -> tzero.v1.common.Decimal
+	25, // 27: tzero.v1.payment.UpdateLimitRequest.Limit.credit_usage:type_name -> tzero.v1.common.Decimal
+	5,  // 28: tzero.v1.payment.ProviderService.PayOut:input_type -> tzero.v1.payment.PayoutRequest
+	7,  // 29: tzero.v1.payment.ProviderService.UpdatePayment:input_type -> tzero.v1.payment.UpdatePaymentRequest
+	9,  // 30: tzero.v1.payment.ProviderService.UpdateLimit:input_type -> tzero.v1.payment.UpdateLimitRequest
+	3,  // 31: tzero.v1.payment.ProviderService.AppendLedgerEntries:input_type -> tzero.v1.payment.AppendLedgerEntriesRequest
+	6,  // 32: tzero.v1.payment.ProviderService.PayOut:output_type -> tzero.v1.payment.PayoutResponse
+	8,  // 33: tzero.v1.payment.ProviderService.UpdatePayment:output_type -> tzero.v1.payment.UpdatePaymentResponse
+	10, // 34: tzero.v1.payment.ProviderService.UpdateLimit:output_type -> tzero.v1.payment.UpdateLimitResponse
+	4,  // 35: tzero.v1.payment.ProviderService.AppendLedgerEntries:output_type -> tzero.v1.payment.AppendLedgerEntriesResponse
+	32, // [32:36] is the sub-list for method output_type
+	28, // [28:32] is the sub-list for method input_type
+	28, // [28:28] is the sub-list for extension type_name
+	28, // [28:28] is the sub-list for extension extendee
+	0,  // [0:28] is the sub-list for field type_name
 }
 
 func init() { file_tzero_v1_payment_provider_proto_init() }
@@ -1519,9 +1797,14 @@ func file_tzero_v1_payment_provider_proto_init() {
 		return
 	}
 	file_tzero_v1_payment_provider_proto_msgTypes[2].OneofWrappers = []any{}
+	file_tzero_v1_payment_provider_proto_msgTypes[3].OneofWrappers = []any{
+		(*PayoutResponse_Accepted_)(nil),
+		(*PayoutResponse_Failed_)(nil),
+	}
 	file_tzero_v1_payment_provider_proto_msgTypes[4].OneofWrappers = []any{
-		(*UpdatePaymentRequest_Success_)(nil),
-		(*UpdatePaymentRequest_Failure_)(nil),
+		(*UpdatePaymentRequest_Accepted_)(nil),
+		(*UpdatePaymentRequest_Failed_)(nil),
+		(*UpdatePaymentRequest_Confirmed_)(nil),
 	}
 	file_tzero_v1_payment_provider_proto_msgTypes[8].OneofWrappers = []any{
 		(*AppendLedgerEntriesRequest_Transaction_PayIn_)(nil),
@@ -1536,8 +1819,8 @@ func file_tzero_v1_payment_provider_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tzero_v1_payment_provider_proto_rawDesc), len(file_tzero_v1_payment_provider_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   19,
+			NumEnums:      3,
+			NumMessages:   22,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

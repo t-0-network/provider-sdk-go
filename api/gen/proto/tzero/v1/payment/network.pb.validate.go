@@ -366,6 +366,8 @@ func (m *GetPayoutQuoteRequest) validate(all bool) error {
 
 	// no validation rules for QuoteType
 
+	// no validation rules for PayoutMethod
+
 	if len(errors) > 0 {
 		return GetPayoutQuoteRequestMultiError(errors)
 	}
@@ -660,6 +662,35 @@ func (m *CreatePaymentRequest) validate(all bool) error {
 	// no validation rules for PaymentClientId
 
 	// no validation rules for PayoutCurrency
+
+	if all {
+		switch v := interface{}(m.GetPayoutDetails()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CreatePaymentRequestValidationError{
+					field:  "PayoutDetails",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CreatePaymentRequestValidationError{
+					field:  "PayoutDetails",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPayoutDetails()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreatePaymentRequestValidationError{
+				field:  "PayoutDetails",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if all {
 		switch v := interface{}(m.GetAmount()).(type) {
@@ -1162,22 +1193,22 @@ var _ interface {
 	ErrorName() string
 } = CreatePaymentResponseValidationError{}
 
-// Validate checks the field values on UpdatePayoutRequest with the rules
+// Validate checks the field values on ConfirmPayoutRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UpdatePayoutRequest) Validate() error {
+func (m *ConfirmPayoutRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on UpdatePayoutRequest with the rules
+// ValidateAll checks the field values on ConfirmPayoutRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// UpdatePayoutRequestMultiError, or nil if none found.
-func (m *UpdatePayoutRequest) ValidateAll() error {
+// ConfirmPayoutRequestMultiError, or nil if none found.
+func (m *ConfirmPayoutRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *UpdatePayoutRequest) validate(all bool) error {
+func (m *ConfirmPayoutRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -1188,107 +1219,49 @@ func (m *UpdatePayoutRequest) validate(all bool) error {
 
 	// no validation rules for PayoutId
 
-	switch v := m.Result.(type) {
-	case *UpdatePayoutRequest_Success_:
-		if v == nil {
-			err := UpdatePayoutRequestValidationError{
-				field:  "Result",
-				reason: "oneof value cannot be a typed-nil",
-			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
-		}
-
-		if all {
-			switch v := interface{}(m.GetSuccess()).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, UpdatePayoutRequestValidationError{
-						field:  "Success",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, UpdatePayoutRequestValidationError{
-						field:  "Success",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(m.GetSuccess()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return UpdatePayoutRequestValidationError{
-					field:  "Success",
+	if all {
+		switch v := interface{}(m.GetReceipt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ConfirmPayoutRequestValidationError{
+					field:  "Receipt",
 					reason: "embedded message failed validation",
 					cause:  err,
-				}
+				})
 			}
-		}
-
-	case *UpdatePayoutRequest_Failure_:
-		if v == nil {
-			err := UpdatePayoutRequestValidationError{
-				field:  "Result",
-				reason: "oneof value cannot be a typed-nil",
-			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
-		}
-
-		if all {
-			switch v := interface{}(m.GetFailure()).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, UpdatePayoutRequestValidationError{
-						field:  "Failure",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, UpdatePayoutRequestValidationError{
-						field:  "Failure",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(m.GetFailure()).(interface{ Validate() error }); ok {
+		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				return UpdatePayoutRequestValidationError{
-					field:  "Failure",
+				errors = append(errors, ConfirmPayoutRequestValidationError{
+					field:  "Receipt",
 					reason: "embedded message failed validation",
 					cause:  err,
-				}
+				})
 			}
 		}
-
-	default:
-		_ = v // ensures v is used
+	} else if v, ok := interface{}(m.GetReceipt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ConfirmPayoutRequestValidationError{
+				field:  "Receipt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
 	}
 
 	if len(errors) > 0 {
-		return UpdatePayoutRequestMultiError(errors)
+		return ConfirmPayoutRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// UpdatePayoutRequestMultiError is an error wrapping multiple validation
-// errors returned by UpdatePayoutRequest.ValidateAll() if the designated
+// ConfirmPayoutRequestMultiError is an error wrapping multiple validation
+// errors returned by ConfirmPayoutRequest.ValidateAll() if the designated
 // constraints aren't met.
-type UpdatePayoutRequestMultiError []error
+type ConfirmPayoutRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m UpdatePayoutRequestMultiError) Error() string {
+func (m ConfirmPayoutRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1297,11 +1270,11 @@ func (m UpdatePayoutRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m UpdatePayoutRequestMultiError) AllErrors() []error { return m }
+func (m ConfirmPayoutRequestMultiError) AllErrors() []error { return m }
 
-// UpdatePayoutRequestValidationError is the validation error returned by
-// UpdatePayoutRequest.Validate if the designated constraints aren't met.
-type UpdatePayoutRequestValidationError struct {
+// ConfirmPayoutRequestValidationError is the validation error returned by
+// ConfirmPayoutRequest.Validate if the designated constraints aren't met.
+type ConfirmPayoutRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1309,24 +1282,24 @@ type UpdatePayoutRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e UpdatePayoutRequestValidationError) Field() string { return e.field }
+func (e ConfirmPayoutRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e UpdatePayoutRequestValidationError) Reason() string { return e.reason }
+func (e ConfirmPayoutRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e UpdatePayoutRequestValidationError) Cause() error { return e.cause }
+func (e ConfirmPayoutRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e UpdatePayoutRequestValidationError) Key() bool { return e.key }
+func (e ConfirmPayoutRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e UpdatePayoutRequestValidationError) ErrorName() string {
-	return "UpdatePayoutRequestValidationError"
+func (e ConfirmPayoutRequestValidationError) ErrorName() string {
+	return "ConfirmPayoutRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e UpdatePayoutRequestValidationError) Error() string {
+func (e ConfirmPayoutRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1338,14 +1311,14 @@ func (e UpdatePayoutRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sUpdatePayoutRequest.%s: %s%s",
+		"invalid %sConfirmPayoutRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = UpdatePayoutRequestValidationError{}
+var _ error = ConfirmPayoutRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -1353,24 +1326,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = UpdatePayoutRequestValidationError{}
+} = ConfirmPayoutRequestValidationError{}
 
-// Validate checks the field values on UpdatePayoutResponse with the rules
+// Validate checks the field values on ConfirmPayoutResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UpdatePayoutResponse) Validate() error {
+func (m *ConfirmPayoutResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on UpdatePayoutResponse with the rules
+// ValidateAll checks the field values on ConfirmPayoutResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// UpdatePayoutResponseMultiError, or nil if none found.
-func (m *UpdatePayoutResponse) ValidateAll() error {
+// ConfirmPayoutResponseMultiError, or nil if none found.
+func (m *ConfirmPayoutResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *UpdatePayoutResponse) validate(all bool) error {
+func (m *ConfirmPayoutResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -1378,19 +1351,19 @@ func (m *UpdatePayoutResponse) validate(all bool) error {
 	var errors []error
 
 	if len(errors) > 0 {
-		return UpdatePayoutResponseMultiError(errors)
+		return ConfirmPayoutResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// UpdatePayoutResponseMultiError is an error wrapping multiple validation
-// errors returned by UpdatePayoutResponse.ValidateAll() if the designated
+// ConfirmPayoutResponseMultiError is an error wrapping multiple validation
+// errors returned by ConfirmPayoutResponse.ValidateAll() if the designated
 // constraints aren't met.
-type UpdatePayoutResponseMultiError []error
+type ConfirmPayoutResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m UpdatePayoutResponseMultiError) Error() string {
+func (m ConfirmPayoutResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1399,11 +1372,11 @@ func (m UpdatePayoutResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m UpdatePayoutResponseMultiError) AllErrors() []error { return m }
+func (m ConfirmPayoutResponseMultiError) AllErrors() []error { return m }
 
-// UpdatePayoutResponseValidationError is the validation error returned by
-// UpdatePayoutResponse.Validate if the designated constraints aren't met.
-type UpdatePayoutResponseValidationError struct {
+// ConfirmPayoutResponseValidationError is the validation error returned by
+// ConfirmPayoutResponse.Validate if the designated constraints aren't met.
+type ConfirmPayoutResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1411,24 +1384,24 @@ type UpdatePayoutResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e UpdatePayoutResponseValidationError) Field() string { return e.field }
+func (e ConfirmPayoutResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e UpdatePayoutResponseValidationError) Reason() string { return e.reason }
+func (e ConfirmPayoutResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e UpdatePayoutResponseValidationError) Cause() error { return e.cause }
+func (e ConfirmPayoutResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e UpdatePayoutResponseValidationError) Key() bool { return e.key }
+func (e ConfirmPayoutResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e UpdatePayoutResponseValidationError) ErrorName() string {
-	return "UpdatePayoutResponseValidationError"
+func (e ConfirmPayoutResponseValidationError) ErrorName() string {
+	return "ConfirmPayoutResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e UpdatePayoutResponseValidationError) Error() string {
+func (e ConfirmPayoutResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1440,14 +1413,14 @@ func (e UpdatePayoutResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sUpdatePayoutResponse.%s: %s%s",
+		"invalid %sConfirmPayoutResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = UpdatePayoutResponseValidationError{}
+var _ error = ConfirmPayoutResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -1455,7 +1428,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = UpdatePayoutResponseValidationError{}
+} = ConfirmPayoutResponseValidationError{}
 
 // Validate checks the field values on UpdateQuoteRequest_Quote with the rules
 // defined in the proto definition for this message. If any rules are
@@ -2436,209 +2409,3 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CreatePaymentResponse_FailureValidationError{}
-
-// Validate checks the field values on UpdatePayoutRequest_Success with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UpdatePayoutRequest_Success) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UpdatePayoutRequest_Success with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// UpdatePayoutRequest_SuccessMultiError, or nil if none found.
-func (m *UpdatePayoutRequest_Success) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UpdatePayoutRequest_Success) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if len(errors) > 0 {
-		return UpdatePayoutRequest_SuccessMultiError(errors)
-	}
-
-	return nil
-}
-
-// UpdatePayoutRequest_SuccessMultiError is an error wrapping multiple
-// validation errors returned by UpdatePayoutRequest_Success.ValidateAll() if
-// the designated constraints aren't met.
-type UpdatePayoutRequest_SuccessMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UpdatePayoutRequest_SuccessMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UpdatePayoutRequest_SuccessMultiError) AllErrors() []error { return m }
-
-// UpdatePayoutRequest_SuccessValidationError is the validation error returned
-// by UpdatePayoutRequest_Success.Validate if the designated constraints
-// aren't met.
-type UpdatePayoutRequest_SuccessValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UpdatePayoutRequest_SuccessValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UpdatePayoutRequest_SuccessValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UpdatePayoutRequest_SuccessValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UpdatePayoutRequest_SuccessValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UpdatePayoutRequest_SuccessValidationError) ErrorName() string {
-	return "UpdatePayoutRequest_SuccessValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UpdatePayoutRequest_SuccessValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUpdatePayoutRequest_Success.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UpdatePayoutRequest_SuccessValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UpdatePayoutRequest_SuccessValidationError{}
-
-// Validate checks the field values on UpdatePayoutRequest_Failure with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UpdatePayoutRequest_Failure) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UpdatePayoutRequest_Failure with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// UpdatePayoutRequest_FailureMultiError, or nil if none found.
-func (m *UpdatePayoutRequest_Failure) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UpdatePayoutRequest_Failure) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if len(errors) > 0 {
-		return UpdatePayoutRequest_FailureMultiError(errors)
-	}
-
-	return nil
-}
-
-// UpdatePayoutRequest_FailureMultiError is an error wrapping multiple
-// validation errors returned by UpdatePayoutRequest_Failure.ValidateAll() if
-// the designated constraints aren't met.
-type UpdatePayoutRequest_FailureMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UpdatePayoutRequest_FailureMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UpdatePayoutRequest_FailureMultiError) AllErrors() []error { return m }
-
-// UpdatePayoutRequest_FailureValidationError is the validation error returned
-// by UpdatePayoutRequest_Failure.Validate if the designated constraints
-// aren't met.
-type UpdatePayoutRequest_FailureValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UpdatePayoutRequest_FailureValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UpdatePayoutRequest_FailureValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UpdatePayoutRequest_FailureValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UpdatePayoutRequest_FailureValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UpdatePayoutRequest_FailureValidationError) ErrorName() string {
-	return "UpdatePayoutRequest_FailureValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UpdatePayoutRequest_FailureValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUpdatePayoutRequest_Failure.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UpdatePayoutRequest_FailureValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UpdatePayoutRequest_FailureValidationError{}

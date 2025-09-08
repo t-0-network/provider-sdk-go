@@ -3,10 +3,11 @@ package provider
 import "errors"
 
 var (
-	ErrMissingRequiredHeader       error = errors.New("missing required header")
-	ErrInvalidHeaderEncoding       error = errors.New("invalid header encoding")
-	ErrUnknownPublicKey            error = errors.New("request signed with unknown public key")
-	ErrSignatureVerificationFailed error = errors.New("signature verification failed")
-	ErrInvalidSignature            error = errors.New("invalid signature")
-	ErrNoSignatureResult           error = errors.New("no signature result in context")
+	ErrMissingRequiredHeader       = errors.New("missing required header")
+	ErrInvalidHeaderEncoding       = errors.New("invalid header encoding")
+	ErrUnknownPublicKey            = errors.New("request signed with unknown public key")
+	ErrSignatureVerificationFailed = errors.New("signature verification failed")
+	ErrInvalidSignature            = errors.New("invalid signature")
+	ErrNoSignatureResult           = errors.New("no signature result in context")
+	ErrNetworkPublicKeyIsRequired  = errors.New("network public key is not set")
 )

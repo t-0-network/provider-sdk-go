@@ -41,10 +41,13 @@ func ExampleNewProviderHandler() {
 	}
 
 	// Start an HTTP server with the provider service handler,
-	shutdownFunc := provider.StartServer(
+	shutdownFunc, err := provider.StartServer(
 		providerServiceHandler,
 		provider.WithAddr(":8080"),
 	)
+	if err != nil {
+		log.Fatalf("Failed to start provider server: %v", err)
+	}
 
 	// Create a provider client to connect to the provider service.
 	providerClient, err := newProviderClient(dummyNetworkPrivateKey)
@@ -76,17 +79,17 @@ func ExampleNewProviderHandler() {
 	// Use the providerClient to call the UpdateLimit method
 	_, err = providerClient.UpdateLimit(context.Background(), req)
 	if err != nil {
-		log.Fatalf("Failed to create pay in details: %v", err)
+		log.Fatalf("Failed to update limits: %v", err)
 	}
 
-	fmt.Println("Successfully created pay in details")
+	fmt.Println("Successfully updated limits")
 
 	if err := shutdownFunc(context.Background()); err != nil {
 		log.Fatalf("Failed to shutdown provider service: %v", err)
 	}
 
 	// Output:
-	// Successfully created pay in details
+	// Successfully updated limits
 }
 
 func newProviderClient(privateKey string) (paymentconnect.ProviderServiceClient, error) {
@@ -112,6 +115,8 @@ func newProviderClient(privateKey string) (paymentconnect.ProviderServiceClient,
 }
 
 type ProviderServiceImplementation struct{}
+
+var _ paymentconnect.ProviderServiceHandler = (*ProviderServiceImplementation)(nil)
 
 func (s *ProviderServiceImplementation) AppendLedgerEntries(
 	ctx context.Context, req *connect.Request[networkproto.AppendLedgerEntriesRequest],

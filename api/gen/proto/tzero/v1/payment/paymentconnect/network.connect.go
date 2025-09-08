@@ -42,9 +42,9 @@ const (
 	// NetworkServiceCreatePaymentProcedure is the fully-qualified name of the NetworkService's
 	// CreatePayment RPC.
 	NetworkServiceCreatePaymentProcedure = "/tzero.v1.payment.NetworkService/CreatePayment"
-	// NetworkServiceUpdatePayoutProcedure is the fully-qualified name of the NetworkService's
-	// UpdatePayout RPC.
-	NetworkServiceUpdatePayoutProcedure = "/tzero.v1.payment.NetworkService/UpdatePayout"
+	// NetworkServiceConfirmPayoutProcedure is the fully-qualified name of the NetworkService's
+	// ConfirmPayout RPC.
+	NetworkServiceConfirmPayoutProcedure = "/tzero.v1.payment.NetworkService/ConfirmPayout"
 )
 
 // NetworkServiceClient is a client for the tzero.v1.payment.NetworkService service.
@@ -52,7 +52,6 @@ type NetworkServiceClient interface {
 	// *
 	// Used by the provider to publish pay-in and pay-out quotes (FX rates) into the network.
 	// These quotes include tiered pricing bands and an expiration timestamp.
-	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdateQuote(context.Context, *connect.Request[payment.UpdateQuoteRequest]) (*connect.Response[payment.UpdateQuoteResponse], error)
 	// *
 	// Request the best available quote for a payout in a specific currency, for a given amount.
@@ -68,13 +67,11 @@ type NetworkServiceClient interface {
 	// If the quoteID is specified, it must be a valid quoteId that was previously returned by the GetPayoutQuote method.
 	// If the quoteId is not specified, the network will try to find a suitable quote for the payout currency and amount,
 	// same way as GetPayoutQuote rpc.
-	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	CreatePayment(context.Context, *connect.Request[payment.CreatePaymentRequest]) (*connect.Response[payment.CreatePaymentResponse], error)
 	// *
-	// Inform the network that a payout has been completed or failed. This endpoint is called by the payout
+	// Inform the network that a payout has been completed. This endpoint is called by the payout
 	// provider, specifying the payment ID and payout ID, which was provided when the payout request was made to this provider.
-	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
-	UpdatePayout(context.Context, *connect.Request[payment.UpdatePayoutRequest]) (*connect.Response[payment.UpdatePayoutResponse], error)
+	ConfirmPayout(context.Context, *connect.Request[payment.ConfirmPayoutRequest]) (*connect.Response[payment.ConfirmPayoutResponse], error)
 }
 
 // NewNetworkServiceClient constructs a client for the tzero.v1.payment.NetworkService service. By
@@ -109,10 +106,10 @@ func NewNetworkServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithIdempotency(connect.IdempotencyIdempotent),
 			connect.WithClientOptions(opts...),
 		),
-		updatePayout: connect.NewClient[payment.UpdatePayoutRequest, payment.UpdatePayoutResponse](
+		confirmPayout: connect.NewClient[payment.ConfirmPayoutRequest, payment.ConfirmPayoutResponse](
 			httpClient,
-			baseURL+NetworkServiceUpdatePayoutProcedure,
-			connect.WithSchema(networkServiceMethods.ByName("UpdatePayout")),
+			baseURL+NetworkServiceConfirmPayoutProcedure,
+			connect.WithSchema(networkServiceMethods.ByName("ConfirmPayout")),
 			connect.WithIdempotency(connect.IdempotencyIdempotent),
 			connect.WithClientOptions(opts...),
 		),
@@ -124,7 +121,7 @@ type networkServiceClient struct {
 	updateQuote    *connect.Client[payment.UpdateQuoteRequest, payment.UpdateQuoteResponse]
 	getPayoutQuote *connect.Client[payment.GetPayoutQuoteRequest, payment.GetPayoutQuoteResponse]
 	createPayment  *connect.Client[payment.CreatePaymentRequest, payment.CreatePaymentResponse]
-	updatePayout   *connect.Client[payment.UpdatePayoutRequest, payment.UpdatePayoutResponse]
+	confirmPayout  *connect.Client[payment.ConfirmPayoutRequest, payment.ConfirmPayoutResponse]
 }
 
 // UpdateQuote calls tzero.v1.payment.NetworkService.UpdateQuote.
@@ -142,9 +139,9 @@ func (c *networkServiceClient) CreatePayment(ctx context.Context, req *connect.R
 	return c.createPayment.CallUnary(ctx, req)
 }
 
-// UpdatePayout calls tzero.v1.payment.NetworkService.UpdatePayout.
-func (c *networkServiceClient) UpdatePayout(ctx context.Context, req *connect.Request[payment.UpdatePayoutRequest]) (*connect.Response[payment.UpdatePayoutResponse], error) {
-	return c.updatePayout.CallUnary(ctx, req)
+// ConfirmPayout calls tzero.v1.payment.NetworkService.ConfirmPayout.
+func (c *networkServiceClient) ConfirmPayout(ctx context.Context, req *connect.Request[payment.ConfirmPayoutRequest]) (*connect.Response[payment.ConfirmPayoutResponse], error) {
+	return c.confirmPayout.CallUnary(ctx, req)
 }
 
 // NetworkServiceHandler is an implementation of the tzero.v1.payment.NetworkService service.
@@ -152,7 +149,6 @@ type NetworkServiceHandler interface {
 	// *
 	// Used by the provider to publish pay-in and pay-out quotes (FX rates) into the network.
 	// These quotes include tiered pricing bands and an expiration timestamp.
-	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	UpdateQuote(context.Context, *connect.Request[payment.UpdateQuoteRequest]) (*connect.Response[payment.UpdateQuoteResponse], error)
 	// *
 	// Request the best available quote for a payout in a specific currency, for a given amount.
@@ -168,13 +164,11 @@ type NetworkServiceHandler interface {
 	// If the quoteID is specified, it must be a valid quoteId that was previously returned by the GetPayoutQuote method.
 	// If the quoteId is not specified, the network will try to find a suitable quote for the payout currency and amount,
 	// same way as GetPayoutQuote rpc.
-	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
 	CreatePayment(context.Context, *connect.Request[payment.CreatePaymentRequest]) (*connect.Response[payment.CreatePaymentResponse], error)
 	// *
-	// Inform the network that a payout has been completed or failed. This endpoint is called by the payout
+	// Inform the network that a payout has been completed. This endpoint is called by the payout
 	// provider, specifying the payment ID and payout ID, which was provided when the payout request was made to this provider.
-	// This method is idempotent, meaning that multiple calls with the same parameters will have no additional effect.
-	UpdatePayout(context.Context, *connect.Request[payment.UpdatePayoutRequest]) (*connect.Response[payment.UpdatePayoutResponse], error)
+	ConfirmPayout(context.Context, *connect.Request[payment.ConfirmPayoutRequest]) (*connect.Response[payment.ConfirmPayoutResponse], error)
 }
 
 // NewNetworkServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -205,10 +199,10 @@ func NewNetworkServiceHandler(svc NetworkServiceHandler, opts ...connect.Handler
 		connect.WithIdempotency(connect.IdempotencyIdempotent),
 		connect.WithHandlerOptions(opts...),
 	)
-	networkServiceUpdatePayoutHandler := connect.NewUnaryHandler(
-		NetworkServiceUpdatePayoutProcedure,
-		svc.UpdatePayout,
-		connect.WithSchema(networkServiceMethods.ByName("UpdatePayout")),
+	networkServiceConfirmPayoutHandler := connect.NewUnaryHandler(
+		NetworkServiceConfirmPayoutProcedure,
+		svc.ConfirmPayout,
+		connect.WithSchema(networkServiceMethods.ByName("ConfirmPayout")),
 		connect.WithIdempotency(connect.IdempotencyIdempotent),
 		connect.WithHandlerOptions(opts...),
 	)
@@ -220,8 +214,8 @@ func NewNetworkServiceHandler(svc NetworkServiceHandler, opts ...connect.Handler
 			networkServiceGetPayoutQuoteHandler.ServeHTTP(w, r)
 		case NetworkServiceCreatePaymentProcedure:
 			networkServiceCreatePaymentHandler.ServeHTTP(w, r)
-		case NetworkServiceUpdatePayoutProcedure:
-			networkServiceUpdatePayoutHandler.ServeHTTP(w, r)
+		case NetworkServiceConfirmPayoutProcedure:
+			networkServiceConfirmPayoutHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -243,6 +237,6 @@ func (UnimplementedNetworkServiceHandler) CreatePayment(context.Context, *connec
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment.NetworkService.CreatePayment is not implemented"))
 }
 
-func (UnimplementedNetworkServiceHandler) UpdatePayout(context.Context, *connect.Request[payment.UpdatePayoutRequest]) (*connect.Response[payment.UpdatePayoutResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment.NetworkService.UpdatePayout is not implemented"))
+func (UnimplementedNetworkServiceHandler) ConfirmPayout(context.Context, *connect.Request[payment.ConfirmPayoutRequest]) (*connect.Response[payment.ConfirmPayoutResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment.NetworkService.ConfirmPayout is not implemented"))
 }

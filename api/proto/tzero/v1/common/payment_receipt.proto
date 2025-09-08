@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package tzero.v1.common;
+
+message PaymentReceipt {
+  oneof details {
+    SepaReceipt sepa = 10;
+    SwiftReceipt swift = 30;
+    StablecoinReceipt stablecoin = 40;
+  }
+}
+
+message SepaReceipt {
+}
+
+message SwiftReceipt {
+
+}
+
+message StablecoinReceipt {
+  string transaction_hash = 10; // on-chain hex encoded transaction hash
+}

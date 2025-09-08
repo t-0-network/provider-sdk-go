@@ -125,7 +125,7 @@ func (x *PaymentMethod) GetDetails() isPaymentMethod_Details {
 	return nil
 }
 
-func (x *PaymentMethod) GetSepa() *SepaPaymentMethod {
+func (x *PaymentMethod) GetSepa() *SepaPaymentDetails {
 	if x != nil {
 		if x, ok := x.Details.(*PaymentMethod_Sepa); ok {
 			return x.Sepa
@@ -134,7 +134,7 @@ func (x *PaymentMethod) GetSepa() *SepaPaymentMethod {
 	return nil
 }
 
-func (x *PaymentMethod) GetSwift() *SwiftPaymentMethod {
+func (x *PaymentMethod) GetSwift() *SwiftPaymentDetails {
 	if x != nil {
 		if x, ok := x.Details.(*PaymentMethod_Swift); ok {
 			return x.Swift
@@ -143,7 +143,7 @@ func (x *PaymentMethod) GetSwift() *SwiftPaymentMethod {
 	return nil
 }
 
-func (x *PaymentMethod) GetStablecoin() *StablecoinPaymentMethod {
+func (x *PaymentMethod) GetStablecoin() *StablecoinPaymentDetails {
 	if x != nil {
 		if x, ok := x.Details.(*PaymentMethod_Stablecoin); ok {
 			return x.Stablecoin
@@ -157,15 +157,15 @@ type isPaymentMethod_Details interface {
 }
 
 type PaymentMethod_Sepa struct {
-	Sepa *SepaPaymentMethod `protobuf:"bytes,10,opt,name=sepa,proto3,oneof"`
+	Sepa *SepaPaymentDetails `protobuf:"bytes,10,opt,name=sepa,proto3,oneof"`
 }
 
 type PaymentMethod_Swift struct {
-	Swift *SwiftPaymentMethod `protobuf:"bytes,30,opt,name=swift,proto3,oneof"`
+	Swift *SwiftPaymentDetails `protobuf:"bytes,30,opt,name=swift,proto3,oneof"`
 }
 
 type PaymentMethod_Stablecoin struct {
-	Stablecoin *StablecoinPaymentMethod `protobuf:"bytes,40,opt,name=stablecoin,proto3,oneof"`
+	Stablecoin *StablecoinPaymentDetails `protobuf:"bytes,40,opt,name=stablecoin,proto3,oneof"`
 }
 
 func (*PaymentMethod_Sepa) isPaymentMethod_Details() {}
@@ -174,7 +174,7 @@ func (*PaymentMethod_Swift) isPaymentMethod_Details() {}
 
 func (*PaymentMethod_Stablecoin) isPaymentMethod_Details() {}
 
-type SepaPaymentMethod struct {
+type SepaPaymentDetails struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	Iban             string                 `protobuf:"bytes,20,opt,name=iban,proto3" json:"iban,omitempty"`
 	BeneficiaryName  string                 `protobuf:"bytes,30,opt,name=beneficiary_name,json=beneficiaryName,proto3" json:"beneficiary_name,omitempty"`
@@ -183,20 +183,20 @@ type SepaPaymentMethod struct {
 	sizeCache        protoimpl.SizeCache
 }
 
-func (x *SepaPaymentMethod) Reset() {
-	*x = SepaPaymentMethod{}
+func (x *SepaPaymentDetails) Reset() {
+	*x = SepaPaymentDetails{}
 	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SepaPaymentMethod) String() string {
+func (x *SepaPaymentDetails) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SepaPaymentMethod) ProtoMessage() {}
+func (*SepaPaymentDetails) ProtoMessage() {}
 
-func (x *SepaPaymentMethod) ProtoReflect() protoreflect.Message {
+func (x *SepaPaymentDetails) ProtoReflect() protoreflect.Message {
 	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -208,52 +208,52 @@ func (x *SepaPaymentMethod) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SepaPaymentMethod.ProtoReflect.Descriptor instead.
-func (*SepaPaymentMethod) Descriptor() ([]byte, []int) {
+// Deprecated: Use SepaPaymentDetails.ProtoReflect.Descriptor instead.
+func (*SepaPaymentDetails) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *SepaPaymentMethod) GetIban() string {
+func (x *SepaPaymentDetails) GetIban() string {
 	if x != nil {
 		return x.Iban
 	}
 	return ""
 }
 
-func (x *SepaPaymentMethod) GetBeneficiaryName() string {
+func (x *SepaPaymentDetails) GetBeneficiaryName() string {
 	if x != nil {
 		return x.BeneficiaryName
 	}
 	return ""
 }
 
-func (x *SepaPaymentMethod) GetPaymentReference() string {
+func (x *SepaPaymentDetails) GetPaymentReference() string {
 	if x != nil {
 		return x.PaymentReference
 	}
 	return ""
 }
 
-type SwiftPaymentMethod struct {
+type SwiftPaymentDetails struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *SwiftPaymentMethod) Reset() {
-	*x = SwiftPaymentMethod{}
+func (x *SwiftPaymentDetails) Reset() {
+	*x = SwiftPaymentDetails{}
 	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SwiftPaymentMethod) String() string {
+func (x *SwiftPaymentDetails) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SwiftPaymentMethod) ProtoMessage() {}
+func (*SwiftPaymentDetails) ProtoMessage() {}
 
-func (x *SwiftPaymentMethod) ProtoReflect() protoreflect.Message {
+func (x *SwiftPaymentDetails) ProtoReflect() protoreflect.Message {
 	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -265,12 +265,12 @@ func (x *SwiftPaymentMethod) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SwiftPaymentMethod.ProtoReflect.Descriptor instead.
-func (*SwiftPaymentMethod) Descriptor() ([]byte, []int) {
+// Deprecated: Use SwiftPaymentDetails.ProtoReflect.Descriptor instead.
+func (*SwiftPaymentDetails) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{2}
 }
 
-type StablecoinPaymentMethod struct {
+type StablecoinPaymentDetails struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Blockchain    Blockchain             `protobuf:"varint,10,opt,name=blockchain,proto3,enum=tzero.v1.common.Blockchain" json:"blockchain,omitempty"`
 	Stablecoin    Stablecoin             `protobuf:"varint,20,opt,name=stablecoin,proto3,enum=tzero.v1.common.Stablecoin" json:"stablecoin,omitempty"`
@@ -279,20 +279,20 @@ type StablecoinPaymentMethod struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *StablecoinPaymentMethod) Reset() {
-	*x = StablecoinPaymentMethod{}
+func (x *StablecoinPaymentDetails) Reset() {
+	*x = StablecoinPaymentDetails{}
 	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StablecoinPaymentMethod) String() string {
+func (x *StablecoinPaymentDetails) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StablecoinPaymentMethod) ProtoMessage() {}
+func (*StablecoinPaymentDetails) ProtoMessage() {}
 
-func (x *StablecoinPaymentMethod) ProtoReflect() protoreflect.Message {
+func (x *StablecoinPaymentDetails) ProtoReflect() protoreflect.Message {
 	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -304,26 +304,26 @@ func (x *StablecoinPaymentMethod) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StablecoinPaymentMethod.ProtoReflect.Descriptor instead.
-func (*StablecoinPaymentMethod) Descriptor() ([]byte, []int) {
+// Deprecated: Use StablecoinPaymentDetails.ProtoReflect.Descriptor instead.
+func (*StablecoinPaymentDetails) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *StablecoinPaymentMethod) GetBlockchain() Blockchain {
+func (x *StablecoinPaymentDetails) GetBlockchain() Blockchain {
 	if x != nil {
 		return x.Blockchain
 	}
 	return Blockchain_BLOCKCHAIN_UNSPECIFIED
 }
 
-func (x *StablecoinPaymentMethod) GetStablecoin() Stablecoin {
+func (x *StablecoinPaymentDetails) GetStablecoin() Stablecoin {
 	if x != nil {
 		return x.Stablecoin
 	}
 	return Stablecoin_STABLECOIN_UNSPECIFIED
 }
 
-func (x *StablecoinPaymentMethod) GetAddress() string {
+func (x *StablecoinPaymentDetails) GetAddress() string {
 	if x != nil {
 		return x.Address
 	}
@@ -334,21 +334,21 @@ var File_tzero_v1_common_payment_method_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_common_payment_method_proto_rawDesc = "" +
 	"\n" +
-	"$tzero/v1/common/payment_method.proto\x12\x0ftzero.v1.common\x1a\x1ctzero/v1/common/common.proto\"\xdd\x01\n" +
-	"\rPaymentMethod\x128\n" +
+	"$tzero/v1/common/payment_method.proto\x12\x0ftzero.v1.common\x1a\x1ctzero/v1/common/common.proto\"\xe0\x01\n" +
+	"\rPaymentMethod\x129\n" +
 	"\x04sepa\x18\n" +
-	" \x01(\v2\".tzero.v1.common.SepaPaymentMethodH\x00R\x04sepa\x12;\n" +
-	"\x05swift\x18\x1e \x01(\v2#.tzero.v1.common.SwiftPaymentMethodH\x00R\x05swift\x12J\n" +
+	" \x01(\v2#.tzero.v1.common.SepaPaymentDetailsH\x00R\x04sepa\x12<\n" +
+	"\x05swift\x18\x1e \x01(\v2$.tzero.v1.common.SwiftPaymentDetailsH\x00R\x05swift\x12K\n" +
 	"\n" +
-	"stablecoin\x18( \x01(\v2(.tzero.v1.common.StablecoinPaymentMethodH\x00R\n" +
+	"stablecoin\x18( \x01(\v2).tzero.v1.common.StablecoinPaymentDetailsH\x00R\n" +
 	"stablecoinB\t\n" +
-	"\adetails\"\x7f\n" +
-	"\x11SepaPaymentMethod\x12\x12\n" +
+	"\adetails\"\x80\x01\n" +
+	"\x12SepaPaymentDetails\x12\x12\n" +
 	"\x04iban\x18\x14 \x01(\tR\x04iban\x12)\n" +
 	"\x10beneficiary_name\x18\x1e \x01(\tR\x0fbeneficiaryName\x12+\n" +
-	"\x11payment_reference\x18( \x01(\tR\x10paymentReference\"\x14\n" +
-	"\x12SwiftPaymentMethod\"\xad\x01\n" +
-	"\x17StablecoinPaymentMethod\x12;\n" +
+	"\x11payment_reference\x18( \x01(\tR\x10paymentReference\"\x15\n" +
+	"\x13SwiftPaymentDetails\"\xae\x01\n" +
+	"\x18StablecoinPaymentDetails\x12;\n" +
 	"\n" +
 	"blockchain\x18\n" +
 	" \x01(\x0e2\x1b.tzero.v1.common.BlockchainR\n" +
@@ -381,20 +381,20 @@ func file_tzero_v1_common_payment_method_proto_rawDescGZIP() []byte {
 var file_tzero_v1_common_payment_method_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_tzero_v1_common_payment_method_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_tzero_v1_common_payment_method_proto_goTypes = []any{
-	(PaymentMethodType)(0),          // 0: tzero.v1.common.PaymentMethodType
-	(*PaymentMethod)(nil),           // 1: tzero.v1.common.PaymentMethod
-	(*SepaPaymentMethod)(nil),       // 2: tzero.v1.common.SepaPaymentMethod
-	(*SwiftPaymentMethod)(nil),      // 3: tzero.v1.common.SwiftPaymentMethod
-	(*StablecoinPaymentMethod)(nil), // 4: tzero.v1.common.StablecoinPaymentMethod
-	(Blockchain)(0),                 // 5: tzero.v1.common.Blockchain
-	(Stablecoin)(0),                 // 6: tzero.v1.common.Stablecoin
+	(PaymentMethodType)(0),           // 0: tzero.v1.common.PaymentMethodType
+	(*PaymentMethod)(nil),            // 1: tzero.v1.common.PaymentMethod
+	(*SepaPaymentDetails)(nil),       // 2: tzero.v1.common.SepaPaymentDetails
+	(*SwiftPaymentDetails)(nil),      // 3: tzero.v1.common.SwiftPaymentDetails
+	(*StablecoinPaymentDetails)(nil), // 4: tzero.v1.common.StablecoinPaymentDetails
+	(Blockchain)(0),                  // 5: tzero.v1.common.Blockchain
+	(Stablecoin)(0),                  // 6: tzero.v1.common.Stablecoin
 }
 var file_tzero_v1_common_payment_method_proto_depIdxs = []int32{
-	2, // 0: tzero.v1.common.PaymentMethod.sepa:type_name -> tzero.v1.common.SepaPaymentMethod
-	3, // 1: tzero.v1.common.PaymentMethod.swift:type_name -> tzero.v1.common.SwiftPaymentMethod
-	4, // 2: tzero.v1.common.PaymentMethod.stablecoin:type_name -> tzero.v1.common.StablecoinPaymentMethod
-	5, // 3: tzero.v1.common.StablecoinPaymentMethod.blockchain:type_name -> tzero.v1.common.Blockchain
-	6, // 4: tzero.v1.common.StablecoinPaymentMethod.stablecoin:type_name -> tzero.v1.common.Stablecoin
+	2, // 0: tzero.v1.common.PaymentMethod.sepa:type_name -> tzero.v1.common.SepaPaymentDetails
+	3, // 1: tzero.v1.common.PaymentMethod.swift:type_name -> tzero.v1.common.SwiftPaymentDetails
+	4, // 2: tzero.v1.common.PaymentMethod.stablecoin:type_name -> tzero.v1.common.StablecoinPaymentDetails
+	5, // 3: tzero.v1.common.StablecoinPaymentDetails.blockchain:type_name -> tzero.v1.common.Blockchain
+	6, // 4: tzero.v1.common.StablecoinPaymentDetails.stablecoin:type_name -> tzero.v1.common.Stablecoin
 	5, // [5:5] is the sub-list for method output_type
 	5, // [5:5] is the sub-list for method input_type
 	5, // [5:5] is the sub-list for extension type_name

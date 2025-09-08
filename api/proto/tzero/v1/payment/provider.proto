@@ -3,6 +3,7 @@ syntax = "proto3";
 package tzero.v1.payment;
 
 import "tzero/v1/common/payment_method.proto";
+import "tzero/v1/common/payment_receipt.proto";
 import "tzero/v1/common/common.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -131,19 +132,19 @@ message AppendLedgerEntriesRequest {
      */
     tzero.v1.common.Decimal exchange_rate = 60;
   }
-
   enum AccountType {
     ACCOUNT_TYPE_UNSPECIFIED = 0;
-    ACCOUNT_TYPE_USER_PAYABLE = 1; // Reflects the user's payable balance, the amount that the provider owes to the user.
-    ACCOUNT_TYPE_CASH = 2; // Reflects the cash balance of the provider.
-    ACCOUNT_TYPE_RESERVE = 3; // This is the reserve account of the provider, which reflects the reserve of balance to reduce the limit available from one provider to another.
-    ACCOUNT_TYPE_RESERVE_USAGE = 4; // This is the mirror account for the reserve. To keep the double entry accounting principle.
-    ACCOUNT_TYPE_PROVIDER_PAYABLE = 5; // Reflects how much the provider owes to the network or other participants.
-    ACCOUNT_TYPE_PROVIDER_RECEIVABLE = 6; // Reflects how much the provider is owed by the network or other participants.
-    ACCOUNT_TYPE_FEE_PAYABLE = 7; // Reflects the fees that the provider owes to the network.
-    ACCOUNT_TYPE_FEE_RECEIVABLE = 8; // Reflects the fees that the network is owed by the provider.
-    ACCOUNT_TYPE_FEE_EXPENSE = 9; // Reflects the fees that the provider has to pay for the services provided by the network.
-    ACCOUNT_TYPE_PROVIDER_SETTLEMENT = 10; // Reflects the settlement balance of the provider with the network or other participants.
+    ACCOUNT_TYPE_USER_PAYABLE = 10; // Reflects the user's payable balance, the amount that the provider owes to the user.
+    ACCOUNT_TYPE_CASH = 20; // Reflects the cash balance of the provider.
+    ACCOUNT_TYPE_RESERVE = 30; // This is the reserve account of the provider, which reflects the reserve of balance to reduce the limit available from one provider to another.
+    ACCOUNT_TYPE_RESERVE_USAGE = 40; // This is the mirror account for the reserve. To keep the double entry accounting principle.
+    ACCOUNT_TYPE_PROVIDER_PAYABLE = 50; // Reflects how much the provider owes to the network or other participants.
+    ACCOUNT_TYPE_PROVIDER_RECEIVABLE = 60; // Reflects how much the provider is owed by the network or other participants.
+    ACCOUNT_TYPE_PROVIDER_SETTLEMENT = 70; // Reflects the settlement balance of the provider with the network or other participants.
+    ACCOUNT_TYPE_FEE_PAYABLE = 80; // Reflects the fees that the provider owes to the network.
+    ACCOUNT_TYPE_FEE_RECEIVABLE = 90; // Reflects the fees that the network is owed by the provider.
+    ACCOUNT_TYPE_FEE_EXPENSE = 100; // Reflects the fees that the provider has to pay for the services provided by the network.
+    ACCOUNT_TYPE_FEE_SETTLEMENT = 110;
   }
 }
 
@@ -190,7 +191,30 @@ message PayoutRequest {
   uint32 pay_in_provider_id = 80;
 }
 
-message PayoutResponse {}
+message PayoutResponse {
+  oneof result {
+    /**
+     * Success response - means the payout was executed successfully and the payment is now complete. This happens when
+     * the payout is successfully processed by the payout provider, and the payment was made to the recipient.
+     */
+    Accepted accepted = 20;
+    /**
+     * Failure response - means the payout was not executed successfully, e.g. the payout provider could not process the payout.
+     */
+    Failed failed = 30;
+  }
+
+  message Accepted {
+  }
+
+  message Failed {
+    Reason reason = 10;
+
+    enum Reason {
+      REASON_UNSPECIFIED = 0;
+    }
+  }
+}
 
 message UpdatePaymentRequest {
   /**
@@ -204,26 +228,43 @@ message UpdatePaymentRequest {
 
   oneof result {
     /**
-     * Success response - means the payout was executed successfully and the payment is now complete. This happens when
-     * the payout is successfully processed by the payout provider, and the payment was made to the recipient.
+     * Accepted response - means the payout was accepted by the pay-out provider and pay-out provider is obligated to
+     * make a pay-out.
      */
-    Success success = 20;
+    Accepted accepted = 20;
+
     /**
-     * Failure response - means the payout was not executed successfully, e.g. the payout provider could not process the payout.
+    * Payment failed and would not be retried.
      */
-    Failure failure = 30;
+    Failed failed = 30;
+    /**
+     * Confirmed response - final state meaning the payout was executed successfully and the payment is now complete.
+     * This happens when the payout is successfully processed by the payout provider, and the payment was made to the recipient.
+     */
+    Confirmed confirmed = 40;
   }
 
-  message Success {
+  message Accepted {
     tzero.v1.common.Decimal payout_amount = 10; // amount in currency of the payout
-    google.protobuf.Timestamp paid_out_at = 50; // time of the payout
   }
 
-  message Failure {
+  message Failed {
+    Reason reason = 10;
+
     enum Reason {
       REASON_UNSPECIFIED = 0;
     }
   }
+
+  message Confirmed {
+    google.protobuf.Timestamp paid_out_at = 10; // time of the payout
+
+    /**
+    * Payment receipt might contain metadata about payment recognizable by pay-in provider.
+    */
+    tzero.v1.common.PaymentReceipt receipt = 20;
+  }
+
 }
 message UpdatePaymentResponse {}
 
@@ -256,7 +297,7 @@ message UpdateLimitRequest {
     /**
      * This is the credit usage that the provider has used so far. It is the sum of all payouts made by the provider
      * minus the settlement net (settlement balance). It could be negative if the provider has received more
-     * in settlements than maid payouts (pre-settlement).
+     * in settlements than made payouts (pre-settlement).
      */
     tzero.v1.common.Decimal credit_usage = 40;
   }

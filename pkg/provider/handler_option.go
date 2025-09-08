@@ -1,16 +1,12 @@
 package provider
 
 import (
-	"errors"
-
 	"connectrpc.com/connect"
 )
 
 const (
 	defaultMaxBodySize = 1024 * 1024 // 1 MB
 )
-
-var ErrNetworkPublicKeyIsRequired = errors.New("network public key is not set")
 
 type providerHandlerOptions struct {
 	verifySignatureFn          verifySignature
@@ -35,5 +31,15 @@ func WithVerifySignatureFn(fn verifySignature) HandlerOption {
 func WithConnectHandlerOptions(opts ...connect.HandlerOption) HandlerOption {
 	return func(h *providerHandlerOptions) {
 		h.connectHandlerOptions = append(h.connectHandlerOptions, opts...)
+	}
+}
+
+// WithMaxBodySize sets the maximum allowed request body size for signature verification.
+// If size is <= 0, the default size will be used.
+func WithMaxBodySize(size int64) HandlerOption {
+	return func(h *providerHandlerOptions) {
+		if size > 0 {
+			h.verifySignatureMaxBodySize = size
+		}
 	}
 }

@@ -9,6 +9,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
+	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/common"
 	networkreq "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment"
 	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment/paymentconnect"
 	"github.com/t-0-network/provider-sdk-go/examples/utils"
@@ -41,14 +42,15 @@ func _ExamplePayoutProviderBasicFlow() {
 	// ------ Step 1: The network will call the provider to request a pay-out for a specific payment.
 	// See the PayOutProviderImplementation.PayOut method for the implementation details.
 
-	// ------ Step 2: The provider notifies the network about the pay-out status using the UpdatePayout RPC.
-	networkClient.UpdatePayout(context.Background(), connect.NewRequest(&networkreq.UpdatePayoutRequest{
+	// ------ Step 2: The provider notifies the network that pay-out is happened. It should also contain the transaction
+	// hash or any other details about the pay-out.
+	_, err = networkClient.ConfirmPayout(context.Background(), connect.NewRequest(&networkreq.ConfirmPayoutRequest{
 		PaymentId: 1, // This is the payment ID that the network provided in the pay-out request.
 		PayoutId:  1, // This is the pay-out ID that the network provided in the pay-out request.
-		// either success or failure result
-		Result: &networkreq.UpdatePayoutRequest_Success_{
-			Success: &networkreq.UpdatePayoutRequest_Success{},
-		},
+		// The receipt contains the details about the pay-out, e.g. transaction hash.
+		Receipt: &common.PaymentReceipt{Details: &common.PaymentReceipt_Stablecoin{
+			Stablecoin: &common.StablecoinReceipt{TransactionHash: "0x1234567890abcdef"},
+		}},
 		// Result:    &networkreq.UpdatePayoutRequest_Failure_{},
 	}))
 
@@ -154,10 +156,13 @@ func startTheProviderService(providerImpl paymentconnect.ProviderServiceHandler)
 	}
 
 	// Start an HTTP server with the provider service handler,
-	shutdownFunc := provider.StartServer(
+	shutdownFunc, err := provider.StartServer(
 		providerServiceHandler,
 		provider.WithAddr(":8080"),
 	)
+	if err != nil {
+		log.Fatalf("Failed to start provider server: %v", err)
+	}
 	return shutdownFunc
 }
 
