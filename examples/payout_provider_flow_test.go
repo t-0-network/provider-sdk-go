@@ -156,10 +156,13 @@ func startTheProviderService(providerImpl paymentconnect.ProviderServiceHandler)
 	}
 
 	// Start an HTTP server with the provider service handler,
-	shutdownFunc := provider.StartServer(
+	shutdownFunc, err := provider.StartServer(
 		providerServiceHandler,
 		provider.WithAddr(":8080"),
 	)
+	if err != nil {
+		log.Fatalf("Failed to start provider server: %v", err)
+	}
 	return shutdownFunc
 }
 

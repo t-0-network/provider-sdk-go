@@ -149,7 +149,7 @@ This step is optional, you can register and serve the handler using your existin
 #### Launch an HTTP server with the provider handler:
 
 ```go
-shutdownFunc := provider.StartServer(
+shutdownFunc, err := provider.StartServer(
     providerServiceHandler,
     // optional configuration
     provider.WithAddr(":8080"),
@@ -158,6 +158,9 @@ shutdownFunc := provider.StartServer(
     provider.WithReadHeaderTimeout(10 * time.Second)
     provider.WithTLSConfig(tlsConfig)
 )
+if err != nil {
+    log.Fatalf("Failed to start provider server: %v", err)
+}
 
 // Manual shutdown handling
 if err := shutdownFunc(context.Background()); err != nil {
