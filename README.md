@@ -65,11 +65,18 @@ openssl ec -in private_key.pem -text -noout 2>/dev/null | grep -A 5 'pub:' | tai
 
 ### Service Interface
 
-Implement the `networkconnect.ProviderServiceHandler` interface to create your provider service:
+Implement the `paymentconnect.ProviderServiceHandler` interface to create your provider service:
 
 ```go
+import (
+    "context"
+    "connectrpc.com/connect"
+    networkproto "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment"
+    "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment/paymentconnect"
+)
+
 type ProviderServiceImplementation struct{
-    networkClient networkconnect.NetworkServiceClient 
+    networkClient paymentconnect.NetworkServiceClient 
 }
 
 func (s *ProviderServiceImplementation) AppendLedgerEntries(
@@ -79,33 +86,26 @@ func (s *ProviderServiceImplementation) AppendLedgerEntries(
     return connect.NewResponse(&networkproto.AppendLedgerEntriesResponse{}), nil
 }
 
-func (s *ProviderServiceImplementation) CreatePayInDetails(
-    ctx context.Context, req *connect.Request[networkproto.CreatePayInDetailsRequest],
-) (*connect.Response[networkproto.CreatePayInDetailsResponse], error) {
-    // Implement pay-in details creation logic
-    return connect.NewResponse(&networkproto.CreatePayInDetailsResponse{}), nil
-}
-
 func (s *ProviderServiceImplementation) PayOut(ctx context.Context, req *connect.Request[networkproto.PayoutRequest],
 ) (*connect.Response[networkproto.PayoutResponse], error) {
-	// At his point we would typically call the bank API to create a payment
-	// and return the payment details to the network.
+    // At this point we would typically call the bank API to create a payment
+    // and return the payment details to the network.
 
-	msg := req.Msg
-	updatePayoutReq := &networkproto.UpdatePayoutRequest{
-		PaymentId: msg.GetPaymentId(),
-		PayoutId:  msg.GetPayoutId(),
-		Result: &networkproto.UpdatePayoutRequest_Success_{
-			Success: &networkproto.UpdatePayoutRequest_Success{},
-		},
-	}
+    msg := req.Msg
+    confirmPayoutReq := &networkproto.ConfirmPayoutRequest{
+        PaymentId: msg.GetPaymentId(),
+        PayoutId:  msg.GetPayoutId(),
+        Result: &networkproto.ConfirmPayoutRequest_Success_{
+            Success: &networkproto.ConfirmPayoutRequest_Success{},
+        },
+    }
 
-	_, err := s.networkClient.UpdatePayout(ctx, connect.NewRequest(updatePayoutReq))
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
+    _, err := s.networkClient.ConfirmPayout(ctx, connect.NewRequest(confirmPayoutReq))
+    if err != nil {
+        return nil, connect.NewError(connect.CodeInternal, err)
+    }
 
-	return connect.NewResponse(&networkproto.PayoutResponse{}), nil
+    return connect.NewResponse(&networkproto.PayoutResponse{}), nil
 }
 
 func (s *ProviderServiceImplementation) UpdateLimit(
@@ -191,7 +191,7 @@ import (
     "log"
 
     "connectrpc.com/connect"
-    networkproto "github.com/t-0-network/provider-sdk-go/api/gen/proto/network"
+    networkproto "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment"
     "github.com/t-0-network/provider-sdk-go/pkg/network"
 )
 
@@ -213,6 +213,33 @@ _, err = networkClient.UpdateQuote(context.Background(), connect.NewRequest(&net
 }))
 if err != nil {
     log.Printf("Failed to update quote: %v", err)
+    return
+}
+
+// Example: Get payout quote
+_, err = networkClient.GetPayoutQuote(context.Background(), connect.NewRequest(&networkproto.GetPayoutQuoteRequest{
+    // Request parameters
+}))
+if err != nil {
+    log.Printf("Failed to get payout quote: %v", err)
+    return
+}
+
+// Example: Create payment
+_, err = networkClient.CreatePayment(context.Background(), connect.NewRequest(&networkproto.CreatePaymentRequest{
+    // Request parameters
+}))
+if err != nil {
+    log.Printf("Failed to create payment: %v", err)
+    return
+}
+
+// Example: Confirm payout
+_, err = networkClient.ConfirmPayout(context.Background(), connect.NewRequest(&networkproto.ConfirmPayoutRequest{
+    // Request parameters
+}))
+if err != nil {
+    log.Printf("Failed to confirm payout: %v", err)
     return
 }
 ```
