@@ -3,6 +3,7 @@ syntax = "proto3";
 package tzero.v1.common;
 
 import "tzero/v1/common/common.proto";
+import "buf/validate/validate.proto";
 
 enum PaymentMethodType {
   PAYMENT_METHOD_TYPE_UNSPECIFIED = 0;
@@ -14,16 +15,29 @@ enum PaymentMethodType {
 
 message PaymentMethod {
   oneof details {
+    option (buf.validate.oneof).required = true;
     SepaPaymentDetails sepa = 10;
     SwiftPaymentDetails swift = 30;
     StablecoinPaymentDetails stablecoin = 40;
-  }
+  } ;
 }
 
 message SepaPaymentDetails {
-  string iban = 20;
-  string beneficiary_name = 30;
-  string payment_reference = 40;
+  // IBAN should be 15-34 characters, alphanumeric
+  string iban = 20 [(buf.validate.field).string = {
+    min_len: 15,
+    max_len: 34,
+    pattern: "^[A-Z]{2}[0-9]{2}[A-Z0-9]+$"
+  }];
+  // Beneficiary name should be 1-70 characters (SEPA standard)
+  string beneficiary_name = 30 [(buf.validate.field).string = {
+    min_len: 1,
+    max_len: 70
+  }];
+  // Payment reference up to 140 characters (SEPA standard)
+  string payment_reference = 40 [(buf.validate.field).string = {
+    max_len: 140
+  }];
 }
 
 message SwiftPaymentDetails {
@@ -31,7 +45,18 @@ message SwiftPaymentDetails {
 }
 
 message StablecoinPaymentDetails {
-  tzero.v1.common.Blockchain blockchain = 10;
-  tzero.v1.common.Stablecoin stablecoin = 20;
-  string address = 30;
+  // Blockchain must be specified and not UNSPECIFIED
+  tzero.v1.common.Blockchain blockchain = 10 [(buf.validate.field).enum = {
+    not_in: [0]
+  }];
+  // Stablecoin must be specified and not UNSPECIFIED
+  tzero.v1.common.Stablecoin stablecoin = 20 [(buf.validate.field).enum = {
+    not_in: [0]
+  }];
+  // Blockchain address should be a valid hex address (20-64 chars for most blockchains)
+  string address = 30 [(buf.validate.field).string = {
+    min_len: 20,
+    max_len: 64,
+    pattern: "^(0x)?[a-fA-F0-9]+$"
+  }];
 }

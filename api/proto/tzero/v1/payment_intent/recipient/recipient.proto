@@ -6,6 +6,7 @@ import "tzero/v1/common/common.proto";
 import "tzero/v1/common/payment_method.proto";
 import "tzero/v1/common/payment_receipt.proto";
 import "google/protobuf/timestamp.proto";
+import "buf/validate/validate.proto";
 
 /**
 * NetworkService is used by recipient to create a payment intents
@@ -51,33 +52,53 @@ message CreatePaymentIntentRequest {
   * Idempotency Key
   * payment reference to identify payment by client.
   */
-  string payment_reference = 10;
+  string payment_reference = 10 [(buf.validate.field).string = {
+    min_len: 1,
+    max_len: 64
+  }];
   /**
   * Pay-in currency
   **/
-  string pay_in_currency = 20;
+  string pay_in_currency = 20 [(buf.validate.field).string = {
+    len: 3,
+    pattern: "^[A-Z]{3}$"
+  }];
   /**
   * Amount denominated in the pay-in currency
   **/
-  tzero.v1.common.Decimal pay_in_amount = 30;
+  tzero.v1.common.Decimal pay_in_amount = 30 [(buf.validate.field).required = true];
   /**
   * Payout currency
   **/
-  string pay_out_currency = 40;
+  string pay_out_currency = 40 [(buf.validate.field).string = {
+    len: 3,
+    pattern: "^[A-Z]{3}$"
+  }];
   /**
   * Payout payment method
   **/
-  tzero.v1.common.PaymentMethod pay_out_method = 50;
+  tzero.v1.common.PaymentMethod pay_out_method = 50 [(buf.validate.field).required = true];
 }
 
 message CreatePaymentIntentResponse {
-  uint64 payment_intent_id = 10;
-  repeated PaymentMethod pay_in_payment_methods = 20;
+  // Payment intent ID must be positive
+  uint64 payment_intent_id = 10 [(buf.validate.field).uint64.gt = 0];
+  // At least one payment method should be provided
+  repeated PaymentMethod pay_in_payment_methods = 20 [(buf.validate.field).repeated.min_items = 1];
 
   message PaymentMethod {
-    string payment_url = 10;
-    uint32 provider_id = 20;
-    tzero.v1.common.PaymentMethodType payment_method = 30;
+    // Payment URL must be a valid URL
+    string payment_url = 10 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 2048,
+      pattern: "^https?://.+"
+    }];
+    // Provider ID must be positive
+    uint32 provider_id = 20 [(buf.validate.field).uint32.gt = 0];
+    // Payment method must be specified
+    tzero.v1.common.PaymentMethodType payment_method = 30 [(buf.validate.field).enum = {
+      not_in: [0]
+    }];
   }
 }
 
