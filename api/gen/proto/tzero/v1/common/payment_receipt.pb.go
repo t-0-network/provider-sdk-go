@@ -7,6 +7,7 @@
 package common
 
 import (
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -192,8 +193,9 @@ func (*SwiftReceipt) Descriptor() ([]byte, []int) {
 }
 
 type StablecoinReceipt struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	TransactionHash string                 `protobuf:"bytes,10,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"` // on-chain hex encoded transaction hash
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Transaction hash should be a valid hex string (64 chars for most blockchains)
+	TransactionHash string `protobuf:"bytes,10,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"` // on-chain hex encoded transaction hash
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -239,20 +241,20 @@ var File_tzero_v1_common_payment_receipt_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_common_payment_receipt_proto_rawDesc = "" +
 	"\n" +
-	"%tzero/v1/common/payment_receipt.proto\x12\x0ftzero.v1.common\"\xcc\x01\n" +
+	"%tzero/v1/common/payment_receipt.proto\x12\x0ftzero.v1.common\x1a\x1bbuf/validate/validate.proto\"\xd3\x01\n" +
 	"\x0ePaymentReceipt\x122\n" +
 	"\x04sepa\x18\n" +
 	" \x01(\v2\x1c.tzero.v1.common.SepaReceiptH\x00R\x04sepa\x125\n" +
 	"\x05swift\x18\x1e \x01(\v2\x1d.tzero.v1.common.SwiftReceiptH\x00R\x05swift\x12D\n" +
 	"\n" +
 	"stablecoin\x18( \x01(\v2\".tzero.v1.common.StablecoinReceiptH\x00R\n" +
-	"stablecoinB\t\n" +
-	"\adetails\"\r\n" +
+	"stablecoinB\x10\n" +
+	"\adetails\x12\x05\xbaH\x02\b\x01\"\r\n" +
 	"\vSepaReceipt\"\x0e\n" +
-	"\fSwiftReceipt\">\n" +
-	"\x11StablecoinReceipt\x12)\n" +
+	"\fSwiftReceipt\"a\n" +
+	"\x11StablecoinReceipt\x12L\n" +
 	"\x10transaction_hash\x18\n" +
-	" \x01(\tR\x0ftransactionHashB\xce\x01\n" +
+	" \x01(\tB!\xbaH\x1er\x1c\x10@\x18B2\x16^(0x)?[a-fA-F0-9]{64}$R\x0ftransactionHashB\xce\x01\n" +
 	"\x13com.tzero.v1.commonB\x13PaymentReceiptProtoP\x01ZDgithub.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/common\xa2\x02\x03TVC\xaa\x02\x0fTzero.V1.Common\xca\x02\x0fTzero\\V1\\Common\xe2\x02\x1bTzero\\V1\\Common\\GPBMetadata\xea\x02\x11Tzero::V1::Commonb\x06proto3"
 
 var (

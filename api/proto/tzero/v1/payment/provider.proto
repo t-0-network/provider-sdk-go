@@ -6,6 +6,7 @@ import "tzero/v1/common/payment_method.proto";
 import "tzero/v1/common/payment_receipt.proto";
 import "tzero/v1/common/common.proto";
 import "google/protobuf/timestamp.proto";
+import "buf/validate/validate.proto";
 
 /**
  * This service must be implemented by the provider.
@@ -51,55 +52,56 @@ message AppendLedgerEntriesRequest {
     * This is a list of transactions that were appended to the ledger of the provider.
     * The transaction_id should be used to identify the transaction and ensure that it is processed only once.
    */
-  repeated Transaction transactions = 20;
+  repeated Transaction transactions = 20 [(buf.validate.field).repeated.min_items = 1];
 
   message Transaction {
     /**
       * transaction_id is an incrementally growing identifier for the transaction.
       * It could have gaps and could be out of order, but it is unique for each transaction.
      */
-    uint64 transaction_id = 10;
+    uint64 transaction_id = 10 [(buf.validate.field).uint64.gt = 0];
     /**
       * entries is a list of ledger entries that were appended to the ledger of the provider.
       * Each entry represents a financial event that occurred in the provider's accounts.
       */
-    repeated LedgerEntry entries = 30;
+    repeated LedgerEntry entries = 30 [(buf.validate.field).repeated.min_items = 1];
 
     /**
      * transaction_details is a oneof field that contains details about the transaction.
      * It can be one of the following: PayIn, PayoutReservation, Payout, ProviderSettlement, FeeSettlement, PayoutReservationRelease.
      */
     oneof transaction_details {
+      option (buf.validate.oneof).required = true;
       PayIn pay_in = 110;
       PayoutReservation payout_reservation = 120;
       Payout payout = 130;
       ProviderSettlement provider_settlement = 140;
       FeeSettlement fee_settlement = 150;
       PayoutReservationRelease payout_reservation_release = 160;
-    }
+    };
 
     message PayIn {
-      uint64 payment_id = 10;
+      uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0];
     }
 
     message PayoutReservation {
-      uint64 payment_id = 10;
+      uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0];
     }
 
     message Payout {
-      uint64 payment_id = 10;
+      uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0];
     }
 
     message ProviderSettlement {
-      uint64 settlement_id = 10;
+      uint64 settlement_id = 10 [(buf.validate.field).uint64.gt = 0];
     }
 
     message FeeSettlement {
-      uint64 fee_settlement_id = 10;
+      uint64 fee_settlement_id = 10 [(buf.validate.field).uint64.gt = 0];
     }
 
     message PayoutReservationRelease {
-      uint64 payment_id = 10;
+      uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0];
     }
   }
 

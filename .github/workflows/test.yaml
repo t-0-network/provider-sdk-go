@@ -22,7 +22,9 @@ jobs:
       - name: Setup Golang
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: 'stable'
+          cache-dependency-path: ./go.sum
+
 
       - name: Validate Go module state
         run: |

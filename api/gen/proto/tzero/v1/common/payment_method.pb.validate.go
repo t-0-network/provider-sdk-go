@@ -181,6 +181,88 @@ func (m *PaymentMethod) validate(all bool) error {
 			}
 		}
 
+	case *PaymentMethod_Ach:
+		if v == nil {
+			err := PaymentMethodValidationError{
+				field:  "Details",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if all {
+			switch v := interface{}(m.GetAch()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, PaymentMethodValidationError{
+						field:  "Ach",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, PaymentMethodValidationError{
+						field:  "Ach",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetAch()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return PaymentMethodValidationError{
+					field:  "Ach",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	case *PaymentMethod_Wire:
+		if v == nil {
+			err := PaymentMethodValidationError{
+				field:  "Details",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if all {
+			switch v := interface{}(m.GetWire()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, PaymentMethodValidationError{
+						field:  "Wire",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, PaymentMethodValidationError{
+						field:  "Wire",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetWire()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return PaymentMethodValidationError{
+					field:  "Wire",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
 	default:
 		_ = v // ensures v is used
 	}
@@ -580,3 +662,229 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = StablecoinPaymentDetailsValidationError{}
+
+// Validate checks the field values on AchPaymentDetails with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *AchPaymentDetails) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AchPaymentDetails with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AchPaymentDetailsMultiError, or nil if none found.
+func (m *AchPaymentDetails) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AchPaymentDetails) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for RoutingNumber
+
+	// no validation rules for AccountNumber
+
+	// no validation rules for AccountHolderName
+
+	// no validation rules for AccountType
+
+	if len(errors) > 0 {
+		return AchPaymentDetailsMultiError(errors)
+	}
+
+	return nil
+}
+
+// AchPaymentDetailsMultiError is an error wrapping multiple validation errors
+// returned by AchPaymentDetails.ValidateAll() if the designated constraints
+// aren't met.
+type AchPaymentDetailsMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AchPaymentDetailsMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AchPaymentDetailsMultiError) AllErrors() []error { return m }
+
+// AchPaymentDetailsValidationError is the validation error returned by
+// AchPaymentDetails.Validate if the designated constraints aren't met.
+type AchPaymentDetailsValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AchPaymentDetailsValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AchPaymentDetailsValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AchPaymentDetailsValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AchPaymentDetailsValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AchPaymentDetailsValidationError) ErrorName() string {
+	return "AchPaymentDetailsValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AchPaymentDetailsValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAchPaymentDetails.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AchPaymentDetailsValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AchPaymentDetailsValidationError{}
+
+// Validate checks the field values on WirePaymentDetails with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *WirePaymentDetails) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on WirePaymentDetails with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// WirePaymentDetailsMultiError, or nil if none found.
+func (m *WirePaymentDetails) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *WirePaymentDetails) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for BankName
+
+	// no validation rules for BankAddress
+
+	// no validation rules for SwiftCode
+
+	// no validation rules for AccountNumber
+
+	// no validation rules for BeneficiaryName
+
+	// no validation rules for BeneficiaryAddress
+
+	// no validation rules for WireReference
+
+	if len(errors) > 0 {
+		return WirePaymentDetailsMultiError(errors)
+	}
+
+	return nil
+}
+
+// WirePaymentDetailsMultiError is an error wrapping multiple validation errors
+// returned by WirePaymentDetails.ValidateAll() if the designated constraints
+// aren't met.
+type WirePaymentDetailsMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m WirePaymentDetailsMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m WirePaymentDetailsMultiError) AllErrors() []error { return m }
+
+// WirePaymentDetailsValidationError is the validation error returned by
+// WirePaymentDetails.Validate if the designated constraints aren't met.
+type WirePaymentDetailsValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e WirePaymentDetailsValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e WirePaymentDetailsValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e WirePaymentDetailsValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e WirePaymentDetailsValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e WirePaymentDetailsValidationError) ErrorName() string {
+	return "WirePaymentDetailsValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e WirePaymentDetailsValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sWirePaymentDetails.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = WirePaymentDetailsValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = WirePaymentDetailsValidationError{}

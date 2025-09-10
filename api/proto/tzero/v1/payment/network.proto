@@ -6,8 +6,7 @@ import "tzero/v1/common/common.proto";
 import "tzero/v1/common/payment_method.proto";
 import "tzero/v1/common/payment_receipt.proto";
 import "google/protobuf/timestamp.proto";
-
-//import "validate/validate.proto";
+import "buf/validate/validate.proto";
 
 /**
  * This service is used by provider to interact with the Network, e.g. push quotes and initiate payments.
@@ -72,17 +71,38 @@ message UpdateQuoteRequest {
   repeated Quote pay_in = 20;
 
   message Quote {
-    string currency = 10; // BRL, EUR, GBP, etc. (ISO 4217 currency code)
-    QuoteType quote_type = 20; // type of the quote, e.g. real-time or guaranteed
-    tzero.v1.common.PaymentMethodType payment_method = 25;
-    repeated Band bands = 30; // list of bands for this quote
-    google.protobuf.Timestamp expiration = 60; // expiration time of the quote
-    google.protobuf.Timestamp timestamp = 70; // timestamp quote was created
+    // ISO 4217 currency code (3 uppercase letters)
+    string currency = 10 [(buf.validate.field).string = {
+      len: 3,
+      pattern: "^[A-Z]{3}$"
+    }]; // BRL, EUR, GBP, etc. (ISO 4217 currency code)
+    // Quote type must be specified
+    QuoteType quote_type = 20 [(buf.validate.field).enum = {
+      not_in: [0]
+    }]; // type of the quote, e.g. real-time or guaranteed
+    // Payment method must be specified
+    tzero.v1.common.PaymentMethodType payment_method = 25 [(buf.validate.field).enum = {
+      not_in: [0]
+    }];
+    // At least one band is required
+    repeated Band bands = 30 [(buf.validate.field).repeated = {
+      min_items: 1
+    }]; // list of bands for this quote
+    // Expiration must be in the future
+    google.protobuf.Timestamp expiration = 60 [(buf.validate.field).timestamp.gt_now = true]; // expiration time of the quote
+    // Timestamp is required
+    google.protobuf.Timestamp timestamp = 70 [(buf.validate.field).required = true]; // timestamp quote was created
 
     message Band {
-      string client_quote_id = 10; // unique client generated id for this band
-      tzero.v1.common.Decimal max_amount = 40; // max amount of USD this quote is applicable for. Please look into documentation for valid amounts.
-      tzero.v1.common.Decimal rate = 50; // USD/currency rate
+      // Client quote ID must be non-empty and reasonable length
+      string client_quote_id = 10 [(buf.validate.field).string = {
+        min_len: 1,
+        max_len: 64
+      }]; // unique client generated id for this band
+      // Max amount is required
+      tzero.v1.common.Decimal max_amount = 40 [(buf.validate.field).required = true]; // max amount of USD this quote is applicable for. Please look into documentation for valid amounts.
+      // Rate is required and must be positive
+      tzero.v1.common.Decimal rate = 50 [(buf.validate.field).required = true]; // USD/currency rate
     }
   }
 }
@@ -90,30 +110,58 @@ message UpdateQuoteRequest {
 message UpdateQuoteResponse {}
 
 message GetPayoutQuoteRequest {
-  string payout_currency = 10; // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
-  tzero.v1.common.Decimal amount = 20; // amount in quote currency, only USD is supported
-  QuoteType quote_type = 30; // type of the quote, e.g. real-time or guaranteed
-  tzero.v1.common.PaymentMethodType payout_method = 40; // payment method to use for the payout, e.g. bank transfer, card, etc.
+  // ISO 4217 currency code (3 uppercase letters)
+  string payout_currency = 10 [(buf.validate.field).string = {
+    len: 3,
+    pattern: "^[A-Z]{3}$"
+  }]; // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
+  // Amount is required
+  tzero.v1.common.Decimal amount = 20 [(buf.validate.field).required = true]; // amount in quote currency, only USD is supported
+  // Quote type must be specified
+  QuoteType quote_type = 30 [(buf.validate.field).enum = {
+    not_in: [0]
+  }]; // type of the quote, e.g. real-time or guaranteed
+  // Payout method must be specified
+  tzero.v1.common.PaymentMethodType payout_method = 40 [(buf.validate.field).enum = {
+    not_in: [0]
+  }]; // payment method to use for the payout, e.g. bank transfer, card, etc.
 }
 
 message GetPayoutQuoteResponse {
-  tzero.v1.common.Decimal rate = 10; // rate in USD/currency, e.g. 1.2345 for 1 USD = 1.2345 EUR
-  google.protobuf.Timestamp expiration = 20; // expiration time of the quote
-  QuoteId quote_id = 30; //
+  // Rate is required
+  tzero.v1.common.Decimal rate = 10 [(buf.validate.field).required = true]; // rate in USD/currency, e.g. 1.2345 for 1 USD = 1.2345 EUR
+  // Expiration must be in the future
+  google.protobuf.Timestamp expiration = 20 [(buf.validate.field).timestamp.gt_now = true]; // expiration time of the quote
+  // Quote ID is required
+  QuoteId quote_id = 30 [(buf.validate.field).required = true]; //
 }
 
 message CreatePaymentRequest{
-  string payment_client_id = 10; // unique client generated id for this payment
+  // Payment client ID must be non-empty and reasonable length
+  string payment_client_id = 10 [(buf.validate.field).string = {
+    min_len: 1,
+    max_len: 64
+  }]; // unique client generated id for this payment
 
-  string payout_currency = 20; // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
-  tzero.v1.common.PaymentMethod payout_details = 25; // payment method to use for the payout, e.g. bank transfer, card, etc.
-  tzero.v1.common.Decimal amount = 30; // amount in the payin currency, by default USD (if the payIn currency is not specified)
-  optional string payin_currency = 40; // if not specified, USD is used
+  // ISO 4217 currency code (3 uppercase letters)
+  string payout_currency = 20 [(buf.validate.field).string = {
+    len: 3,
+    pattern: "^[A-Z]{3}$"
+  }]; // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
+  // Payout details are required
+  tzero.v1.common.PaymentMethod payout_details = 25 [(buf.validate.field).required = true]; // payment method to use for the payout, e.g. bank transfer, card, etc.
+  // Amount is required
+  tzero.v1.common.Decimal amount = 30 [(buf.validate.field).required = true]; // amount in the payin currency, by default USD (if the payIn currency is not specified)
+  // If specified, must be valid ISO 4217 currency code
+  optional string payin_currency = 40 [(buf.validate.field).string = {
+    len: 3,
+    pattern: "^[A-Z]{3}$"
+  }]; // if not specified, USD is used
 
   Sender sender = 50; // optional or option in the oneof?
   Recipient recipient = 60; // optional or option in the oneof?
 
-  optional string reference = 70 [deprecated = true]; // optional reference for the payment, up to 140 characters
+  optional string reference = 70 [deprecated = true, (buf.validate.field).string.max_len = 140]; // optional reference for the payment, up to 140 characters
 
   optional QuoteId quote_id = 100; // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method
 
@@ -133,21 +181,37 @@ message CreatePaymentRequest{
 
   // Work in progress
   message PrivatePerson {
-    string private_person_client_id = 10;
-    string first_name = 20;
-    string last_name = 30;
+    // Private person client ID must be non-empty
+    string private_person_client_id = 10 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 64
+    }];
+    // First name must be non-empty and reasonable length
+    string first_name = 20 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 50
+    }];
+    // Last name must be non-empty and reasonable length
+    string last_name = 30 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 50
+    }];
   }
 }
 
 message QuoteId {
-  int64 quote_id = 30; // unique identifier of the quote within the specified provider
-  int32 provider_id = 40; // provider id of the quote
+  // Quote ID must be positive
+  int64 quote_id = 30 [(buf.validate.field).int64.gt = 0]; // unique identifier of the quote within the specified provider
+  // Provider ID must be positive
+  int32 provider_id = 40 [(buf.validate.field).int32.gt = 0]; // provider id of the quote
 }
 
 message CreatePaymentResponse {
-  string payment_client_id = 10; // client generated id supplied in the request
+  // Payment client ID must be non-empty
+  string payment_client_id = 10 [(buf.validate.field).string.min_len = 1]; // client generated id supplied in the request
 
   oneof result {
+    option (buf.validate.oneof).required = true;
     /**
      * Success response - means the payment was accepted, but the payout is not yet completed. This means, the network found
      * a suitable quote for the payout currency and amount, and instructed the payout provider to process the payout.
@@ -158,10 +222,11 @@ message CreatePaymentResponse {
      * payout currency and amount, or the credit limit is exceeded for the available quotes.
      */
     Failure failure = 30;
-  }
+  };
 
   message Success {
-    int64 payment_id = 10; // payment id assigned by the network
+    // Payment ID must be positive
+    int64 payment_id = 10 [(buf.validate.field).int64.gt = 0]; // payment id assigned by the network
   }
 
   message Failure {
@@ -173,8 +238,10 @@ message CreatePaymentResponse {
 }
 
 message ConfirmPayoutRequest{
-  int64 payment_id = 10; // payment id assigned by the network, this is the same payment id that was provided in the PayoutRequest
-  int64 payout_id = 20; // payout id assigned by the payout provider, this is the same payout id that was provided in the PayoutRequest
+  // Payment ID must be positive
+  int64 payment_id = 10 [(buf.validate.field).int64.gt = 0]; // payment id assigned by the network, this is the same payment id that was provided in the PayoutRequest
+  // Payout ID must be positive
+  int64 payout_id = 20 [(buf.validate.field).int64.gt = 0]; // payout id assigned by the payout provider, this is the same payout id that was provided in the PayoutRequest
 
   /**
   * Payment receipt might contain metadata about payment recognizable by pay-in provider.
