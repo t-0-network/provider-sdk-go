@@ -5,7 +5,7 @@ managed:
     - file_option: go_package
       module: buf.build/googleapis/googleapis
     - file_option: go_package
-      module: buf.build/envoyproxy/protoc-gen-validate
+      module: buf.build/bufbuild/protovalidate
   override:
     - file_option: go_package_prefix
       value: github.com/t-0-network/provider-sdk-go/api/gen/proto
