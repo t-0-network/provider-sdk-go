@@ -7,6 +7,7 @@
 package common
 
 import (
+	_ "github.com/t-0-network/provider-sdk-go/api/gen/proto/buf/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -118,9 +119,10 @@ func (Stablecoin) EnumDescriptor() ([]byte, []int) {
 
 // Decimal 123.45 equals to unscaled=12345 and exponent=-2 (e.g. unscaled * 10^exponent, 123.45 = 12345 * 10^-2)
 type Decimal struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Unscaled      int64                  `protobuf:"varint,10,opt,name=unscaled,proto3" json:"unscaled,omitempty"`
-	Exponent      int32                  `protobuf:"varint,20,opt,name=exponent,proto3" json:"exponent,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Unscaled int64                  `protobuf:"varint,10,opt,name=unscaled,proto3" json:"unscaled,omitempty"`
+	// Exponent should be reasonable for financial calculations (typically -8 to 8)
+	Exponent      int32 `protobuf:"varint,20,opt,name=exponent,proto3" json:"exponent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -173,11 +175,11 @@ var File_tzero_v1_common_common_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_common_common_proto_rawDesc = "" +
 	"\n" +
-	"\x1ctzero/v1/common/common.proto\x12\x0ftzero.v1.common\"A\n" +
+	"\x1ctzero/v1/common/common.proto\x12\x0ftzero.v1.common\x1a\x1bbuf/validate/validate.proto\"U\n" +
 	"\aDecimal\x12\x1a\n" +
 	"\bunscaled\x18\n" +
-	" \x01(\x03R\bunscaled\x12\x1a\n" +
-	"\bexponent\x18\x14 \x01(\x05R\bexponent*Q\n" +
+	" \x01(\x03R\bunscaled\x12.\n" +
+	"\bexponent\x18\x14 \x01(\x05B\x12\xbaH\x0f\x1a\r\x18\b(\xf8\xff\xff\xff\xff\xff\xff\xff\xff\x01R\bexponent*Q\n" +
 	"\n" +
 	"Blockchain\x12\x1a\n" +
 	"\x16BLOCKCHAIN_UNSPECIFIED\x10\x00\x12\x12\n" +

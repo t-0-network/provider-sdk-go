@@ -7,6 +7,7 @@
 package common
 
 import (
+	_ "github.com/t-0-network/provider-sdk-go/api/gen/proto/buf/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -29,6 +30,8 @@ const (
 	PaymentMethodType_PAYMENT_METHOD_TYPE_SWIFT       PaymentMethodType = 20
 	PaymentMethodType_PAYMENT_METHOD_TYPE_CARD        PaymentMethodType = 30 // only pay in
 	PaymentMethodType_PAYMENT_METHOD_TYPE_STABLECOIN  PaymentMethodType = 40 // only pay out
+	PaymentMethodType_PAYMENT_METHOD_TYPE_ACH         PaymentMethodType = 50
+	PaymentMethodType_PAYMENT_METHOD_TYPE_WIRE        PaymentMethodType = 60
 )
 
 // Enum value maps for PaymentMethodType.
@@ -39,6 +42,8 @@ var (
 		20: "PAYMENT_METHOD_TYPE_SWIFT",
 		30: "PAYMENT_METHOD_TYPE_CARD",
 		40: "PAYMENT_METHOD_TYPE_STABLECOIN",
+		50: "PAYMENT_METHOD_TYPE_ACH",
+		60: "PAYMENT_METHOD_TYPE_WIRE",
 	}
 	PaymentMethodType_value = map[string]int32{
 		"PAYMENT_METHOD_TYPE_UNSPECIFIED": 0,
@@ -46,6 +51,8 @@ var (
 		"PAYMENT_METHOD_TYPE_SWIFT":       20,
 		"PAYMENT_METHOD_TYPE_CARD":        30,
 		"PAYMENT_METHOD_TYPE_STABLECOIN":  40,
+		"PAYMENT_METHOD_TYPE_ACH":         50,
+		"PAYMENT_METHOD_TYPE_WIRE":        60,
 	}
 )
 
@@ -76,6 +83,55 @@ func (PaymentMethodType) EnumDescriptor() ([]byte, []int) {
 	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{0}
 }
 
+type AchPaymentDetails_AchAccountType int32
+
+const (
+	AchPaymentDetails_ACH_ACCOUNT_TYPE_UNSPECIFIED AchPaymentDetails_AchAccountType = 0
+	AchPaymentDetails_ACH_ACCOUNT_TYPE_CHECKING    AchPaymentDetails_AchAccountType = 10
+	AchPaymentDetails_ACH_ACCOUNT_TYPE_SAVINGS     AchPaymentDetails_AchAccountType = 20
+)
+
+// Enum value maps for AchPaymentDetails_AchAccountType.
+var (
+	AchPaymentDetails_AchAccountType_name = map[int32]string{
+		0:  "ACH_ACCOUNT_TYPE_UNSPECIFIED",
+		10: "ACH_ACCOUNT_TYPE_CHECKING",
+		20: "ACH_ACCOUNT_TYPE_SAVINGS",
+	}
+	AchPaymentDetails_AchAccountType_value = map[string]int32{
+		"ACH_ACCOUNT_TYPE_UNSPECIFIED": 0,
+		"ACH_ACCOUNT_TYPE_CHECKING":    10,
+		"ACH_ACCOUNT_TYPE_SAVINGS":     20,
+	}
+)
+
+func (x AchPaymentDetails_AchAccountType) Enum() *AchPaymentDetails_AchAccountType {
+	p := new(AchPaymentDetails_AchAccountType)
+	*p = x
+	return p
+}
+
+func (x AchPaymentDetails_AchAccountType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AchPaymentDetails_AchAccountType) Descriptor() protoreflect.EnumDescriptor {
+	return file_tzero_v1_common_payment_method_proto_enumTypes[1].Descriptor()
+}
+
+func (AchPaymentDetails_AchAccountType) Type() protoreflect.EnumType {
+	return &file_tzero_v1_common_payment_method_proto_enumTypes[1]
+}
+
+func (x AchPaymentDetails_AchAccountType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AchPaymentDetails_AchAccountType.Descriptor instead.
+func (AchPaymentDetails_AchAccountType) EnumDescriptor() ([]byte, []int) {
+	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{4, 0}
+}
+
 type PaymentMethod struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Details:
@@ -83,6 +139,8 @@ type PaymentMethod struct {
 	//	*PaymentMethod_Sepa
 	//	*PaymentMethod_Swift
 	//	*PaymentMethod_Stablecoin
+	//	*PaymentMethod_Ach
+	//	*PaymentMethod_Wire
 	Details       isPaymentMethod_Details `protobuf_oneof:"details"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -152,6 +210,24 @@ func (x *PaymentMethod) GetStablecoin() *StablecoinPaymentDetails {
 	return nil
 }
 
+func (x *PaymentMethod) GetAch() *AchPaymentDetails {
+	if x != nil {
+		if x, ok := x.Details.(*PaymentMethod_Ach); ok {
+			return x.Ach
+		}
+	}
+	return nil
+}
+
+func (x *PaymentMethod) GetWire() *WirePaymentDetails {
+	if x != nil {
+		if x, ok := x.Details.(*PaymentMethod_Wire); ok {
+			return x.Wire
+		}
+	}
+	return nil
+}
+
 type isPaymentMethod_Details interface {
 	isPaymentMethod_Details()
 }
@@ -168,17 +244,32 @@ type PaymentMethod_Stablecoin struct {
 	Stablecoin *StablecoinPaymentDetails `protobuf:"bytes,40,opt,name=stablecoin,proto3,oneof"`
 }
 
+type PaymentMethod_Ach struct {
+	Ach *AchPaymentDetails `protobuf:"bytes,50,opt,name=ach,proto3,oneof"`
+}
+
+type PaymentMethod_Wire struct {
+	Wire *WirePaymentDetails `protobuf:"bytes,60,opt,name=wire,proto3,oneof"`
+}
+
 func (*PaymentMethod_Sepa) isPaymentMethod_Details() {}
 
 func (*PaymentMethod_Swift) isPaymentMethod_Details() {}
 
 func (*PaymentMethod_Stablecoin) isPaymentMethod_Details() {}
 
+func (*PaymentMethod_Ach) isPaymentMethod_Details() {}
+
+func (*PaymentMethod_Wire) isPaymentMethod_Details() {}
+
 type SepaPaymentDetails struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	Iban             string                 `protobuf:"bytes,20,opt,name=iban,proto3" json:"iban,omitempty"`
-	BeneficiaryName  string                 `protobuf:"bytes,30,opt,name=beneficiary_name,json=beneficiaryName,proto3" json:"beneficiary_name,omitempty"`
-	PaymentReference string                 `protobuf:"bytes,40,opt,name=payment_reference,json=paymentReference,proto3" json:"payment_reference,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// IBAN should be 15-34 characters, alphanumeric
+	Iban string `protobuf:"bytes,20,opt,name=iban,proto3" json:"iban,omitempty"`
+	// Beneficiary name should be 1-70 characters (SEPA standard)
+	BeneficiaryName string `protobuf:"bytes,30,opt,name=beneficiary_name,json=beneficiaryName,proto3" json:"beneficiary_name,omitempty"`
+	// Payment reference up to 140 characters (SEPA standard)
+	PaymentReference string `protobuf:"bytes,40,opt,name=payment_reference,json=paymentReference,proto3" json:"payment_reference,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -271,10 +362,13 @@ func (*SwiftPaymentDetails) Descriptor() ([]byte, []int) {
 }
 
 type StablecoinPaymentDetails struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Blockchain    Blockchain             `protobuf:"varint,10,opt,name=blockchain,proto3,enum=tzero.v1.common.Blockchain" json:"blockchain,omitempty"`
-	Stablecoin    Stablecoin             `protobuf:"varint,20,opt,name=stablecoin,proto3,enum=tzero.v1.common.Stablecoin" json:"stablecoin,omitempty"`
-	Address       string                 `protobuf:"bytes,30,opt,name=address,proto3" json:"address,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Blockchain must be specified and not UNSPECIFIED
+	Blockchain Blockchain `protobuf:"varint,10,opt,name=blockchain,proto3,enum=tzero.v1.common.Blockchain" json:"blockchain,omitempty"`
+	// Stablecoin must be specified and not UNSPECIFIED
+	Stablecoin Stablecoin `protobuf:"varint,20,opt,name=stablecoin,proto3,enum=tzero.v1.common.Stablecoin" json:"stablecoin,omitempty"`
+	// Blockchain address should be a valid hex address (20-64 chars for most blockchains)
+	Address       string `protobuf:"bytes,30,opt,name=address,proto3" json:"address,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -330,40 +424,239 @@ func (x *StablecoinPaymentDetails) GetAddress() string {
 	return ""
 }
 
+type AchPaymentDetails struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// US bank routing number (9 digits)
+	RoutingNumber string `protobuf:"bytes,10,opt,name=routing_number,json=routingNumber,proto3" json:"routing_number,omitempty"`
+	// US bank account number (up to 17 digits)
+	AccountNumber string `protobuf:"bytes,20,opt,name=account_number,json=accountNumber,proto3" json:"account_number,omitempty"`
+	// Account holder name (1-70 characters)
+	AccountHolderName string `protobuf:"bytes,30,opt,name=account_holder_name,json=accountHolderName,proto3" json:"account_holder_name,omitempty"`
+	// Account type (checking or savings)
+	AccountType   AchPaymentDetails_AchAccountType `protobuf:"varint,40,opt,name=account_type,json=accountType,proto3,enum=tzero.v1.common.AchPaymentDetails_AchAccountType" json:"account_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AchPaymentDetails) Reset() {
+	*x = AchPaymentDetails{}
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AchPaymentDetails) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AchPaymentDetails) ProtoMessage() {}
+
+func (x *AchPaymentDetails) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AchPaymentDetails.ProtoReflect.Descriptor instead.
+func (*AchPaymentDetails) Descriptor() ([]byte, []int) {
+	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *AchPaymentDetails) GetRoutingNumber() string {
+	if x != nil {
+		return x.RoutingNumber
+	}
+	return ""
+}
+
+func (x *AchPaymentDetails) GetAccountNumber() string {
+	if x != nil {
+		return x.AccountNumber
+	}
+	return ""
+}
+
+func (x *AchPaymentDetails) GetAccountHolderName() string {
+	if x != nil {
+		return x.AccountHolderName
+	}
+	return ""
+}
+
+func (x *AchPaymentDetails) GetAccountType() AchPaymentDetails_AchAccountType {
+	if x != nil {
+		return x.AccountType
+	}
+	return AchPaymentDetails_ACH_ACCOUNT_TYPE_UNSPECIFIED
+}
+
+type WirePaymentDetails struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Bank name (1-70 characters)
+	BankName string `protobuf:"bytes,10,opt,name=bank_name,json=bankName,proto3" json:"bank_name,omitempty"`
+	// Bank address (1-140 characters)
+	BankAddress string `protobuf:"bytes,20,opt,name=bank_address,json=bankAddress,proto3" json:"bank_address,omitempty"`
+	// SWIFT/BIC code (8 or 11 characters)
+	SwiftCode string `protobuf:"bytes,30,opt,name=swift_code,json=swiftCode,proto3" json:"swift_code,omitempty"`
+	// Account number (up to 34 characters for international compatibility)
+	AccountNumber string `protobuf:"bytes,40,opt,name=account_number,json=accountNumber,proto3" json:"account_number,omitempty"`
+	// Beneficiary name (1-70 characters)
+	BeneficiaryName string `protobuf:"bytes,50,opt,name=beneficiary_name,json=beneficiaryName,proto3" json:"beneficiary_name,omitempty"`
+	// Beneficiary address (1-140 characters)
+	BeneficiaryAddress string `protobuf:"bytes,60,opt,name=beneficiary_address,json=beneficiaryAddress,proto3" json:"beneficiary_address,omitempty"`
+	// Wire reference/purpose (up to 140 characters)
+	WireReference string `protobuf:"bytes,70,opt,name=wire_reference,json=wireReference,proto3" json:"wire_reference,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WirePaymentDetails) Reset() {
+	*x = WirePaymentDetails{}
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WirePaymentDetails) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WirePaymentDetails) ProtoMessage() {}
+
+func (x *WirePaymentDetails) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WirePaymentDetails.ProtoReflect.Descriptor instead.
+func (*WirePaymentDetails) Descriptor() ([]byte, []int) {
+	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *WirePaymentDetails) GetBankName() string {
+	if x != nil {
+		return x.BankName
+	}
+	return ""
+}
+
+func (x *WirePaymentDetails) GetBankAddress() string {
+	if x != nil {
+		return x.BankAddress
+	}
+	return ""
+}
+
+func (x *WirePaymentDetails) GetSwiftCode() string {
+	if x != nil {
+		return x.SwiftCode
+	}
+	return ""
+}
+
+func (x *WirePaymentDetails) GetAccountNumber() string {
+	if x != nil {
+		return x.AccountNumber
+	}
+	return ""
+}
+
+func (x *WirePaymentDetails) GetBeneficiaryName() string {
+	if x != nil {
+		return x.BeneficiaryName
+	}
+	return ""
+}
+
+func (x *WirePaymentDetails) GetBeneficiaryAddress() string {
+	if x != nil {
+		return x.BeneficiaryAddress
+	}
+	return ""
+}
+
+func (x *WirePaymentDetails) GetWireReference() string {
+	if x != nil {
+		return x.WireReference
+	}
+	return ""
+}
+
 var File_tzero_v1_common_payment_method_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_common_payment_method_proto_rawDesc = "" +
 	"\n" +
-	"$tzero/v1/common/payment_method.proto\x12\x0ftzero.v1.common\x1a\x1ctzero/v1/common/common.proto\"\xe0\x01\n" +
+	"$tzero/v1/common/payment_method.proto\x12\x0ftzero.v1.common\x1a\x1ctzero/v1/common/common.proto\x1a\x1bbuf/validate/validate.proto\"\xda\x02\n" +
 	"\rPaymentMethod\x129\n" +
 	"\x04sepa\x18\n" +
 	" \x01(\v2#.tzero.v1.common.SepaPaymentDetailsH\x00R\x04sepa\x12<\n" +
 	"\x05swift\x18\x1e \x01(\v2$.tzero.v1.common.SwiftPaymentDetailsH\x00R\x05swift\x12K\n" +
 	"\n" +
 	"stablecoin\x18( \x01(\v2).tzero.v1.common.StablecoinPaymentDetailsH\x00R\n" +
-	"stablecoinB\t\n" +
-	"\adetails\"\x80\x01\n" +
-	"\x12SepaPaymentDetails\x12\x12\n" +
-	"\x04iban\x18\x14 \x01(\tR\x04iban\x12)\n" +
-	"\x10beneficiary_name\x18\x1e \x01(\tR\x0fbeneficiaryName\x12+\n" +
-	"\x11payment_reference\x18( \x01(\tR\x10paymentReference\"\x15\n" +
-	"\x13SwiftPaymentDetails\"\xae\x01\n" +
-	"\x18StablecoinPaymentDetails\x12;\n" +
+	"stablecoin\x126\n" +
+	"\x03ach\x182 \x01(\v2\".tzero.v1.common.AchPaymentDetailsH\x00R\x03ach\x129\n" +
+	"\x04wire\x18< \x01(\v2#.tzero.v1.common.WirePaymentDetailsH\x00R\x04wireB\x10\n" +
+	"\adetails\x12\x05\xbaH\x02\b\x01\"\xbd\x01\n" +
+	"\x12SepaPaymentDetails\x12:\n" +
+	"\x04iban\x18\x14 \x01(\tB&\xbaH#r!\x10\x0f\x18\"2\x1b^[A-Z]{2}[0-9]{2}[A-Z0-9]+$R\x04iban\x124\n" +
+	"\x10beneficiary_name\x18\x1e \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18FR\x0fbeneficiaryName\x125\n" +
+	"\x11payment_reference\x18( \x01(\tB\b\xbaH\x05r\x03\x18\x8c\x01R\x10paymentReference\"\x15\n" +
+	"\x13SwiftPaymentDetails\"\xe2\x01\n" +
+	"\x18StablecoinPaymentDetails\x12E\n" +
 	"\n" +
 	"blockchain\x18\n" +
-	" \x01(\x0e2\x1b.tzero.v1.common.BlockchainR\n" +
-	"blockchain\x12;\n" +
+	" \x01(\x0e2\x1b.tzero.v1.common.BlockchainB\b\xbaH\x05\x82\x01\x02 \x00R\n" +
+	"blockchain\x12E\n" +
 	"\n" +
-	"stablecoin\x18\x14 \x01(\x0e2\x1b.tzero.v1.common.StablecoinR\n" +
-	"stablecoin\x12\x18\n" +
-	"\aaddress\x18\x1e \x01(\tR\aaddress*\xb7\x01\n" +
+	"stablecoin\x18\x14 \x01(\x0e2\x1b.tzero.v1.common.StablecoinB\b\xbaH\x05\x82\x01\x02 \x00R\n" +
+	"stablecoin\x128\n" +
+	"\aaddress\x18\x1e \x01(\tB\x1e\xbaH\x1br\x19\x10\x14\x18@2\x13^(0x)?[a-fA-F0-9]+$R\aaddress\"\x99\x03\n" +
+	"\x11AchPaymentDetails\x12<\n" +
+	"\x0erouting_number\x18\n" +
+	" \x01(\tB\x15\xbaH\x12r\x10\x10\t\x18\t2\n" +
+	"^[0-9]{9}$R\rroutingNumber\x12:\n" +
+	"\x0eaccount_number\x18\x14 \x01(\tB\x13\xbaH\x10r\x0e\x10\x01\x18\x112\b^[0-9]+$R\raccountNumber\x129\n" +
+	"\x13account_holder_name\x18\x1e \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18FR\x11accountHolderName\x12^\n" +
+	"\faccount_type\x18( \x01(\x0e21.tzero.v1.common.AchPaymentDetails.AchAccountTypeB\b\xbaH\x05\x82\x01\x02 \x00R\vaccountType\"o\n" +
+	"\x0eAchAccountType\x12 \n" +
+	"\x1cACH_ACCOUNT_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
+	"\x19ACH_ACCOUNT_TYPE_CHECKING\x10\n" +
+	"\x12\x1c\n" +
+	"\x18ACH_ACCOUNT_TYPE_SAVINGS\x10\x14\"\x90\x03\n" +
+	"\x12WirePaymentDetails\x12&\n" +
+	"\tbank_name\x18\n" +
+	" \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18FR\bbankName\x12-\n" +
+	"\fbank_address\x18\x14 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x8c\x01R\vbankAddress\x12M\n" +
+	"\n" +
+	"swift_code\x18\x1e \x01(\tB.\xbaH+r)\x10\b\x18\v2#^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$R\tswiftCode\x120\n" +
+	"\x0eaccount_number\x18( \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18\"R\raccountNumber\x124\n" +
+	"\x10beneficiary_name\x182 \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18FR\x0fbeneficiaryName\x12;\n" +
+	"\x13beneficiary_address\x18< \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x8c\x01R\x12beneficiaryAddress\x12/\n" +
+	"\x0ewire_reference\x18F \x01(\tB\b\xbaH\x05r\x03\x18\x8c\x01R\rwireReference*\xf2\x01\n" +
 	"\x11PaymentMethodType\x12#\n" +
 	"\x1fPAYMENT_METHOD_TYPE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18PAYMENT_METHOD_TYPE_SEPA\x10\n" +
 	"\x12\x1d\n" +
 	"\x19PAYMENT_METHOD_TYPE_SWIFT\x10\x14\x12\x1c\n" +
 	"\x18PAYMENT_METHOD_TYPE_CARD\x10\x1e\x12\"\n" +
-	"\x1ePAYMENT_METHOD_TYPE_STABLECOIN\x10(B\xcd\x01\n" +
+	"\x1ePAYMENT_METHOD_TYPE_STABLECOIN\x10(\x12\x1b\n" +
+	"\x17PAYMENT_METHOD_TYPE_ACH\x102\x12\x1c\n" +
+	"\x18PAYMENT_METHOD_TYPE_WIRE\x10<B\xcd\x01\n" +
 	"\x13com.tzero.v1.commonB\x12PaymentMethodProtoP\x01ZDgithub.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/common\xa2\x02\x03TVC\xaa\x02\x0fTzero.V1.Common\xca\x02\x0fTzero\\V1\\Common\xe2\x02\x1bTzero\\V1\\Common\\GPBMetadata\xea\x02\x11Tzero::V1::Commonb\x06proto3"
 
 var (
@@ -378,28 +671,34 @@ func file_tzero_v1_common_payment_method_proto_rawDescGZIP() []byte {
 	return file_tzero_v1_common_payment_method_proto_rawDescData
 }
 
-var file_tzero_v1_common_payment_method_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_tzero_v1_common_payment_method_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_tzero_v1_common_payment_method_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_tzero_v1_common_payment_method_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_tzero_v1_common_payment_method_proto_goTypes = []any{
-	(PaymentMethodType)(0),           // 0: tzero.v1.common.PaymentMethodType
-	(*PaymentMethod)(nil),            // 1: tzero.v1.common.PaymentMethod
-	(*SepaPaymentDetails)(nil),       // 2: tzero.v1.common.SepaPaymentDetails
-	(*SwiftPaymentDetails)(nil),      // 3: tzero.v1.common.SwiftPaymentDetails
-	(*StablecoinPaymentDetails)(nil), // 4: tzero.v1.common.StablecoinPaymentDetails
-	(Blockchain)(0),                  // 5: tzero.v1.common.Blockchain
-	(Stablecoin)(0),                  // 6: tzero.v1.common.Stablecoin
+	(PaymentMethodType)(0),                // 0: tzero.v1.common.PaymentMethodType
+	(AchPaymentDetails_AchAccountType)(0), // 1: tzero.v1.common.AchPaymentDetails.AchAccountType
+	(*PaymentMethod)(nil),                 // 2: tzero.v1.common.PaymentMethod
+	(*SepaPaymentDetails)(nil),            // 3: tzero.v1.common.SepaPaymentDetails
+	(*SwiftPaymentDetails)(nil),           // 4: tzero.v1.common.SwiftPaymentDetails
+	(*StablecoinPaymentDetails)(nil),      // 5: tzero.v1.common.StablecoinPaymentDetails
+	(*AchPaymentDetails)(nil),             // 6: tzero.v1.common.AchPaymentDetails
+	(*WirePaymentDetails)(nil),            // 7: tzero.v1.common.WirePaymentDetails
+	(Blockchain)(0),                       // 8: tzero.v1.common.Blockchain
+	(Stablecoin)(0),                       // 9: tzero.v1.common.Stablecoin
 }
 var file_tzero_v1_common_payment_method_proto_depIdxs = []int32{
-	2, // 0: tzero.v1.common.PaymentMethod.sepa:type_name -> tzero.v1.common.SepaPaymentDetails
-	3, // 1: tzero.v1.common.PaymentMethod.swift:type_name -> tzero.v1.common.SwiftPaymentDetails
-	4, // 2: tzero.v1.common.PaymentMethod.stablecoin:type_name -> tzero.v1.common.StablecoinPaymentDetails
-	5, // 3: tzero.v1.common.StablecoinPaymentDetails.blockchain:type_name -> tzero.v1.common.Blockchain
-	6, // 4: tzero.v1.common.StablecoinPaymentDetails.stablecoin:type_name -> tzero.v1.common.Stablecoin
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	3, // 0: tzero.v1.common.PaymentMethod.sepa:type_name -> tzero.v1.common.SepaPaymentDetails
+	4, // 1: tzero.v1.common.PaymentMethod.swift:type_name -> tzero.v1.common.SwiftPaymentDetails
+	5, // 2: tzero.v1.common.PaymentMethod.stablecoin:type_name -> tzero.v1.common.StablecoinPaymentDetails
+	6, // 3: tzero.v1.common.PaymentMethod.ach:type_name -> tzero.v1.common.AchPaymentDetails
+	7, // 4: tzero.v1.common.PaymentMethod.wire:type_name -> tzero.v1.common.WirePaymentDetails
+	8, // 5: tzero.v1.common.StablecoinPaymentDetails.blockchain:type_name -> tzero.v1.common.Blockchain
+	9, // 6: tzero.v1.common.StablecoinPaymentDetails.stablecoin:type_name -> tzero.v1.common.Stablecoin
+	1, // 7: tzero.v1.common.AchPaymentDetails.account_type:type_name -> tzero.v1.common.AchPaymentDetails.AchAccountType
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_tzero_v1_common_payment_method_proto_init() }
@@ -412,14 +711,16 @@ func file_tzero_v1_common_payment_method_proto_init() {
 		(*PaymentMethod_Sepa)(nil),
 		(*PaymentMethod_Swift)(nil),
 		(*PaymentMethod_Stablecoin)(nil),
+		(*PaymentMethod_Ach)(nil),
+		(*PaymentMethod_Wire)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tzero_v1_common_payment_method_proto_rawDesc), len(file_tzero_v1_common_payment_method_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   4,
+			NumEnums:      2,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

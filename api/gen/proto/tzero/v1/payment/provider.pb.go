@@ -7,6 +7,7 @@
 package payment
 
 import (
+	_ "github.com/t-0-network/provider-sdk-go/api/gen/proto/buf/validate"
 	common "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -1577,42 +1578,42 @@ var File_tzero_v1_payment_provider_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\n" +
-	"\x1ftzero/v1/payment/provider.proto\x12\x10tzero.v1.payment\x1a$tzero/v1/common/payment_method.proto\x1a%tzero/v1/common/payment_receipt.proto\x1a\x1ctzero/v1/common/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xed\x0f\n" +
-	"\x1aAppendLedgerEntriesRequest\x12\\\n" +
-	"\ftransactions\x18\x14 \x03(\v28.tzero.v1.payment.AppendLedgerEntriesRequest.TransactionR\ftransactions\x1a\x91\t\n" +
-	"\vTransaction\x12%\n" +
+	"\x1ftzero/v1/payment/provider.proto\x12\x10tzero.v1.payment\x1a$tzero/v1/common/payment_method.proto\x1a%tzero/v1/common/payment_receipt.proto\x1a\x1ctzero/v1/common/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\"\xc7\x10\n" +
+	"\x1aAppendLedgerEntriesRequest\x12f\n" +
+	"\ftransactions\x18\x14 \x03(\v28.tzero.v1.payment.AppendLedgerEntriesRequest.TransactionB\b\xbaH\x05\x92\x01\x02\b\x01R\ftransactions\x1a\xe1\t\n" +
+	"\vTransaction\x12.\n" +
 	"\x0etransaction_id\x18\n" +
-	" \x01(\x04R\rtransactionId\x12R\n" +
-	"\aentries\x18\x1e \x03(\v28.tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntryR\aentries\x12W\n" +
+	" \x01(\x04B\a\xbaH\x042\x02 \x00R\rtransactionId\x12\\\n" +
+	"\aentries\x18\x1e \x03(\v28.tzero.v1.payment.AppendLedgerEntriesRequest.LedgerEntryB\b\xbaH\x05\x92\x01\x02\b\x01R\aentries\x12W\n" +
 	"\x06pay_in\x18n \x01(\v2>.tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayInH\x00R\x05payIn\x12{\n" +
 	"\x12payout_reservation\x18x \x01(\v2J.tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayoutReservationH\x00R\x11payoutReservation\x12Z\n" +
 	"\x06payout\x18\x82\x01 \x01(\v2?.tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayoutH\x00R\x06payout\x12\x7f\n" +
 	"\x13provider_settlement\x18\x8c\x01 \x01(\v2K.tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.ProviderSettlementH\x00R\x12providerSettlement\x12p\n" +
 	"\x0efee_settlement\x18\x96\x01 \x01(\v2F.tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.FeeSettlementH\x00R\rfeeSettlement\x12\x92\x01\n" +
-	"\x1apayout_reservation_release\x18\xa0\x01 \x01(\v2Q.tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayoutReservationReleaseH\x00R\x18payoutReservationRelease\x1a&\n" +
-	"\x05PayIn\x12\x1d\n" +
+	"\x1apayout_reservation_release\x18\xa0\x01 \x01(\v2Q.tzero.v1.payment.AppendLedgerEntriesRequest.Transaction.PayoutReservationReleaseH\x00R\x18payoutReservationRelease\x1a/\n" +
+	"\x05PayIn\x12&\n" +
 	"\n" +
 	"payment_id\x18\n" +
-	" \x01(\x04R\tpaymentId\x1a2\n" +
-	"\x11PayoutReservation\x12\x1d\n" +
+	" \x01(\x04B\a\xbaH\x042\x02 \x00R\tpaymentId\x1a;\n" +
+	"\x11PayoutReservation\x12&\n" +
 	"\n" +
 	"payment_id\x18\n" +
-	" \x01(\x04R\tpaymentId\x1a'\n" +
-	"\x06Payout\x12\x1d\n" +
+	" \x01(\x04B\a\xbaH\x042\x02 \x00R\tpaymentId\x1a0\n" +
+	"\x06Payout\x12&\n" +
 	"\n" +
 	"payment_id\x18\n" +
-	" \x01(\x04R\tpaymentId\x1a9\n" +
-	"\x12ProviderSettlement\x12#\n" +
+	" \x01(\x04B\a\xbaH\x042\x02 \x00R\tpaymentId\x1aB\n" +
+	"\x12ProviderSettlement\x12,\n" +
 	"\rsettlement_id\x18\n" +
-	" \x01(\x04R\fsettlementId\x1a;\n" +
-	"\rFeeSettlement\x12*\n" +
+	" \x01(\x04B\a\xbaH\x042\x02 \x00R\fsettlementId\x1aD\n" +
+	"\rFeeSettlement\x123\n" +
 	"\x11fee_settlement_id\x18\n" +
-	" \x01(\x04R\x0ffeeSettlementId\x1a9\n" +
-	"\x18PayoutReservationRelease\x12\x1d\n" +
+	" \x01(\x04B\a\xbaH\x042\x02 \x00R\x0ffeeSettlementId\x1aB\n" +
+	"\x18PayoutReservationRelease\x12&\n" +
 	"\n" +
 	"payment_id\x18\n" +
-	" \x01(\x04R\tpaymentIdB\x15\n" +
-	"\x13transaction_details\x1a\xd1\x02\n" +
+	" \x01(\x04B\a\xbaH\x042\x02 \x00R\tpaymentIdB\x1c\n" +
+	"\x13transaction_details\x12\x05\xbaH\x02\b\x01\x1a\xd1\x02\n" +
 	"\vLedgerEntry\x12(\n" +
 	"\x10account_owner_id\x18\n" +
 	" \x01(\rR\x0eaccountOwnerId\x12[\n" +
