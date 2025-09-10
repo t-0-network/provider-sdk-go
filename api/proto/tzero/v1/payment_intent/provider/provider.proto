@@ -4,6 +4,7 @@ package tzero.v1.payment_intent.provider;
 
 import "tzero/v1/common/common.proto";
 import "tzero/v1/common/payment_method.proto";
+import "buf/validate/validate.proto";
 
 /**
 * NetworkService is used by provider in order to notify network on payment intent updates
@@ -53,23 +54,42 @@ service ProviderService {
 }
 
 message CreatePaymentIntentRequest {
-  uint64 payment_intent_id = 10; // idempotency key
-  string currency = 20; // pay-in currency
-  tzero.v1.common.Decimal amount = 30; // pay-in amount
+  // Payment intent ID must be positive
+  uint64 payment_intent_id = 10 [(buf.validate.field).uint64.gt = 0]; // idempotency key
+  // ISO 4217 currency code (3 uppercase letters)
+  string currency = 20 [(buf.validate.field).string = {
+    len: 3,
+    pattern: "^[A-Z]{3}$"
+  }]; // pay-in currency
+  // Amount is required
+  tzero.v1.common.Decimal amount = 30 [(buf.validate.field).required = true]; // pay-in amount
 }
 
 message CreatePaymentIntentResponse {
-  repeated PaymentMethod payment_methods = 20;
+  // At least one payment method should be provided
+  repeated PaymentMethod payment_methods = 20 [(buf.validate.field).repeated.min_items = 1];
 
   message PaymentMethod {
-    string payment_url = 10;
-    tzero.v1.common.PaymentMethodType payment_method = 20;
+    // Payment URL must be a valid URL
+    string payment_url = 10 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 2048,
+      pattern: "^https?://.+"
+    }];
+    // Payment method must be specified
+    tzero.v1.common.PaymentMethodType payment_method = 20 [(buf.validate.field).enum = {
+      not_in: [0]
+    }];
   }
 }
 
 message ConfirmPaymentRequest {
-  uint64 payment_intent_id = 10; // payment_intent_id from CreatePaymentIntentRequest
-  tzero.v1.common.PaymentMethodType payment_method = 20;
+  // Payment intent ID must be positive
+  uint64 payment_intent_id = 10 [(buf.validate.field).uint64.gt = 0]; // payment_intent_id from CreatePaymentIntentRequest
+  // Payment method must be specified
+  tzero.v1.common.PaymentMethodType payment_method = 20 [(buf.validate.field).enum = {
+    not_in: [0]
+  }];
 }
 
 message ConfirmPaymentResponse {
