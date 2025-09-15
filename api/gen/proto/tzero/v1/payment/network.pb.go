@@ -209,17 +209,13 @@ func (*UpdateQuoteResponse) Descriptor() ([]byte, []int) {
 }
 
 type GetPayoutQuoteRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// ISO 4217 currency code (3 uppercase letters)
-	PayoutCurrency string `protobuf:"bytes,10,opt,name=payout_currency,json=payoutCurrency,proto3" json:"payout_currency,omitempty"` // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
-	// Amount is required
-	Amount *common.Decimal `protobuf:"bytes,20,opt,name=amount,proto3" json:"amount,omitempty"` // amount in quote currency, only USD is supported
-	// Quote type must be specified
-	QuoteType QuoteType `protobuf:"varint,30,opt,name=quote_type,json=quoteType,proto3,enum=tzero.v1.payment.QuoteType" json:"quote_type,omitempty"` // type of the quote, e.g. real-time or guaranteed
-	// Payout method must be specified
-	PayoutMethod  common.PaymentMethodType `protobuf:"varint,40,opt,name=payout_method,json=payoutMethod,proto3,enum=tzero.v1.common.PaymentMethodType" json:"payout_method,omitempty"` // payment method to use for the payout, e.g. bank transfer, card, etc.
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState   `protogen:"open.v1"`
+	PayoutCurrency string                   `protobuf:"bytes,10,opt,name=payout_currency,json=payoutCurrency,proto3" json:"payout_currency,omitempty"`                                   // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
+	Amount         *common.Decimal          `protobuf:"bytes,20,opt,name=amount,proto3" json:"amount,omitempty"`                                                                         // amount in quote currency, only USD is supported
+	QuoteType      QuoteType                `protobuf:"varint,30,opt,name=quote_type,json=quoteType,proto3,enum=tzero.v1.payment.QuoteType" json:"quote_type,omitempty"`                 // type of the quote, e.g. real-time or guaranteed
+	PayoutMethod   common.PaymentMethodType `protobuf:"varint,40,opt,name=payout_method,json=payoutMethod,proto3,enum=tzero.v1.common.PaymentMethodType" json:"payout_method,omitempty"` // payment method to use for the payout, e.g. bank transfer, card, etc.
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *GetPayoutQuoteRequest) Reset() {
@@ -281,13 +277,10 @@ func (x *GetPayoutQuoteRequest) GetPayoutMethod() common.PaymentMethodType {
 }
 
 type GetPayoutQuoteResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Rate is required
-	Rate *common.Decimal `protobuf:"bytes,10,opt,name=rate,proto3" json:"rate,omitempty"` // rate in USD/currency, e.g. 1.2345 for 1 USD = 1.2345 EUR
-	// Expiration must be in the future
-	Expiration *timestamppb.Timestamp `protobuf:"bytes,20,opt,name=expiration,proto3" json:"expiration,omitempty"` // expiration time of the quote
-	// Quote ID is required
-	QuoteId       *QuoteId `protobuf:"bytes,30,opt,name=quote_id,json=quoteId,proto3" json:"quote_id,omitempty"` //
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Rate          *common.Decimal        `protobuf:"bytes,10,opt,name=rate,proto3" json:"rate,omitempty"`                      // rate in USD/currency, e.g. 1.2345 for 1 USD = 1.2345 EUR
+	Expiration    *timestamppb.Timestamp `protobuf:"bytes,20,opt,name=expiration,proto3" json:"expiration,omitempty"`          // expiration time of the quote
+	QuoteId       *QuoteId               `protobuf:"bytes,30,opt,name=quote_id,json=quoteId,proto3" json:"quote_id,omitempty"` //
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -344,19 +337,14 @@ func (x *GetPayoutQuoteResponse) GetQuoteId() *QuoteId {
 }
 
 type CreatePaymentRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Payment client ID must be non-empty and reasonable length
-	PaymentClientId string `protobuf:"bytes,10,opt,name=payment_client_id,json=paymentClientId,proto3" json:"payment_client_id,omitempty"` // unique client generated id for this payment
-	// ISO 4217 currency code (3 uppercase letters)
-	PayoutCurrency string `protobuf:"bytes,20,opt,name=payout_currency,json=payoutCurrency,proto3" json:"payout_currency,omitempty"` // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
-	// Payout details are required
-	PayoutDetails *common.PaymentMethod `protobuf:"bytes,25,opt,name=payout_details,json=payoutDetails,proto3" json:"payout_details,omitempty"` // payment method to use for the payout, e.g. bank transfer, card, etc.
-	// Amount is required
-	Amount *common.Decimal `protobuf:"bytes,30,opt,name=amount,proto3" json:"amount,omitempty"` // amount in the payin currency, by default USD (if the payIn currency is not specified)
-	// If specified, must be valid ISO 4217 currency code
-	PayinCurrency *string                         `protobuf:"bytes,40,opt,name=payin_currency,json=payinCurrency,proto3,oneof" json:"payin_currency,omitempty"` // if not specified, USD is used
-	Sender        *CreatePaymentRequest_Sender    `protobuf:"bytes,50,opt,name=sender,proto3" json:"sender,omitempty"`                                          // optional or option in the oneof?
-	Recipient     *CreatePaymentRequest_Recipient `protobuf:"bytes,60,opt,name=recipient,proto3" json:"recipient,omitempty"`                                    // optional or option in the oneof?
+	state           protoimpl.MessageState          `protogen:"open.v1"`
+	PaymentClientId string                          `protobuf:"bytes,10,opt,name=payment_client_id,json=paymentClientId,proto3" json:"payment_client_id,omitempty"` // unique client generated id for this payment
+	PayoutCurrency  string                          `protobuf:"bytes,20,opt,name=payout_currency,json=payoutCurrency,proto3" json:"payout_currency,omitempty"`      // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
+	PayoutDetails   *common.PaymentMethod           `protobuf:"bytes,25,opt,name=payout_details,json=payoutDetails,proto3" json:"payout_details,omitempty"`         // payment method to use for the payout, e.g. bank transfer, card, etc.
+	Amount          *common.Decimal                 `protobuf:"bytes,30,opt,name=amount,proto3" json:"amount,omitempty"`                                            // amount in the payin currency, by default USD (if the payIn currency is not specified)
+	PayinCurrency   *string                         `protobuf:"bytes,40,opt,name=payin_currency,json=payinCurrency,proto3,oneof" json:"payin_currency,omitempty"`   // if not specified, USD is used
+	Sender          *CreatePaymentRequest_Sender    `protobuf:"bytes,50,opt,name=sender,proto3" json:"sender,omitempty"`                                            // optional or option in the oneof?
+	Recipient       *CreatePaymentRequest_Recipient `protobuf:"bytes,60,opt,name=recipient,proto3" json:"recipient,omitempty"`                                      // optional or option in the oneof?
 	// Deprecated: Marked as deprecated in tzero/v1/payment/network.proto.
 	Reference     *string  `protobuf:"bytes,70,opt,name=reference,proto3,oneof" json:"reference,omitempty"`             // optional reference for the payment, up to 140 characters
 	QuoteId       *QuoteId `protobuf:"bytes,100,opt,name=quote_id,json=quoteId,proto3,oneof" json:"quote_id,omitempty"` // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method
@@ -459,11 +447,9 @@ func (x *CreatePaymentRequest) GetQuoteId() *QuoteId {
 }
 
 type QuoteId struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Quote ID must be positive
-	QuoteId int64 `protobuf:"varint,30,opt,name=quote_id,json=quoteId,proto3" json:"quote_id,omitempty"` // unique identifier of the quote within the specified provider
-	// Provider ID must be positive
-	ProviderId    int32 `protobuf:"varint,40,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"` // provider id of the quote
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	QuoteId       int64                  `protobuf:"varint,30,opt,name=quote_id,json=quoteId,proto3" json:"quote_id,omitempty"`          // unique identifier of the quote within the specified provider
+	ProviderId    int32                  `protobuf:"varint,40,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"` // provider id of the quote
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -513,9 +499,8 @@ func (x *QuoteId) GetProviderId() int32 {
 }
 
 type CreatePaymentResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Payment client ID must be non-empty
-	PaymentClientId string `protobuf:"bytes,10,opt,name=payment_client_id,json=paymentClientId,proto3" json:"payment_client_id,omitempty"` // client generated id supplied in the request
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	PaymentClientId string                 `protobuf:"bytes,10,opt,name=payment_client_id,json=paymentClientId,proto3" json:"payment_client_id,omitempty"` // client generated id supplied in the request
 	// Types that are valid to be assigned to Result:
 	//
 	//	*CreatePaymentResponse_Success_
@@ -610,11 +595,9 @@ func (*CreatePaymentResponse_Success_) isCreatePaymentResponse_Result() {}
 func (*CreatePaymentResponse_Failure_) isCreatePaymentResponse_Result() {}
 
 type ConfirmPayoutRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Payment ID must be positive
-	PaymentId int64 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"` // payment id assigned by the network, this is the same payment id that was provided in the PayoutRequest
-	// Payout ID must be positive
-	PayoutId int64 `protobuf:"varint,20,opt,name=payout_id,json=payoutId,proto3" json:"payout_id,omitempty"` // payout id assigned by the payout provider, this is the same payout id that was provided in the PayoutRequest
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	PaymentId int64                  `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"` // payment id assigned by the network, this is the same payment id that was provided in the PayoutRequest
+	PayoutId  int64                  `protobuf:"varint,20,opt,name=payout_id,json=payoutId,proto3" json:"payout_id,omitempty"`    // payout id assigned by the payout provider, this is the same payout id that was provided in the PayoutRequest
 	// *
 	// Payment receipt might contain metadata about payment recognizable by pay-in provider.
 	Receipt       *common.PaymentReceipt `protobuf:"bytes,30,opt,name=receipt,proto3" json:"receipt,omitempty"`
@@ -710,19 +693,14 @@ func (*ConfirmPayoutResponse) Descriptor() ([]byte, []int) {
 }
 
 type UpdateQuoteRequest_Quote struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// ISO 4217 currency code (3 uppercase letters)
-	Currency string `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"` // BRL, EUR, GBP, etc. (ISO 4217 currency code)
-	// Quote type must be specified
-	QuoteType QuoteType `protobuf:"varint,20,opt,name=quote_type,json=quoteType,proto3,enum=tzero.v1.payment.QuoteType" json:"quote_type,omitempty"` // type of the quote, e.g. real-time or guaranteed
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	Currency  string                 `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"` // BRL, EUR, GBP, etc. (ISO 4217 currency code)
+	QuoteType QuoteType              `protobuf:"varint,20,opt,name=quote_type,json=quoteType,proto3,enum=tzero.v1.payment.QuoteType" json:"quote_type,omitempty"`
 	// Payment method must be specified
-	PaymentMethod common.PaymentMethodType `protobuf:"varint,25,opt,name=payment_method,json=paymentMethod,proto3,enum=tzero.v1.common.PaymentMethodType" json:"payment_method,omitempty"`
-	// At least one band is required
-	Bands []*UpdateQuoteRequest_Quote_Band `protobuf:"bytes,30,rep,name=bands,proto3" json:"bands,omitempty"` // list of bands for this quote
-	// Expiration must be in the future
-	Expiration *timestamppb.Timestamp `protobuf:"bytes,60,opt,name=expiration,proto3" json:"expiration,omitempty"` // expiration time of the quote
-	// Timestamp is required
-	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,70,opt,name=timestamp,proto3" json:"timestamp,omitempty"` // timestamp quote was created
+	PaymentMethod common.PaymentMethodType         `protobuf:"varint,25,opt,name=payment_method,json=paymentMethod,proto3,enum=tzero.v1.common.PaymentMethodType" json:"payment_method,omitempty"`
+	Bands         []*UpdateQuoteRequest_Quote_Band `protobuf:"bytes,30,rep,name=bands,proto3" json:"bands,omitempty"`           // list of bands for this quote
+	Expiration    *timestamppb.Timestamp           `protobuf:"bytes,60,opt,name=expiration,proto3" json:"expiration,omitempty"` // expiration time of the quote
+	Timestamp     *timestamppb.Timestamp           `protobuf:"bytes,70,opt,name=timestamp,proto3" json:"timestamp,omitempty"`   // timestamp quote was created
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -800,13 +778,10 @@ func (x *UpdateQuoteRequest_Quote) GetTimestamp() *timestamppb.Timestamp {
 }
 
 type UpdateQuoteRequest_Quote_Band struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Client quote ID must be non-empty and reasonable length
-	ClientQuoteId string `protobuf:"bytes,10,opt,name=client_quote_id,json=clientQuoteId,proto3" json:"client_quote_id,omitempty"` // unique client generated id for this band
-	// Max amount is required
-	MaxAmount *common.Decimal `protobuf:"bytes,40,opt,name=max_amount,json=maxAmount,proto3" json:"max_amount,omitempty"` // max amount of USD this quote is applicable for. Please look into documentation for valid amounts.
-	// Rate is required and must be positive
-	Rate          *common.Decimal `protobuf:"bytes,50,opt,name=rate,proto3" json:"rate,omitempty"` // USD/currency rate
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ClientQuoteId string                 `protobuf:"bytes,10,opt,name=client_quote_id,json=clientQuoteId,proto3" json:"client_quote_id,omitempty"` // unique client generated id for this band
+	MaxAmount     *common.Decimal        `protobuf:"bytes,40,opt,name=max_amount,json=maxAmount,proto3" json:"max_amount,omitempty"`               // max amount of USD this quote is applicable for. Please look into documentation for valid amounts.
+	Rate          *common.Decimal        `protobuf:"bytes,50,opt,name=rate,proto3" json:"rate,omitempty"`                                          // USD/currency rate
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -998,15 +973,12 @@ func (*CreatePaymentRequest_Recipient_PrivatePerson) isCreatePaymentRequest_Reci
 
 // Work in progress
 type CreatePaymentRequest_PrivatePerson struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Private person client ID must be non-empty
-	PrivatePersonClientId string `protobuf:"bytes,10,opt,name=private_person_client_id,json=privatePersonClientId,proto3" json:"private_person_client_id,omitempty"`
-	// First name must be non-empty and reasonable length
-	FirstName string `protobuf:"bytes,20,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	// Last name must be non-empty and reasonable length
-	LastName      string `protobuf:"bytes,30,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	PrivatePersonClientId string                 `protobuf:"bytes,10,opt,name=private_person_client_id,json=privatePersonClientId,proto3" json:"private_person_client_id,omitempty"`
+	FirstName             string                 `protobuf:"bytes,20,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	LastName              string                 `protobuf:"bytes,30,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *CreatePaymentRequest_PrivatePerson) Reset() {
@@ -1061,9 +1033,8 @@ func (x *CreatePaymentRequest_PrivatePerson) GetLastName() string {
 }
 
 type CreatePaymentResponse_Success struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Payment ID must be positive
-	PaymentId     int64 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"` // payment id assigned by the network
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PaymentId     int64                  `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"` // payment id assigned by the network
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1145,18 +1116,18 @@ var File_tzero_v1_payment_network_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_payment_network_proto_rawDesc = "" +
 	"\n" +
-	"\x1etzero/v1/payment/network.proto\x12\x10tzero.v1.payment\x1a\x1ctzero/v1/common/common.proto\x1a$tzero/v1/common/payment_method.proto\x1a%tzero/v1/common/payment_receipt.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\"\xff\x05\n" +
+	"\x1etzero/v1/payment/network.proto\x12\x10tzero.v1.payment\x1a\x1ctzero/v1/common/common.proto\x1a$tzero/v1/common/payment_method.proto\x1a%tzero/v1/common/payment_receipt.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\"\xfb\x05\n" +
 	"\x12UpdateQuoteRequest\x12C\n" +
 	"\apay_out\x18\n" +
 	" \x03(\v2*.tzero.v1.payment.UpdateQuoteRequest.QuoteR\x06payOut\x12A\n" +
-	"\x06pay_in\x18\x14 \x03(\v2*.tzero.v1.payment.UpdateQuoteRequest.QuoteR\x05payIn\x1a\xe0\x04\n" +
+	"\x06pay_in\x18\x14 \x03(\v2*.tzero.v1.payment.UpdateQuoteRequest.QuoteR\x05payIn\x1a\xdc\x04\n" +
 	"\x05Quote\x120\n" +
 	"\bcurrency\x18\n" +
 	" \x01(\tB\x14\xbaH\x11r\x0f2\n" +
-	"^[A-Z]{3}$\x98\x01\x03R\bcurrency\x12D\n" +
+	"^[A-Z]{3}$\x98\x01\x03R\bcurrency\x12B\n" +
 	"\n" +
-	"quote_type\x18\x14 \x01(\x0e2\x1b.tzero.v1.payment.QuoteTypeB\b\xbaH\x05\x82\x01\x02 \x00R\tquoteType\x12S\n" +
-	"\x0epayment_method\x18\x19 \x01(\x0e2\".tzero.v1.common.PaymentMethodTypeB\b\xbaH\x05\x82\x01\x02 \x00R\rpaymentMethod\x12O\n" +
+	"quote_type\x18\x14 \x01(\x0e2\x1b.tzero.v1.payment.QuoteTypeB\x06\xbaH\x03\xc8\x01\x01R\tquoteType\x12Q\n" +
+	"\x0epayment_method\x18\x19 \x01(\x0e2\".tzero.v1.common.PaymentMethodTypeB\x06\xbaH\x03\xc8\x01\x01R\rpaymentMethod\x12O\n" +
 	"\x05bands\x18\x1e \x03(\v2/.tzero.v1.payment.UpdateQuoteRequest.Quote.BandB\b\xbaH\x05\x92\x01\x02\b\x01R\x05bands\x12D\n" +
 	"\n" +
 	"expiration\x18< \x01(\v2\x1a.google.protobuf.TimestampB\b\xbaH\x05\xb2\x01\x02@\x01R\n" +
@@ -1168,14 +1139,14 @@ const file_tzero_v1_payment_network_proto_rawDesc = "" +
 	"\n" +
 	"max_amount\x18( \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\tmaxAmount\x124\n" +
 	"\x04rate\x182 \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\x04rate\"\x15\n" +
-	"\x13UpdateQuoteResponse\"\xa9\x02\n" +
+	"\x13UpdateQuoteResponse\"\xa7\x02\n" +
 	"\x15GetPayoutQuoteRequest\x12=\n" +
 	"\x0fpayout_currency\x18\n" +
 	" \x01(\tB\x14\xbaH\x11r\x0f2\n" +
 	"^[A-Z]{3}$\x98\x01\x03R\x0epayoutCurrency\x128\n" +
-	"\x06amount\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\x06amount\x12D\n" +
+	"\x06amount\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\x06amount\x12B\n" +
 	"\n" +
-	"quote_type\x18\x1e \x01(\x0e2\x1b.tzero.v1.payment.QuoteTypeB\b\xbaH\x05\x82\x01\x02 \x00R\tquoteType\x12Q\n" +
+	"quote_type\x18\x1e \x01(\x0e2\x1b.tzero.v1.payment.QuoteTypeB\x06\xbaH\x03\xc8\x01\x01R\tquoteType\x12Q\n" +
 	"\rpayout_method\x18( \x01(\x0e2\".tzero.v1.common.PaymentMethodTypeB\b\xbaH\x05\x82\x01\x02 \x00R\fpayoutMethod\"\xd2\x01\n" +
 	"\x16GetPayoutQuoteResponse\x124\n" +
 	"\x04rate\x18\n" +

@@ -119,10 +119,9 @@ func (Stablecoin) EnumDescriptor() ([]byte, []int) {
 
 // Decimal 123.45 equals to unscaled=12345 and exponent=-2 (e.g. unscaled * 10^exponent, 123.45 = 12345 * 10^-2)
 type Decimal struct {
-	state    protoimpl.MessageState `protogen:"open.v1"`
-	Unscaled int64                  `protobuf:"varint,10,opt,name=unscaled,proto3" json:"unscaled,omitempty"`
-	// Exponent should be reasonable for financial calculations (typically -8 to 8)
-	Exponent      int32 `protobuf:"varint,20,opt,name=exponent,proto3" json:"exponent,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Unscaled      int64                  `protobuf:"varint,10,opt,name=unscaled,proto3" json:"unscaled,omitempty"`
+	Exponent      int32                  `protobuf:"varint,20,opt,name=exponent,proto3" json:"exponent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

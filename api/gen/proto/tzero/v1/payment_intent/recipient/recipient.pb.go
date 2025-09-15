@@ -112,10 +112,8 @@ func (x *CreatePaymentIntentRequest) GetPayOutMethod() *common.PaymentMethod {
 }
 
 type CreatePaymentIntentResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Payment intent ID must be positive
-	PaymentIntentId uint64 `protobuf:"varint,10,opt,name=payment_intent_id,json=paymentIntentId,proto3" json:"payment_intent_id,omitempty"`
-	// At least one payment method should be provided
+	state               protoimpl.MessageState                       `protogen:"open.v1"`
+	PaymentIntentId     uint64                                       `protobuf:"varint,10,opt,name=payment_intent_id,json=paymentIntentId,proto3" json:"payment_intent_id,omitempty"`
 	PayInPaymentMethods []*CreatePaymentIntentResponse_PaymentMethod `protobuf:"bytes,20,rep,name=pay_in_payment_methods,json=payInPaymentMethods,proto3" json:"pay_in_payment_methods,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
@@ -642,12 +640,9 @@ func (*RejectPaymentIntentResponse) Descriptor() ([]byte, []int) {
 }
 
 type CreatePaymentIntentResponse_PaymentMethod struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Payment URL must be a valid URL
-	PaymentUrl string `protobuf:"bytes,10,opt,name=payment_url,json=paymentUrl,proto3" json:"payment_url,omitempty"`
-	// Provider ID must be positive
-	ProviderId uint32 `protobuf:"varint,20,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
-	// Payment method must be specified
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	PaymentUrl    string                   `protobuf:"bytes,10,opt,name=payment_url,json=paymentUrl,proto3" json:"payment_url,omitempty"`
+	ProviderId    uint32                   `protobuf:"varint,20,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
 	PaymentMethod common.PaymentMethodType `protobuf:"varint,30,opt,name=payment_method,json=paymentMethod,proto3,enum=tzero.v1.common.PaymentMethodType" json:"payment_method,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -809,18 +804,18 @@ const file_tzero_v1_payment_intent_recipient_recipient_proto_rawDesc = "" +
 	"\rpay_in_amount\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\vpayInAmount\x12>\n" +
 	"\x10pay_out_currency\x18( \x01(\tB\x14\xbaH\x11r\x0f2\n" +
 	"^[A-Z]{3}$\x98\x01\x03R\x0epayOutCurrency\x12L\n" +
-	"\x0epay_out_method\x182 \x01(\v2\x1e.tzero.v1.common.PaymentMethodB\x06\xbaH\x03\xc8\x01\x01R\fpayOutMethod\"\xac\x03\n" +
+	"\x0epay_out_method\x182 \x01(\v2\x1e.tzero.v1.common.PaymentMethodB\x06\xbaH\x03\xc8\x01\x01R\fpayOutMethod\"\xaa\x03\n" +
 	"\x1bCreatePaymentIntentResponse\x123\n" +
 	"\x11payment_intent_id\x18\n" +
 	" \x01(\x04B\a\xbaH\x042\x02 \x00R\x0fpaymentIntentId\x12\x8b\x01\n" +
-	"\x16pay_in_payment_methods\x18\x14 \x03(\v2L.tzero.v1.payment_intent.recipient.CreatePaymentIntentResponse.PaymentMethodB\b\xbaH\x05\x92\x01\x02\b\x01R\x13payInPaymentMethods\x1a\xc9\x01\n" +
+	"\x16pay_in_payment_methods\x18\x14 \x03(\v2L.tzero.v1.payment_intent.recipient.CreatePaymentIntentResponse.PaymentMethodB\b\xbaH\x05\x92\x01\x02\b\x01R\x13payInPaymentMethods\x1a\xc7\x01\n" +
 	"\rPaymentMethod\x129\n" +
 	"\vpayment_url\x18\n" +
 	" \x01(\tB\x18\xbaH\x15r\x13\x10\x01\x18\x80\x102\f^https?://.+R\n" +
 	"paymentUrl\x12(\n" +
 	"\vprovider_id\x18\x14 \x01(\rB\a\xbaH\x04*\x02 \x00R\n" +
-	"providerId\x12S\n" +
-	"\x0epayment_method\x18\x1e \x01(\x0e2\".tzero.v1.common.PaymentMethodTypeB\b\xbaH\x05\x82\x01\x02 \x00R\rpaymentMethod\"\xd1\x02\n" +
+	"providerId\x12Q\n" +
+	"\x0epayment_method\x18\x1e \x01(\x0e2\".tzero.v1.common.PaymentMethodTypeB\x06\xbaH\x03\xc8\x01\x01R\rpaymentMethod\"\xd1\x02\n" +
 	"\x0fGetQuoteRequest\x12&\n" +
 	"\x0fpay_in_currency\x18\n" +
 	" \x01(\tR\rpayInCurrency\x12<\n" +
