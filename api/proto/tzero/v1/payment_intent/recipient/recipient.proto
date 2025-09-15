@@ -81,24 +81,21 @@ message CreatePaymentIntentRequest {
 }
 
 message CreatePaymentIntentResponse {
-  // Payment intent ID must be positive
   uint64 payment_intent_id = 10 [(buf.validate.field).uint64.gt = 0];
-  // At least one payment method should be provided
+
   repeated PaymentMethod pay_in_payment_methods = 20 [(buf.validate.field).repeated.min_items = 1];
 
   message PaymentMethod {
-    // Payment URL must be a valid URL
+
     string payment_url = 10 [(buf.validate.field).string = {
       min_len: 1,
       max_len: 2048,
       pattern: "^https?://.+"
     }];
-    // Provider ID must be positive
+
     uint32 provider_id = 20 [(buf.validate.field).uint32.gt = 0];
-    // Payment method must be specified
-    tzero.v1.common.PaymentMethodType payment_method = 30 [(buf.validate.field).enum = {
-      not_in: [0]
-    }];
+
+    tzero.v1.common.PaymentMethodType payment_method = 30 [(buf.validate.field).required = true];
   }
 }
 
