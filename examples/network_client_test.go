@@ -7,9 +7,10 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/common"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment"
-	"github.com/t-0-network/provider-sdk-go/pkg/network"
+	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/common"
+	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment"
+	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment/paymentconnect"
+	"github.com/t-0-network/provider-sdk-go/network"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -21,6 +22,7 @@ func ExampleNewServiceClient() {
 
 	networkClient, err := network.NewServiceClient(
 		yourPrivateKey,
+		paymentconnect.NewNetworkServiceClient,
 		// Optional configuration for the network service client.
 		network.WithBaseURL("http://0.0.0.0:8080"), // No need to set, defaults to t-zero network
 	)

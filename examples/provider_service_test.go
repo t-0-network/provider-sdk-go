@@ -13,12 +13,13 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/common"
-	networkproto "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment/paymentconnect"
-	"github.com/t-0-network/provider-sdk-go/pkg/constant"
-	"github.com/t-0-network/provider-sdk-go/pkg/crypto"
-	"github.com/t-0-network/provider-sdk-go/pkg/provider"
+	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/common"
+
+	networkproto "github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment"
+	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment/paymentconnect"
+	sdkCommon "github.com/t-0-network/provider-sdk-go/common"
+	"github.com/t-0-network/provider-sdk-go/crypto"
+	"github.com/t-0-network/provider-sdk-go/provider"
 )
 
 var (
@@ -172,9 +173,9 @@ func (t *signingTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 	}
 
 	// Set headers
-	req.Header.Set(constant.PublicKeyHeader, "0x"+hex.EncodeToString(pubKeyBytes))
-	req.Header.Set(constant.SignatureHeader, "0x"+hex.EncodeToString(signature))
-	req.Header.Set(constant.SignatureTimestampHeader, strconv.FormatInt(timestamp, 10))
+	req.Header.Set(sdkCommon.PublicKeyHeader, "0x"+hex.EncodeToString(pubKeyBytes))
+	req.Header.Set(sdkCommon.SignatureHeader, "0x"+hex.EncodeToString(signature))
+	req.Header.Set(sdkCommon.SignatureTimestampHeader, strconv.FormatInt(timestamp, 10))
 
 	return t.transport.RoundTrip(req)
 }

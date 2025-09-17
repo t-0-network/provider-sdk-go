@@ -71,8 +71,8 @@ Implement the `paymentconnect.ProviderServiceHandler` interface to create your p
 import (
     "context"
     "connectrpc.com/connect"
-    networkproto "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment"
-    "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment/paymentconnect"
+    networkproto "github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment"
+    "github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment/paymentconnect"
 )
 
 type ProviderServiceImplementation struct{
@@ -191,14 +191,15 @@ import (
     "log"
 
     "connectrpc.com/connect"
-    networkproto "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment"
+    networkproto "github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment"
+    "github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment/paymentconnect"
     "github.com/t-0-network/provider-sdk-go/pkg/network"
 )
 
 // Initialize with private key
 yourPrivateKey := network.PrivateKeyHexed("0x7795db2f4499c04d80062c1f1614ff1e427c148e47ed23e387d62829f437b5d8")
 
-networkClient, err := network.NewServiceClient(yourPrivateKey)
+networkClient, err := network.NewServiceClient(yourPrivateKey, paymentconnect.NewNetworkServiceClient)
 if err != nil {
     log.Fatalf("Failed to create network service client: %v", err)
 }
