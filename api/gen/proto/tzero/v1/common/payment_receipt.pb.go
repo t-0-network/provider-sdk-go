@@ -193,9 +193,8 @@ func (*SwiftReceipt) Descriptor() ([]byte, []int) {
 }
 
 type StablecoinReceipt struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Transaction hash should be a valid hex string (64 chars for most blockchains)
-	TransactionHash string `protobuf:"bytes,10,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"` // on-chain hex encoded transaction hash
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	TransactionHash string                 `protobuf:"bytes,10,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"` // on-chain hex encoded transaction hash
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }

@@ -263,13 +263,10 @@ func (*PaymentMethod_Ach) isPaymentMethod_Details() {}
 func (*PaymentMethod_Wire) isPaymentMethod_Details() {}
 
 type SepaPaymentDetails struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// IBAN should be 15-34 characters, alphanumeric
-	Iban string `protobuf:"bytes,20,opt,name=iban,proto3" json:"iban,omitempty"`
-	// Beneficiary name should be 1-70 characters (SEPA standard)
-	BeneficiaryName string `protobuf:"bytes,30,opt,name=beneficiary_name,json=beneficiaryName,proto3" json:"beneficiary_name,omitempty"`
-	// Payment reference up to 140 characters (SEPA standard)
-	PaymentReference string `protobuf:"bytes,40,opt,name=payment_reference,json=paymentReference,proto3" json:"payment_reference,omitempty"`
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Iban             string                 `protobuf:"bytes,20,opt,name=iban,proto3" json:"iban,omitempty"`
+	BeneficiaryName  string                 `protobuf:"bytes,30,opt,name=beneficiary_name,json=beneficiaryName,proto3" json:"beneficiary_name,omitempty"`
+	PaymentReference string                 `protobuf:"bytes,40,opt,name=payment_reference,json=paymentReference,proto3" json:"payment_reference,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -362,13 +359,10 @@ func (*SwiftPaymentDetails) Descriptor() ([]byte, []int) {
 }
 
 type StablecoinPaymentDetails struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Blockchain must be specified and not UNSPECIFIED
-	Blockchain Blockchain `protobuf:"varint,10,opt,name=blockchain,proto3,enum=tzero.v1.common.Blockchain" json:"blockchain,omitempty"`
-	// Stablecoin must be specified and not UNSPECIFIED
-	Stablecoin Stablecoin `protobuf:"varint,20,opt,name=stablecoin,proto3,enum=tzero.v1.common.Stablecoin" json:"stablecoin,omitempty"`
-	// Blockchain address should be a valid hex address (20-64 chars for most blockchains)
-	Address       string `protobuf:"bytes,30,opt,name=address,proto3" json:"address,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Blockchain    Blockchain             `protobuf:"varint,10,opt,name=blockchain,proto3,enum=tzero.v1.common.Blockchain" json:"blockchain,omitempty"`
+	Stablecoin    Stablecoin             `protobuf:"varint,20,opt,name=stablecoin,proto3,enum=tzero.v1.common.Stablecoin" json:"stablecoin,omitempty"`
+	Address       string                 `protobuf:"bytes,30,opt,name=address,proto3" json:"address,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -425,17 +419,13 @@ func (x *StablecoinPaymentDetails) GetAddress() string {
 }
 
 type AchPaymentDetails struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// US bank routing number (9 digits)
-	RoutingNumber string `protobuf:"bytes,10,opt,name=routing_number,json=routingNumber,proto3" json:"routing_number,omitempty"`
-	// US bank account number (up to 17 digits)
-	AccountNumber string `protobuf:"bytes,20,opt,name=account_number,json=accountNumber,proto3" json:"account_number,omitempty"`
-	// Account holder name (1-70 characters)
-	AccountHolderName string `protobuf:"bytes,30,opt,name=account_holder_name,json=accountHolderName,proto3" json:"account_holder_name,omitempty"`
-	// Account type (checking or savings)
-	AccountType   AchPaymentDetails_AchAccountType `protobuf:"varint,40,opt,name=account_type,json=accountType,proto3,enum=tzero.v1.common.AchPaymentDetails_AchAccountType" json:"account_type,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState           `protogen:"open.v1"`
+	RoutingNumber     string                           `protobuf:"bytes,10,opt,name=routing_number,json=routingNumber,proto3" json:"routing_number,omitempty"`
+	AccountNumber     string                           `protobuf:"bytes,20,opt,name=account_number,json=accountNumber,proto3" json:"account_number,omitempty"`
+	AccountHolderName string                           `protobuf:"bytes,30,opt,name=account_holder_name,json=accountHolderName,proto3" json:"account_holder_name,omitempty"`
+	AccountType       AchPaymentDetails_AchAccountType `protobuf:"varint,40,opt,name=account_type,json=accountType,proto3,enum=tzero.v1.common.AchPaymentDetails_AchAccountType" json:"account_type,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *AchPaymentDetails) Reset() {
@@ -497,23 +487,16 @@ func (x *AchPaymentDetails) GetAccountType() AchPaymentDetails_AchAccountType {
 }
 
 type WirePaymentDetails struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Bank name (1-70 characters)
-	BankName string `protobuf:"bytes,10,opt,name=bank_name,json=bankName,proto3" json:"bank_name,omitempty"`
-	// Bank address (1-140 characters)
-	BankAddress string `protobuf:"bytes,20,opt,name=bank_address,json=bankAddress,proto3" json:"bank_address,omitempty"`
-	// SWIFT/BIC code (8 or 11 characters)
-	SwiftCode string `protobuf:"bytes,30,opt,name=swift_code,json=swiftCode,proto3" json:"swift_code,omitempty"`
-	// Account number (up to 34 characters for international compatibility)
-	AccountNumber string `protobuf:"bytes,40,opt,name=account_number,json=accountNumber,proto3" json:"account_number,omitempty"`
-	// Beneficiary name (1-70 characters)
-	BeneficiaryName string `protobuf:"bytes,50,opt,name=beneficiary_name,json=beneficiaryName,proto3" json:"beneficiary_name,omitempty"`
-	// Beneficiary address (1-140 characters)
-	BeneficiaryAddress string `protobuf:"bytes,60,opt,name=beneficiary_address,json=beneficiaryAddress,proto3" json:"beneficiary_address,omitempty"`
-	// Wire reference/purpose (up to 140 characters)
-	WireReference string `protobuf:"bytes,70,opt,name=wire_reference,json=wireReference,proto3" json:"wire_reference,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	BankName           string                 `protobuf:"bytes,10,opt,name=bank_name,json=bankName,proto3" json:"bank_name,omitempty"`
+	BankAddress        string                 `protobuf:"bytes,20,opt,name=bank_address,json=bankAddress,proto3" json:"bank_address,omitempty"`
+	SwiftCode          string                 `protobuf:"bytes,30,opt,name=swift_code,json=swiftCode,proto3" json:"swift_code,omitempty"`
+	AccountNumber      string                 `protobuf:"bytes,40,opt,name=account_number,json=accountNumber,proto3" json:"account_number,omitempty"`
+	BeneficiaryName    string                 `protobuf:"bytes,50,opt,name=beneficiary_name,json=beneficiaryName,proto3" json:"beneficiary_name,omitempty"`
+	BeneficiaryAddress string                 `protobuf:"bytes,60,opt,name=beneficiary_address,json=beneficiaryAddress,proto3" json:"beneficiary_address,omitempty"`
+	WireReference      string                 `protobuf:"bytes,70,opt,name=wire_reference,json=wireReference,proto3" json:"wire_reference,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *WirePaymentDetails) Reset() {
@@ -614,14 +597,14 @@ const file_tzero_v1_common_payment_method_proto_rawDesc = "" +
 	"\x04iban\x18\x14 \x01(\tB&\xbaH#r!\x10\x0f\x18\"2\x1b^[A-Z]{2}[0-9]{2}[A-Z0-9]+$R\x04iban\x124\n" +
 	"\x10beneficiary_name\x18\x1e \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18FR\x0fbeneficiaryName\x125\n" +
 	"\x11payment_reference\x18( \x01(\tB\b\xbaH\x05r\x03\x18\x8c\x01R\x10paymentReference\"\x15\n" +
-	"\x13SwiftPaymentDetails\"\xe2\x01\n" +
-	"\x18StablecoinPaymentDetails\x12E\n" +
+	"\x13SwiftPaymentDetails\"\xde\x01\n" +
+	"\x18StablecoinPaymentDetails\x12C\n" +
 	"\n" +
 	"blockchain\x18\n" +
-	" \x01(\x0e2\x1b.tzero.v1.common.BlockchainB\b\xbaH\x05\x82\x01\x02 \x00R\n" +
-	"blockchain\x12E\n" +
+	" \x01(\x0e2\x1b.tzero.v1.common.BlockchainB\x06\xbaH\x03\xc8\x01\x01R\n" +
+	"blockchain\x12C\n" +
 	"\n" +
-	"stablecoin\x18\x14 \x01(\x0e2\x1b.tzero.v1.common.StablecoinB\b\xbaH\x05\x82\x01\x02 \x00R\n" +
+	"stablecoin\x18\x14 \x01(\x0e2\x1b.tzero.v1.common.StablecoinB\x06\xbaH\x03\xc8\x01\x01R\n" +
 	"stablecoin\x128\n" +
 	"\aaddress\x18\x1e \x01(\tB\x1e\xbaH\x1br\x19\x10\x14\x18@2\x13^(0x)?[a-fA-F0-9]+$R\aaddress\"\x99\x03\n" +
 	"\x11AchPaymentDetails\x12<\n" +

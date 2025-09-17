@@ -21,10 +21,9 @@ message SwiftReceipt {
 }
 
 message StablecoinReceipt {
-  // Transaction hash should be a valid hex string (64 chars for most blockchains)
   string transaction_hash = 10 [(buf.validate.field).string = {
     min_len: 64,
-    max_len: 66, // Allow 0x prefix
+    max_len: 66,
     pattern: "^(0x)?[a-fA-F0-9]{64}$"
   }]; // on-chain hex encoded transaction hash
 }

@@ -7,7 +7,7 @@ import "buf/validate/validate.proto";
 // Decimal 123.45 equals to unscaled=12345 and exponent=-2 (e.g. unscaled * 10^exponent, 123.45 = 12345 * 10^-2)
 message Decimal {
   int64 unscaled = 10;
-  // Exponent should be reasonable for financial calculations (typically -8 to 8)
+
   int32 exponent = 20 [(buf.validate.field).int32 = {gte: -8, lte: 8}];
 }
 
