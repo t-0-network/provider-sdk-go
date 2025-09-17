@@ -4,8 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize]
     paths:
-      - "api/proto/**"
-      - "api/gen/**"
+      - "proto/**"
 
 jobs:
   test:
@@ -39,10 +38,10 @@ jobs:
 
       - name: Generate Clients
         run: |
-          go generate api/gen.go
+          go generate gen.go
 
       - name: Commit generated files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Auto-generate GRPC clients"
-          file_pattern: "api/gen/**"
+          file_pattern: "api/**"
