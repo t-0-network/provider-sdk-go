@@ -9,12 +9,12 @@ import (
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/common"
-	networkreq "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment/paymentconnect"
+	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/common"
+	networkreq "github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment"
+	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment/paymentconnect"
 	"github.com/t-0-network/provider-sdk-go/examples/utils"
-	"github.com/t-0-network/provider-sdk-go/pkg/network"
-	"github.com/t-0-network/provider-sdk-go/pkg/provider"
+	"github.com/t-0-network/provider-sdk-go/network"
+	"github.com/t-0-network/provider-sdk-go/provider"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -172,6 +172,7 @@ func createClientToInteractWithNetwork() paymentconnect.NetworkServiceClient {
 
 	networkClient, err := network.NewServiceClient(
 		yourPrivateKey,
+		paymentconnect.NewNetworkServiceClient,
 		// Optional configuration for the network service client.
 		network.WithBaseURL("http://0.0.0.0:8080"), // No need to set, defaults to t-zero network
 	)

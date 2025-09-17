@@ -3,7 +3,7 @@ module github.com/t-0-network/provider-sdk-go
 go 1.24.4
 
 require (
-	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.9-20250717185734-6c6e0d3c608e.1
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.9-20250912141014-52f32327d4b0.1
 	connectrpc.com/connect v1.18.1
 	github.com/btcsuite/btcd/btcec/v2 v2.3.5
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0

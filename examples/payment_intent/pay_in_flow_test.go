@@ -7,14 +7,16 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
-	"github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/common"
-	. "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment_intent/provider"
-	. "github.com/t-0-network/provider-sdk-go/api/gen/proto/tzero/v1/payment_intent/provider/providerconnect"
-	"github.com/t-0-network/provider-sdk-go/pkg/provider"
+	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/common"
+	. "github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment_intent/provider"
+	. "github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment_intent/provider/providerconnect"
+	"github.com/t-0-network/provider-sdk-go/network"
+	"github.com/t-0-network/provider-sdk-go/provider"
 )
 
 var (
-	dummyNetworkPublicKey = "0x049bb924680bfba3f64d924bf9040c45dcc215b124b5b9ee73ca8e32c050d042c0bbd8dbb98e3929ed5bc2967f28c3a3b72dd5e24312404598bbf6c6cc47708dc7"
+	dummyNetworkPublicKey   = "0x049bb924680bfba3f64d924bf9040c45dcc215b124b5b9ee73ca8e32c050d042c0bbd8dbb98e3929ed5bc2967f28c3a3b72dd5e24312404598bbf6c6cc47708dc7"
+	dummyProviderPrivateKey = network.PrivateKeyHexed("0xb3994c781b75d168545d20e8562393b9a42677b9862e0db46d145853879c8345")
 )
 
 func ExampleNewProviderServiceHandler() {
@@ -54,7 +56,10 @@ func ExampleNewProviderServiceHandler() {
 	// PayIn provider will interact with the network using the NetworkServiceClient interface.
 	// It will use ConfirmPayment/RejectPaymentIntent rpcs to notify the network about the payment intent status.
 	// ConfirmSettlement rpc should be used to notify the network about the settlement transfer (in case of pre-settlement).
-	networkClient := createNetworkClient()
+	networkClient, err := network.NewServiceClient(dummyProviderPrivateKey, NewNetworkServiceClient)
+	if err != nil {
+		panic(err)
+	}
 
 	// The flow starts when the network call the CreatePaymentIntent method of the PayIn provider.
 
