@@ -43,7 +43,7 @@ func NewServiceClient[T any](
 
 	client := http.Client{
 		Timeout: options.timeout,
-		Transport: newSigningTransport(
+		Transport: NewSigningTransport(
 			options.signFn, time.Now,
 		),
 	}

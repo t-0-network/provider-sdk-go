@@ -68,6 +68,8 @@ openssl ec -in private_key.pem -text -noout 2>/dev/null | grep -A 5 'pub:' | tai
 Implement the `paymentconnect.ProviderServiceHandler` interface to create your provider service:
 
 ```go
+package impl
+
 import (
     "context"
     "connectrpc.com/connect"
@@ -130,13 +132,13 @@ Initialize the provider handler with the T-ZERO Network public key and your serv
 ```go
 // T-ZERO Network hex formatted public key
 networkPublicKey := "0x049bb924680bfba3f64d924bf9040c45dcc215b124b5b9ee73ca8e32c050d042c0bbd8dbb98e3929ed5bc2967f28c3a3b72dd5e24312404598bbf6c6cc47708dc7"
-
+var handler providerconnect.ProviderServiceHandler = &ProviderServiceImplementation{}
 providerServiceHandler, err := provider.NewProviderHandler(
     provider.NetworkPublicKeyHexed(networkPublicKey),
-    &ProviderServiceImplementation{},
-    // optional configuration
-    provider.WithVerifySignatureFn(verifySignatureFn)
-    provider.WithConnectHandlerOptions(HandlerOptions)
+    provider.Handler(providerconnect.NewProviderServiceHandler, handler,
+        // optional configuration
+        provider.WithVerifySignatureFn(verifySignatureFn)
+        provider.WithConnectHandlerOptions(HandlerOptions))
 )
 if err != nil {
     log.Fatalf("Failed to create provider service handler: %v", err)
@@ -251,3 +253,4 @@ Comprehensive examples are available in:
 - [Payout Provider flow Example](examples/payout_provider_flow_test.go)
 - [Provider Service Example](examples/provider_service_test.go)
 - [Network Client Example](examples/network_client_test.go)
+- [Payment Intent Pay-in Provider Example](examples/payment_intent/pay_in_flow_test.go)

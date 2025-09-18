@@ -14,24 +14,24 @@ import (
 	"github.com/t-0-network/provider-sdk-go/crypto"
 )
 
-func newSigningTransport(signFn crypto.SignFn, timeNow func() time.Time) *signingTransport {
-	return &signingTransport{
+func NewSigningTransport(signFn crypto.SignFn, timeNow func() time.Time) *SigningTransport {
+	return &SigningTransport{
 		transport: http.DefaultTransport,
 		sign:      signFn,
 		timeNow:   timeNow,
 	}
 }
 
-// EthereumSigningTransport is an HTTP transport that signs requests with a given signing function.
+// SigningTransport is an HTTP transport that signs requests with a given signing function.
 // It reads the request body, computes its digest, signs it, and adds the signature and public key
 // to the request headers before forwarding the request to the underlying transport.
-type signingTransport struct {
+type SigningTransport struct {
 	transport http.RoundTripper
 	sign      crypto.SignFn
 	timeNow   func() time.Time
 }
 
-func (t *signingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+func (t *SigningTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	// Read and restore request body
 	body, err := io.ReadAll(req.Body)
 	if err != nil {

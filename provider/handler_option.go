@@ -9,20 +9,24 @@ const (
 )
 
 type providerHandlerOptions struct {
-	verifySignatureFn          verifySignature
+	verifySignatureFn          VerifySignature
 	verifySignatureMaxBodySize int64
 	connectHandlerOptions      []connect.HandlerOption
 }
 
-var defaultProviderHandlerOptions = providerHandlerOptions{
-	verifySignatureMaxBodySize: defaultMaxBodySize,
-	connectHandlerOptions:      []connect.HandlerOption{},
-	verifySignatureFn:          nil,
+func newDefaultHandlerOptions(verifySignatureFn VerifySignature) (providerHandlerOptions, error) {
+	return providerHandlerOptions{
+		verifySignatureMaxBodySize: defaultMaxBodySize,
+		connectHandlerOptions: []connect.HandlerOption{
+			connect.WithInterceptors(signatureErrorInterceptor()),
+		},
+		verifySignatureFn: verifySignatureFn,
+	}, nil
 }
 
 type HandlerOption func(*providerHandlerOptions)
 
-func WithVerifySignatureFn(fn verifySignature) HandlerOption {
+func WithVerifySignatureFn(fn VerifySignature) HandlerOption {
 	return func(h *providerHandlerOptions) {
 		h.verifySignatureFn = fn
 	}

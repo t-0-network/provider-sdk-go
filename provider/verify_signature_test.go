@@ -17,7 +17,7 @@ import (
 
 func TestNewSignatureVerifierMiddleware(t *testing.T) {
 	// Mock verify signature function for testing
-	mockVerifySignature := func(returnError bool) verifySignature {
+	mockVerifySignature := func(returnError bool) VerifySignature {
 		return func(publicKey, message, signature []byte) error {
 			if returnError {
 				return fmt.Errorf("signature verification failed")
@@ -42,7 +42,7 @@ func TestNewSignatureVerifierMiddleware(t *testing.T) {
 		name                string
 		setupHeaders        func() http.Header
 		requestBody         string
-		verifySignatureFunc verifySignature
+		verifySignatureFunc VerifySignature
 		expectedError       *SignatureError
 	}{
 		{
