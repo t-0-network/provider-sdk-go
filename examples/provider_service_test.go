@@ -1,23 +1,18 @@
 package examples_test
 
 import (
-	"bytes"
 	"context"
-	"encoding/binary"
-	"encoding/hex"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"connectrpc.com/connect"
 	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/common"
+	"github.com/t-0-network/provider-sdk-go/network"
 
-	networkproto "github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment"
+	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment"
 	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment/paymentconnect"
-	sdkCommon "github.com/t-0-network/provider-sdk-go/common"
 	"github.com/t-0-network/provider-sdk-go/crypto"
 	"github.com/t-0-network/provider-sdk-go/provider"
 )
@@ -27,15 +22,15 @@ var (
 	dummyNetworkPrivateKey = "691db48202ca70d83cc7f5f3aa219536f9bb2dfe12ebb78a7bb634544858ee92"
 )
 
-func ExampleNewProviderHandler() {
+func ExampleProviderServiceHandler() {
 	// Initialize a provider service handler using your implementation of the
 	// networkconnect.ProviderServiceHandler interface.
-	providerServiceHandler, err := provider.NewProviderHandler(
+	providerServiceHandler, err := provider.NewHttpHandler(
 		// Provide the T-ZERO Network Public Key in hex format. This key is used to verify
 		// the signatures of incoming requests.
 		provider.NetworkPublicKeyHexed(dummyNetworkPublicKey),
 		// Your provider service implementation
-		provider.WithProviderServiceHandler(&ProviderServiceImplementation{}),
+		provider.Handler(paymentconnect.NewProviderServiceHandler, paymentconnect.ProviderServiceHandler(&ProviderServiceImplementation{})),
 	)
 	if err != nil {
 		log.Fatalf("Failed to create provider service handler: %v", err)
@@ -57,8 +52,8 @@ func ExampleNewProviderHandler() {
 	}
 
 	// Build a CreatePayInDetails request
-	req := connect.NewRequest(&networkproto.UpdateLimitRequest{
-		Limits: []*networkproto.UpdateLimitRequest_Limit{
+	req := connect.NewRequest(&payment.UpdateLimitRequest{
+		Limits: []*payment.UpdateLimitRequest_Limit{
 			{
 				Version:    1,
 				CreditorId: 3,
@@ -103,12 +98,8 @@ func newProviderClient(privateKey string) (paymentconnect.ProviderServiceClient,
 
 	// Create a custom HTTP client with a custom transport to sign requests.
 	httpClient := http.Client{
-		Timeout: 15 * time.Second,
-		Transport: &signingTransport{
-			transport: http.DefaultTransport,
-			sign:      signFn,
-			timeNow:   time.Now,
-		},
+		Timeout:   15 * time.Second,
+		Transport: network.NewSigningTransport(signFn, time.Now),
 	}
 
 	// Initialize the provider service client using custom HTTP client.
@@ -120,62 +111,24 @@ type ProviderServiceImplementation struct{}
 var _ paymentconnect.ProviderServiceHandler = (*ProviderServiceImplementation)(nil)
 
 func (s *ProviderServiceImplementation) AppendLedgerEntries(
-	ctx context.Context, req *connect.Request[networkproto.AppendLedgerEntriesRequest],
-) (*connect.Response[networkproto.AppendLedgerEntriesResponse], error) {
-	return connect.NewResponse(&networkproto.AppendLedgerEntriesResponse{}), nil
+	ctx context.Context, req *connect.Request[payment.AppendLedgerEntriesRequest],
+) (*connect.Response[payment.AppendLedgerEntriesResponse], error) {
+	return connect.NewResponse(&payment.AppendLedgerEntriesResponse{}), nil
 }
 
-func (s *ProviderServiceImplementation) PayOut(ctx context.Context, req *connect.Request[networkproto.PayoutRequest],
-) (*connect.Response[networkproto.PayoutResponse], error) {
-	return connect.NewResponse(&networkproto.PayoutResponse{}), nil
+func (s *ProviderServiceImplementation) PayOut(ctx context.Context, req *connect.Request[payment.PayoutRequest],
+) (*connect.Response[payment.PayoutResponse], error) {
+	return connect.NewResponse(&payment.PayoutResponse{}), nil
 }
 
 func (s *ProviderServiceImplementation) UpdateLimit(
-	ctx context.Context, req *connect.Request[networkproto.UpdateLimitRequest],
-) (*connect.Response[networkproto.UpdateLimitResponse], error) {
-	return connect.NewResponse(&networkproto.UpdateLimitResponse{}), nil
+	ctx context.Context, req *connect.Request[payment.UpdateLimitRequest],
+) (*connect.Response[payment.UpdateLimitResponse], error) {
+	return connect.NewResponse(&payment.UpdateLimitResponse{}), nil
 }
 
 func (s *ProviderServiceImplementation) UpdatePayment(
-	ctx context.Context, req *connect.Request[networkproto.UpdatePaymentRequest],
-) (*connect.Response[networkproto.UpdatePaymentResponse], error) {
-	return connect.NewResponse(&networkproto.UpdatePaymentResponse{}), nil
-}
-
-type signingTransport struct {
-	transport http.RoundTripper
-	sign      crypto.SignFn
-	timeNow   func() time.Time
-}
-
-func (t *signingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	// Read and restore request body
-	body, err := io.ReadAll(req.Body)
-	if err != nil {
-		return nil, fmt.Errorf("reading request body: %w", err)
-	}
-	req.Body.Close()
-	req.Body = io.NopCloser(bytes.NewReader(body))
-
-	// Get current timestamp in milliseconds
-	timestamp := t.timeNow().UnixMilli()
-
-	// Convert timestamp to little-endian (8 bytes for int64)
-	timestampBytes := [8]byte{}
-	binary.LittleEndian.PutUint64(timestampBytes[:], uint64(timestamp))
-
-	// Append timestamp bytes to the body and compute the digest
-	digest := crypto.LegacyKeccak256(append(body, timestampBytes[:]...))
-
-	signature, pubKeyBytes, err := t.sign(digest)
-	if err != nil {
-		return nil, fmt.Errorf("signing request body: %w", err)
-	}
-
-	// Set headers
-	req.Header.Set(sdkCommon.PublicKeyHeader, "0x"+hex.EncodeToString(pubKeyBytes))
-	req.Header.Set(sdkCommon.SignatureHeader, "0x"+hex.EncodeToString(signature))
-	req.Header.Set(sdkCommon.SignatureTimestampHeader, strconv.FormatInt(timestamp, 10))
-
-	return t.transport.RoundTrip(req)
+	ctx context.Context, req *connect.Request[payment.UpdatePaymentRequest],
+) (*connect.Response[payment.UpdatePaymentResponse], error) {
+	return connect.NewResponse(&payment.UpdatePaymentResponse{}), nil
 }

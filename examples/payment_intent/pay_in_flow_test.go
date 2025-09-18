@@ -8,10 +8,10 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/common"
-	. "github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment_intent/provider"
-	. "github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment_intent/provider/providerconnect"
+	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment_intent/provider"
+	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment_intent/provider/providerconnect"
 	"github.com/t-0-network/provider-sdk-go/network"
-	"github.com/t-0-network/provider-sdk-go/provider"
+	providerHandler "github.com/t-0-network/provider-sdk-go/provider"
 )
 
 var (
@@ -27,21 +27,22 @@ func ExampleNewProviderServiceHandler() {
 	// 2. ConfirmPayout - to confirm the payout after the payment is completed successfully.
 	// Initialize a provider service handler using your implementation of the
 	// networkconnect.ProviderServiceHandler interface.
-	providerServiceHandler, err := provider.NewProviderHandler(
+	var handler providerconnect.ProviderServiceHandler = &PayInProviderServiceHandler{}
+	providerServiceHandler, err := providerHandler.NewHttpHandler(
 		// Provide the T-ZERO Network Public Key in hex format. This key is used to verify
 		// the signatures of incoming requests.
-		provider.NetworkPublicKeyHexed(dummyNetworkPublicKey),
+		providerHandler.NetworkPublicKeyHexed(dummyNetworkPublicKey),
 		// Your provider service implementation
-		provider.WithPaymentIntentProviderServiceHandler(&PayInProviderServiceHandler{}),
+		providerHandler.Handler(providerconnect.NewProviderServiceHandler, handler),
 	)
 	if err != nil {
 		log.Fatalf("Failed to create provider service handler: %v", err)
 	}
 
 	// Start an HTTP server with the provider service handler,
-	shutdownFunc, err := provider.StartServer(
+	shutdownFunc, err := providerHandler.StartServer(
 		providerServiceHandler,
-		provider.WithAddr(":8080"),
+		providerHandler.WithAddr(":8080"),
 	)
 	if err != nil {
 		log.Fatalf("Failed to start provider server: %v", err)
@@ -56,7 +57,7 @@ func ExampleNewProviderServiceHandler() {
 	// PayIn provider will interact with the network using the NetworkServiceClient interface.
 	// It will use ConfirmPayment/RejectPaymentIntent rpcs to notify the network about the payment intent status.
 	// ConfirmSettlement rpc should be used to notify the network about the settlement transfer (in case of pre-settlement).
-	networkClient, err := network.NewServiceClient(dummyProviderPrivateKey, NewNetworkServiceClient)
+	networkClient, err := network.NewServiceClient(dummyProviderPrivateKey, providerconnect.NewNetworkServiceClient)
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +66,7 @@ func ExampleNewProviderServiceHandler() {
 
 	// Pay-in provider will return the list of available payment methods, and when it receives the payment from the payer,
 	// it will call the ConfirmPayout method to confirm the payout.
-	_, err = networkClient.ConfirmPayment(context.Background(), connect.NewRequest(&ConfirmPaymentRequest{
+	_, err = networkClient.ConfirmPayment(context.Background(), connect.NewRequest(&provider.ConfirmPaymentRequest{
 		PaymentIntentId: 123,
 		PaymentMethod:   common.PaymentMethodType_PAYMENT_METHOD_TYPE_CARD,
 	}))
@@ -75,7 +76,7 @@ func ExampleNewProviderServiceHandler() {
 
 	// if the payment collection was not successful, the provider will call RejectPaymentIntent method to notify
 	//the network about the failure.
-	_, err = networkClient.RejectPaymentIntent(context.Background(), connect.NewRequest(&RejectPaymentIntentRequest{
+	_, err = networkClient.RejectPaymentIntent(context.Background(), connect.NewRequest(&provider.RejectPaymentIntentRequest{
 		PaymentIntentId: 123,
 		Reason:          "Payment collection failed",
 	}))
@@ -85,7 +86,7 @@ func ExampleNewProviderServiceHandler() {
 
 	// Next step would be to transfer the settlement amount to the pay-out provider, and
 	// then call the ConfirmSettlement endpoint
-	_, err = networkClient.ConfirmSettlement(context.Background(), connect.NewRequest(&ConfirmSettlementRequest{
+	_, err = networkClient.ConfirmSettlement(context.Background(), connect.NewRequest(&provider.ConfirmSettlementRequest{
 		Blockchain:      common.Blockchain_BLOCKCHAIN_TRON,
 		TxHash:          "tx-hash-of-the-pre-settlement-transfer",
 		PaymentIntentId: []uint64{123}, // one settlement may include several payment intents
@@ -97,9 +98,9 @@ func ExampleNewProviderServiceHandler() {
 	// And the last step - ConfirmPayout rpc will be called by Network to finalize the process.
 }
 
-func createNetworkClient() NetworkServiceClient {
+func createNetworkClient() providerconnect.NetworkServiceClient {
 	httpClient := http.DefaultClient
-	networkClient := NewNetworkServiceClient(httpClient, "tzero-network-url")
+	networkClient := providerconnect.NewNetworkServiceClient(httpClient, "tzero-network-url")
 	return networkClient
 }
 
@@ -111,12 +112,12 @@ type PayInProviderServiceHandler struct {
 	// Add any necessary fields for the service handler
 }
 
-var _ ProviderServiceHandler = (*PayInProviderServiceHandler)(nil)
+var _ providerconnect.ProviderServiceHandler = (*PayInProviderServiceHandler)(nil)
 
 func (p *PayInProviderServiceHandler) CreatePaymentIntent(
 	ctx context.Context,
-	req *connect.Request[CreatePaymentIntentRequest],
-) (*connect.Response[CreatePaymentIntentResponse], error) {
+	req *connect.Request[provider.CreatePaymentIntentRequest],
+) (*connect.Response[provider.CreatePaymentIntentResponse], error) {
 	// payment intent id is the idempotency key for the payment
 	_ = req.Msg.PaymentIntentId
 	// pay-in amount to be collected from the payer
@@ -127,7 +128,7 @@ func (p *PayInProviderServiceHandler) CreatePaymentIntent(
 	// payment intent should be saved in the database or parameters can be embedded in the URL
 
 	// provider will generate the list of available payment methods along with the URL to redirect user
-	methods := []*CreatePaymentIntentResponse_PaymentMethod{
+	methods := []*provider.CreatePaymentIntentResponse_PaymentMethod{
 		{
 			// This is the URL where the client should be redirected to make the payment.
 			PaymentUrl: fmt.Sprintf("https://example.com/pay/%d", req.Msg.PaymentIntentId),
@@ -136,17 +137,17 @@ func (p *PayInProviderServiceHandler) CreatePaymentIntent(
 		},
 	}
 
-	return connect.NewResponse(&CreatePaymentIntentResponse{
+	return connect.NewResponse(&provider.CreatePaymentIntentResponse{
 		PaymentMethods: methods,
 	}), nil
 }
 
 func (p *PayInProviderServiceHandler) ConfirmPayout(
 	ctx context.Context,
-	req *connect.Request[ConfirmPayoutRequest],
-) (*connect.Response[ConfirmPayoutResponse], error) {
+	req *connect.Request[provider.ConfirmPayoutRequest],
+) (*connect.Response[provider.ConfirmPayoutResponse], error) {
 	// confirm payout is just a notification that the payment was completed successfully. Nothing to return in the response here.
 	_ = req.Msg.PaymentIntentId
 
-	return connect.NewResponse(&ConfirmPayoutResponse{}), nil
+	return connect.NewResponse(&provider.ConfirmPayoutResponse{}), nil
 }

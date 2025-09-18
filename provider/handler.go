@@ -4,16 +4,14 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
-	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment/paymentconnect"
-	paymentintent "github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment_intent/provider/providerconnect"
 )
 
-type BuildHandler func(options ...connect.HandlerOption) (path string, handler http.Handler)
+type BuildHandler func(defaultOptions providerHandlerOptions) (path string, handler http.Handler)
 
 // T-ZERO Network Public Key, required for signature verification.
 type NetworkPublicKeyHexed string
 
-// NewProviderHandler returns a ready-to-use *http.ServeMux with the
+// NewHttpHandler returns a ready-to-use *http.ServeMux with the
 // networkconnect.ProviderServiceHandler registered.
 //
 // It creates a new HTTP mux, registers the provided ProviderServiceHandler on the appropriate path,
@@ -24,57 +22,39 @@ type NetworkPublicKeyHexed string
 //
 // Returns:
 //   - *http.ServeMux: An HTTP mux with the provider service handler registered.
-func NewProviderHandler(
+func NewHttpHandler(
 	networkPublicKey NetworkPublicKeyHexed,
-	buildHandler BuildHandler,
-	option ...HandlerOption,
+	buildHandlers ...BuildHandler,
 ) (http.Handler, error) {
-	handler := defaultProviderHandlerOptions
-	for _, opt := range option {
-		opt(&handler)
-	}
-
-	if handler.verifySignatureFn == nil {
-		if networkPublicKey == "" {
-			return nil, ErrNetworkPublicKeyIsRequired
-		}
-
-		verifySignatureFn, err := newVerifySignature(string(networkPublicKey))
+	var verifySignatureFn VerifySignature = nil
+	if networkPublicKey != "" {
+		var err error
+		verifySignatureFn, err = newVerifySignature(string(networkPublicKey))
 		if err != nil {
 			return nil, err
 		}
-
-		handler.verifySignatureFn = verifySignatureFn
 	}
-
-	connectHandlerOpts := append([]connect.HandlerOption{
-		connect.WithInterceptors(signatureErrorInterceptor()),
-	}, handler.connectHandlerOptions...)
-
-	path, providerServiceHandler := buildHandler(connectHandlerOpts...)
+	defaultOptions, err := newDefaultHandlerOptions(verifySignatureFn)
+	if err != nil {
+		return nil, err
+	}
 
 	mux := http.NewServeMux()
-	mux.Handle(path, providerServiceHandler)
-
-	return newSignatureVerifierMiddleware(
-		handler.verifySignatureFn, handler.verifySignatureMaxBodySize,
-	)(mux), nil
-}
-
-func WithProviderServiceHandler(
-	providerHandler paymentconnect.ProviderServiceHandler,
-) BuildHandler {
-	return func(options ...connect.HandlerOption) (string, http.Handler) {
-		path, handler := paymentconnect.NewProviderServiceHandler(providerHandler, options...)
-		return path, handler
+	for _, b := range buildHandlers {
+		path, providerServiceHandler := b(defaultOptions)
+		mux.Handle(path, providerServiceHandler)
 	}
+
+	return mux, nil
 }
 
-func WithPaymentIntentProviderServiceHandler(
-	paymentIntentProviderHandler paymentintent.ProviderServiceHandler,
-) BuildHandler {
-	return func(options ...connect.HandlerOption) (string, http.Handler) {
-		path, handler := paymentintent.NewProviderServiceHandler(paymentIntentProviderHandler, options...)
-		return path, handler
+func Handler[T any](handler func(svc T, option ...connect.HandlerOption) (string, http.Handler), p T, options ...HandlerOption) BuildHandler {
+	return func(defaultOptions providerHandlerOptions) (string, http.Handler) {
+		for _, o := range options {
+			o(&defaultOptions)
+		}
+		path, h := handler(p, defaultOptions.connectHandlerOptions...)
+		h = newSignatureVerifierMiddleware(defaultOptions.verifySignatureFn, defaultOptions.verifySignatureMaxBodySize)(h)
+		return path, h
 	}
 }

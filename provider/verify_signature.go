@@ -33,7 +33,7 @@ func getSignatureErrorFromContext(ctx context.Context) (*SignatureError, bool) {
 }
 
 func newSignatureVerifierMiddleware(
-	verifySignature verifySignature,
+	verifySignature VerifySignature,
 	maxBodySizeOpt int64,
 ) middleware {
 	return func(handler http.Handler) http.Handler {
@@ -146,11 +146,11 @@ func readBodyWithCap(r *http.Request, cap int64) ([]byte, error) {
 	return body.Bytes(), nil
 }
 
-// verifySignature accepts a public key, a message, and a signature, hashes the
+// VerifySignature accepts a public key, a message, and a signature, hashes the
 // message, and verifies the signature against the public key.
-type verifySignature func(publicKey, message, signature []byte) error
+type VerifySignature func(publicKey, message, signature []byte) error
 
-func newVerifySignature(networkPublicKeyHexed string) (verifySignature, error) {
+func newVerifySignature(networkPublicKeyHexed string) (VerifySignature, error) {
 	networkPublicKey, err := crypto.GetPublicKeyFromHex(networkPublicKeyHexed)
 	if err != nil {
 		return nil, fmt.Errorf("invalid network public key: %w", err)

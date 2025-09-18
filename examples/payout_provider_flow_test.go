@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"log"
+	"strconv"
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/common"
-	networkreq "github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment"
+	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment"
 	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment/paymentconnect"
 	"github.com/t-0-network/provider-sdk-go/examples/utils"
 	"github.com/t-0-network/provider-sdk-go/network"
@@ -44,14 +44,14 @@ func _ExamplePayoutProviderBasicFlow() {
 
 	// ------ Step 2: The provider notifies the network that pay-out is happened. It should also contain the transaction
 	// hash or any other details about the pay-out.
-	_, err = networkClient.ConfirmPayout(context.Background(), connect.NewRequest(&networkreq.ConfirmPayoutRequest{
+	_, err = networkClient.ConfirmPayout(context.Background(), connect.NewRequest(&payment.ConfirmPayoutRequest{
 		PaymentId: 1, // This is the payment ID that the network provided in the pay-out request.
 		PayoutId:  1, // This is the pay-out ID that the network provided in the pay-out request.
 		// The receipt contains the details about the pay-out, e.g. transaction hash.
 		Receipt: &common.PaymentReceipt{Details: &common.PaymentReceipt_Stablecoin{
 			Stablecoin: &common.StablecoinReceipt{TransactionHash: "0x1234567890abcdef"},
 		}},
-		// Result:    &networkreq.UpdatePayoutRequest_Failure_{},
+		// Result:    &payment.UpdatePayoutRequest_Failure_{},
 	}))
 
 	log.Printf("Pay-out quotes submitted successfully: %v", resp.Msg)
@@ -61,23 +61,29 @@ func _ExamplePayoutProviderBasicFlow() {
 	}
 }
 
-func payOutQuotesRequestExample() *connect.Request[networkreq.UpdateQuoteRequest] {
-	return connect.NewRequest(&networkreq.UpdateQuoteRequest{
+func payOutQuotesRequestExample() *connect.Request[payment.UpdateQuoteRequest] {
+	quoteId := time.Now().Nanosecond()
+	getQuoteId := func() string {
+		quoteId++
+		return strconv.Itoa(quoteId)
+	}
+
+	return connect.NewRequest(&payment.UpdateQuoteRequest{
 		// There are 2 repeated fields in the request, one for the pay-in quotes and one for the pay-out quotes.
 		// So the provider can either submit pay-in quotes, pay-out quotes or both.
-		PayOut: []*networkreq.UpdateQuoteRequest_Quote{
+		PayOut: []*payment.UpdateQuoteRequest_Quote{
 			{
 				// specify the currency for the pay-out quote, e.g. BRL. In this case the rate is for USD/BRL.
 				Currency: payoutCurrency,
 				// right now only realtime quotes are supported
-				QuoteType: networkreq.QuoteType_QUOTE_TYPE_REALTIME,
+				QuoteType: payment.QuoteType_QUOTE_TYPE_REALTIME,
 				// Set the expiration time for the quote
 				Expiration: timestamppb.New(time.Now().Add(10 * time.Minute)),
 				Timestamp:  timestamppb.Now(),
-				Bands: []*networkreq.UpdateQuoteRequest_Quote_Band{
+				Bands: []*payment.UpdateQuoteRequest_Quote_Band{
 					{
 						// ClientQuoteId is a unique identifier for each quote of this provider, which can be used to reference it later.
-						ClientQuoteId: uuid.NewString(),
+						ClientQuoteId: getQuoteId(),
 						// band of the quote, e.g. this rate is up to 1000 USD
 						MaxAmount: utils.DecimalToProto(decimal.NewFromFloat(1000.0)),
 						// rate for the band, USD/BRL = 5.56
@@ -85,7 +91,7 @@ func payOutQuotesRequestExample() *connect.Request[networkreq.UpdateQuoteRequest
 						Rate: utils.DecimalToProto(decimal.NewFromFloat(5.56)),
 					},
 					{
-						ClientQuoteId: uuid.NewString(),
+						ClientQuoteId: getQuoteId(),
 						// band of the quote, e.g. this rate is up to 5000 USD payment amount
 						MaxAmount: utils.DecimalToProto(decimal.NewFromFloat(5000.0)),
 						// rate for this band, USD/EUR = 0.88. Rate for the bigger bands includes risk premium,
@@ -101,7 +107,7 @@ func payOutQuotesRequestExample() *connect.Request[networkreq.UpdateQuoteRequest
 
 type PayOutProviderImplementation struct{}
 
-func (p *PayOutProviderImplementation) PayOut(ctx context.Context, c *connect.Request[networkreq.PayoutRequest]) (*connect.Response[networkreq.PayoutResponse], error) {
+func (p *PayOutProviderImplementation) PayOut(ctx context.Context, c *connect.Request[payment.PayoutRequest]) (*connect.Response[payment.PayoutResponse], error) {
 	// This function is called by the network to request a pay-out for a specific payment.
 	// The provider should implement the logic to process the pay-out and initiate the transfer to the recipient
 	log.Printf("Received pay-out request: %v", c.Msg)
@@ -117,20 +123,20 @@ func (p *PayOutProviderImplementation) PayOut(ctx context.Context, c *connect.Re
 	// by calling the NetworkService.UpdatePayout RPC inside this handler.
 	// Otherwise, the provider can notify the network later, when the payment is processed.
 	// In this case just return here a success response to the network.
-	return connect.NewResponse(&networkreq.PayoutResponse{}), nil
+	return connect.NewResponse(&payment.PayoutResponse{}), nil
 }
 
-func (p *PayOutProviderImplementation) UpdateLimit(ctx context.Context, c *connect.Request[networkreq.UpdateLimitRequest]) (*connect.Response[networkreq.UpdateLimitResponse], error) {
+func (p *PayOutProviderImplementation) UpdateLimit(ctx context.Context, c *connect.Request[payment.UpdateLimitRequest]) (*connect.Response[payment.UpdateLimitResponse], error) {
 	// This function is called by the network to notify about the changes in the limits between providers.
 	// This is not required to be implemented by the pay-in provider, but it can be useful to keep track of the limits.
 	log.Printf("Received limit update: %v", c.Msg)
 
 	// Here you can implement your logic to handle the limit update, e.g. update the limits in your database.
 	// For now, we just return a success response.
-	return connect.NewResponse(&networkreq.UpdateLimitResponse{}), nil
+	return connect.NewResponse(&payment.UpdateLimitResponse{}), nil
 }
 
-func (p *PayOutProviderImplementation) AppendLedgerEntries(ctx context.Context, c *connect.Request[networkreq.AppendLedgerEntriesRequest]) (*connect.Response[networkreq.AppendLedgerEntriesResponse], error) {
+func (p *PayOutProviderImplementation) AppendLedgerEntries(ctx context.Context, c *connect.Request[payment.AppendLedgerEntriesRequest]) (*connect.Response[payment.AppendLedgerEntriesResponse], error) {
 	// Alternatively to the UpdateLimit, the provider can handle all the changes in the ledger entries via this rpc.
 	// This is not required to be implemented by the pay-in provider, but if the provider wants to keep track of all the changes
 	// in the ledger, it can implement this rpc.
@@ -138,18 +144,18 @@ func (p *PayOutProviderImplementation) AppendLedgerEntries(ctx context.Context, 
 
 	// Here you can implement your logic to handle the ledger entries
 	// For now, we just return a success response.
-	return connect.NewResponse(&networkreq.AppendLedgerEntriesResponse{}), nil
+	return connect.NewResponse(&payment.AppendLedgerEntriesResponse{}), nil
 }
 
-func (p *PayOutProviderImplementation) UpdatePayment(ctx context.Context, c *connect.Request[networkreq.UpdatePaymentRequest]) (*connect.Response[networkreq.UpdatePaymentResponse], error) {
+func (p *PayOutProviderImplementation) UpdatePayment(ctx context.Context, c *connect.Request[payment.UpdatePaymentRequest]) (*connect.Response[payment.UpdatePaymentResponse], error) {
 	// this function is not required for the pay-out provider flow, but it can be implemented if provider wants to participate as pay-in provider as well.
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("UpdatePayment is not implemented for PayOutProviderImplementation"))
 }
 
 func startTheProviderService(providerImpl paymentconnect.ProviderServiceHandler) provider.ServerShutdownFn {
-	providerServiceHandler, err := provider.NewProviderHandler(
+	providerServiceHandler, err := provider.NewHttpHandler(
 		provider.NetworkPublicKeyHexed(dummyNetworkPublicKey),
-		provider.WithProviderServiceHandler(providerImpl),
+		provider.Handler(paymentconnect.NewProviderServiceHandler, providerImpl),
 	)
 	if err != nil {
 		log.Fatalf("Failed to create provider service handler: %v", err)
