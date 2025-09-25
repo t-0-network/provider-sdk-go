@@ -156,11 +156,11 @@ message PayoutRequest {
   /**
    * payment id assigned by the network (provider should store this id to provide details in UpdatePayout later)
    */
-  int64 payment_id = 10;
+  uint64 payment_id = 10;
   /**
    * payout id assigned by the network (provider should store this id to provide details in UpdatePayout later)
    */
-  int64 payout_id = 20;
+  uint64 payout_id = 20;
   /**
    * currency of the payout (participant could support multiple currencies)
    * This is the currency in which the payout should be made.

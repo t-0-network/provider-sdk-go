@@ -62,6 +62,8 @@ message CreatePaymentIntentRequest {
   }]; // pay-in currency
 
   tzero.v1.common.Decimal amount = 30 [(buf.validate.field).required = true]; // pay-in amount
+
+  uint32 merchant_id = 50 [(buf.validate.field).uint64.gt = 0];
 }
 
 message CreatePaymentIntentResponse {
