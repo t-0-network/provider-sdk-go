@@ -28,6 +28,7 @@ type CreatePaymentIntentRequest struct {
 	PaymentIntentId uint64                 `protobuf:"varint,10,opt,name=payment_intent_id,json=paymentIntentId,proto3" json:"payment_intent_id,omitempty"` // idempotency key
 	Currency        string                 `protobuf:"bytes,20,opt,name=currency,proto3" json:"currency,omitempty"`                                         // pay-in currency
 	Amount          *common.Decimal        `protobuf:"bytes,30,opt,name=amount,proto3" json:"amount,omitempty"`                                             // pay-in amount
+	MerchantId      uint32                 `protobuf:"varint,50,opt,name=merchant_id,json=merchantId,proto3" json:"merchant_id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -81,6 +82,13 @@ func (x *CreatePaymentIntentRequest) GetAmount() *common.Decimal {
 		return x.Amount
 	}
 	return nil
+}
+
+func (x *CreatePaymentIntentRequest) GetMerchantId() uint32 {
+	if x != nil {
+		return x.MerchantId
+	}
+	return 0
 }
 
 type CreatePaymentIntentResponse struct {
@@ -627,13 +635,15 @@ var File_tzero_v1_payment_intent_provider_provider_proto protoreflect.FileDescri
 
 const file_tzero_v1_payment_intent_provider_provider_proto_rawDesc = "" +
 	"\n" +
-	"/tzero/v1/payment_intent/provider/provider.proto\x12 tzero.v1.payment_intent.provider\x1a\x1ctzero/v1/common/common.proto\x1a$tzero/v1/common/payment_method.proto\x1a\x1bbuf/validate/validate.proto\"\xbd\x01\n" +
+	"/tzero/v1/payment_intent/provider/provider.proto\x12 tzero.v1.payment_intent.provider\x1a\x1ctzero/v1/common/common.proto\x1a$tzero/v1/common/payment_method.proto\x1a\x1bbuf/validate/validate.proto\"\xe7\x01\n" +
 	"\x1aCreatePaymentIntentRequest\x123\n" +
 	"\x11payment_intent_id\x18\n" +
 	" \x01(\x04B\a\xbaH\x042\x02 \x00R\x0fpaymentIntentId\x120\n" +
 	"\bcurrency\x18\x14 \x01(\tB\x14\xbaH\x11r\x0f2\n" +
 	"^[A-Z]{3}$\x98\x01\x03R\bcurrency\x128\n" +
-	"\x06amount\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\x06amount\"\xbd\x02\n" +
+	"\x06amount\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\x06amount\x12(\n" +
+	"\vmerchant_id\x182 \x01(\rB\a\xbaH\x042\x02 \x00R\n" +
+	"merchantId\"\xbd\x02\n" +
 	"\x1bCreatePaymentIntentResponse\x12~\n" +
 	"\x0fpayment_methods\x18\x14 \x03(\v2K.tzero.v1.payment_intent.provider.CreatePaymentIntentResponse.PaymentMethodB\b\xbaH\x05\x92\x01\x02\b\x01R\x0epaymentMethods\x1a\x9d\x01\n" +
 	"\rPaymentMethod\x129\n" +

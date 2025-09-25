@@ -36,9 +36,8 @@ const (
 	// NetworkServiceUpdateQuoteProcedure is the fully-qualified name of the NetworkService's
 	// UpdateQuote RPC.
 	NetworkServiceUpdateQuoteProcedure = "/tzero.v1.payment.NetworkService/UpdateQuote"
-	// NetworkServiceGetPayoutQuoteProcedure is the fully-qualified name of the NetworkService's
-	// GetPayoutQuote RPC.
-	NetworkServiceGetPayoutQuoteProcedure = "/tzero.v1.payment.NetworkService/GetPayoutQuote"
+	// NetworkServiceGetQuoteProcedure is the fully-qualified name of the NetworkService's GetQuote RPC.
+	NetworkServiceGetQuoteProcedure = "/tzero.v1.payment.NetworkService/GetQuote"
 	// NetworkServiceCreatePaymentProcedure is the fully-qualified name of the NetworkService's
 	// CreatePayment RPC.
 	NetworkServiceCreatePaymentProcedure = "/tzero.v1.payment.NetworkService/CreatePayment"
@@ -56,7 +55,7 @@ type NetworkServiceClient interface {
 	// *
 	// Request the best available quote for a payout in a specific currency, for a given amount.
 	// If the payout quote exists, but the credit limit is exceeded, this quote will not be considered.
-	GetPayoutQuote(context.Context, *connect.Request[payment.GetPayoutQuoteRequest]) (*connect.Response[payment.GetPayoutQuoteResponse], error)
+	GetQuote(context.Context, *connect.Request[payment.GetQuoteRequest]) (*connect.Response[payment.GetQuoteResponse], error)
 	// *
 	// Submit a request to create a new payment. PayIn currency and QuoteId are the optional parameters.
 	// If the payIn currency is not specified, the network will use USD as the default payIn currency, and considering
@@ -92,10 +91,10 @@ func NewNetworkServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithIdempotency(connect.IdempotencyIdempotent),
 			connect.WithClientOptions(opts...),
 		),
-		getPayoutQuote: connect.NewClient[payment.GetPayoutQuoteRequest, payment.GetPayoutQuoteResponse](
+		getQuote: connect.NewClient[payment.GetQuoteRequest, payment.GetQuoteResponse](
 			httpClient,
-			baseURL+NetworkServiceGetPayoutQuoteProcedure,
-			connect.WithSchema(networkServiceMethods.ByName("GetPayoutQuote")),
+			baseURL+NetworkServiceGetQuoteProcedure,
+			connect.WithSchema(networkServiceMethods.ByName("GetQuote")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
@@ -118,10 +117,10 @@ func NewNetworkServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 
 // networkServiceClient implements NetworkServiceClient.
 type networkServiceClient struct {
-	updateQuote    *connect.Client[payment.UpdateQuoteRequest, payment.UpdateQuoteResponse]
-	getPayoutQuote *connect.Client[payment.GetPayoutQuoteRequest, payment.GetPayoutQuoteResponse]
-	createPayment  *connect.Client[payment.CreatePaymentRequest, payment.CreatePaymentResponse]
-	confirmPayout  *connect.Client[payment.ConfirmPayoutRequest, payment.ConfirmPayoutResponse]
+	updateQuote   *connect.Client[payment.UpdateQuoteRequest, payment.UpdateQuoteResponse]
+	getQuote      *connect.Client[payment.GetQuoteRequest, payment.GetQuoteResponse]
+	createPayment *connect.Client[payment.CreatePaymentRequest, payment.CreatePaymentResponse]
+	confirmPayout *connect.Client[payment.ConfirmPayoutRequest, payment.ConfirmPayoutResponse]
 }
 
 // UpdateQuote calls tzero.v1.payment.NetworkService.UpdateQuote.
@@ -129,9 +128,9 @@ func (c *networkServiceClient) UpdateQuote(ctx context.Context, req *connect.Req
 	return c.updateQuote.CallUnary(ctx, req)
 }
 
-// GetPayoutQuote calls tzero.v1.payment.NetworkService.GetPayoutQuote.
-func (c *networkServiceClient) GetPayoutQuote(ctx context.Context, req *connect.Request[payment.GetPayoutQuoteRequest]) (*connect.Response[payment.GetPayoutQuoteResponse], error) {
-	return c.getPayoutQuote.CallUnary(ctx, req)
+// GetQuote calls tzero.v1.payment.NetworkService.GetQuote.
+func (c *networkServiceClient) GetQuote(ctx context.Context, req *connect.Request[payment.GetQuoteRequest]) (*connect.Response[payment.GetQuoteResponse], error) {
+	return c.getQuote.CallUnary(ctx, req)
 }
 
 // CreatePayment calls tzero.v1.payment.NetworkService.CreatePayment.
@@ -153,7 +152,7 @@ type NetworkServiceHandler interface {
 	// *
 	// Request the best available quote for a payout in a specific currency, for a given amount.
 	// If the payout quote exists, but the credit limit is exceeded, this quote will not be considered.
-	GetPayoutQuote(context.Context, *connect.Request[payment.GetPayoutQuoteRequest]) (*connect.Response[payment.GetPayoutQuoteResponse], error)
+	GetQuote(context.Context, *connect.Request[payment.GetQuoteRequest]) (*connect.Response[payment.GetQuoteResponse], error)
 	// *
 	// Submit a request to create a new payment. PayIn currency and QuoteId are the optional parameters.
 	// If the payIn currency is not specified, the network will use USD as the default payIn currency, and considering
@@ -185,10 +184,10 @@ func NewNetworkServiceHandler(svc NetworkServiceHandler, opts ...connect.Handler
 		connect.WithIdempotency(connect.IdempotencyIdempotent),
 		connect.WithHandlerOptions(opts...),
 	)
-	networkServiceGetPayoutQuoteHandler := connect.NewUnaryHandler(
-		NetworkServiceGetPayoutQuoteProcedure,
-		svc.GetPayoutQuote,
-		connect.WithSchema(networkServiceMethods.ByName("GetPayoutQuote")),
+	networkServiceGetQuoteHandler := connect.NewUnaryHandler(
+		NetworkServiceGetQuoteProcedure,
+		svc.GetQuote,
+		connect.WithSchema(networkServiceMethods.ByName("GetQuote")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
@@ -210,8 +209,8 @@ func NewNetworkServiceHandler(svc NetworkServiceHandler, opts ...connect.Handler
 		switch r.URL.Path {
 		case NetworkServiceUpdateQuoteProcedure:
 			networkServiceUpdateQuoteHandler.ServeHTTP(w, r)
-		case NetworkServiceGetPayoutQuoteProcedure:
-			networkServiceGetPayoutQuoteHandler.ServeHTTP(w, r)
+		case NetworkServiceGetQuoteProcedure:
+			networkServiceGetQuoteHandler.ServeHTTP(w, r)
 		case NetworkServiceCreatePaymentProcedure:
 			networkServiceCreatePaymentHandler.ServeHTTP(w, r)
 		case NetworkServiceConfirmPayoutProcedure:
@@ -229,8 +228,8 @@ func (UnimplementedNetworkServiceHandler) UpdateQuote(context.Context, *connect.
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment.NetworkService.UpdateQuote is not implemented"))
 }
 
-func (UnimplementedNetworkServiceHandler) GetPayoutQuote(context.Context, *connect.Request[payment.GetPayoutQuoteRequest]) (*connect.Response[payment.GetPayoutQuoteResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment.NetworkService.GetPayoutQuote is not implemented"))
+func (UnimplementedNetworkServiceHandler) GetQuote(context.Context, *connect.Request[payment.GetQuoteRequest]) (*connect.Response[payment.GetQuoteResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment.NetworkService.GetQuote is not implemented"))
 }
 
 func (UnimplementedNetworkServiceHandler) CreatePayment(context.Context, *connect.Request[payment.CreatePaymentRequest]) (*connect.Response[payment.CreatePaymentResponse], error) {

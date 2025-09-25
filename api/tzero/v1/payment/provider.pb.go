@@ -273,10 +273,10 @@ type PayoutRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// *
 	// payment id assigned by the network (provider should store this id to provide details in UpdatePayout later)
-	PaymentId int64 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	PaymentId uint64 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
 	// *
 	// payout id assigned by the network (provider should store this id to provide details in UpdatePayout later)
-	PayoutId int64 `protobuf:"varint,20,opt,name=payout_id,json=payoutId,proto3" json:"payout_id,omitempty"`
+	PayoutId uint64 `protobuf:"varint,20,opt,name=payout_id,json=payoutId,proto3" json:"payout_id,omitempty"`
 	// *
 	// currency of the payout (participant could support multiple currencies)
 	// This is the currency in which the payout should be made.
@@ -330,14 +330,14 @@ func (*PayoutRequest) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_payment_provider_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *PayoutRequest) GetPaymentId() int64 {
+func (x *PayoutRequest) GetPaymentId() uint64 {
 	if x != nil {
 		return x.PaymentId
 	}
 	return 0
 }
 
-func (x *PayoutRequest) GetPayoutId() int64 {
+func (x *PayoutRequest) GetPayoutId() uint64 {
 	if x != nil {
 		return x.PayoutId
 	}
@@ -1640,8 +1640,8 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\rPayoutRequest\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\n" +
-	" \x01(\x03R\tpaymentId\x12\x1b\n" +
-	"\tpayout_id\x18\x14 \x01(\x03R\bpayoutId\x12\x1a\n" +
+	" \x01(\x04R\tpaymentId\x12\x1b\n" +
+	"\tpayout_id\x18\x14 \x01(\x04R\bpayoutId\x12\x1a\n" +
 	"\bcurrency\x18\x1e \x01(\tR\bcurrency\x12&\n" +
 	"\x0fclient_quote_id\x18( \x01(\tR\rclientQuoteId\x120\n" +
 	"\x06amount\x182 \x01(\v2\x18.tzero.v1.common.DecimalR\x06amount\x12H\n" +
