@@ -5,6 +5,7 @@ package tzero.v1.payment;
 import "tzero/v1/common/common.proto";
 import "tzero/v1/common/payment_method.proto";
 import "tzero/v1/common/payment_receipt.proto";
+import "ivms101/v1/ivms/ivms101.proto";
 import "google/protobuf/timestamp.proto";
 import "buf/validate/validate.proto";
 
@@ -106,7 +107,7 @@ message UpdateQuoteResponse {}
 
 message GetQuoteRequest {
   string pay_in_currency = 10 [(buf.validate.field).string = {len: 3, pattern: "^[A-Z]{3}$"}]; // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
-  tzero.v1.common.Decimal pay_in_amount = 20 [(buf.validate.field).required = true]; // amount in pay-in currency
+  PaymentAmount amount = 20 [(buf.validate.field).required = true]; // amount
   tzero.v1.common.PaymentMethodType pay_in_method = 30 [(buf.validate.field).required = true]; // payment method to use for the payout, e.g. bank transfer, card, etc.
 
   string pay_out_currency = 40 [(buf.validate.field).string = {len: 3, pattern: "^[A-Z]{3}$"}]; // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
@@ -133,8 +134,6 @@ message CreatePaymentRequest{
   PayIn pay_in = 40 [(buf.validate.field).required = true];
   PayOut pay_out = 45 [(buf.validate.field).required = true];
 
-  optional string reference = 70 [deprecated = true, (buf.validate.field).string.max_len = 140]; // optional reference for the payment, up to 140 characters
-
   // Provider must submit quotes to the network for the specified pay-in currency and payment method
   message PayIn {
     string currency = 10 [(buf.validate.field).string = {len: 3, pattern: "^[A-Z]{3}$"}];
@@ -145,6 +144,17 @@ message CreatePaymentRequest{
     string currency = 10 [(buf.validate.field).string = {len: 3, pattern: "^[A-Z]{3}$"}];
     tzero.v1.common.PaymentMethod payment_method = 20 [(buf.validate.field).required = true];
     optional QuoteId quote_id = 100; // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method otherwise last available quote will be used
+  }
+
+  optional TravelRuleData travel_rule_data = 100;
+
+  message TravelRuleData {
+    // the natural or legal person that requests payment with originating provider
+    repeated ivms101.Person originator = 10 [(buf.validate.field).repeated.min_items = 1];
+
+    // the natural or legal person or legal arrangement who is identified
+    // by the originator as the receiver of the requested payment.
+    repeated ivms101.Person beneficiary = 20 [(buf.validate.field).repeated.min_items = 1];
   }
 }
 
