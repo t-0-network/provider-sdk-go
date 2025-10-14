@@ -642,7 +642,7 @@ const file_tzero_v1_payment_intent_provider_provider_proto_rawDesc = "" +
 	"\bcurrency\x18\x14 \x01(\tB\x14\xbaH\x11r\x0f2\n" +
 	"^[A-Z]{3}$\x98\x01\x03R\bcurrency\x128\n" +
 	"\x06amount\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\x06amount\x12(\n" +
-	"\vmerchant_id\x182 \x01(\rB\a\xbaH\x042\x02 \x00R\n" +
+	"\vmerchant_id\x182 \x01(\rB\a\xbaH\x04*\x02 \x00R\n" +
 	"merchantId\"\xbd\x02\n" +
 	"\x1bCreatePaymentIntentResponse\x12~\n" +
 	"\x0fpayment_methods\x18\x14 \x03(\v2K.tzero.v1.payment_intent.provider.CreatePaymentIntentResponse.PaymentMethodB\b\xbaH\x05\x92\x01\x02\b\x01R\x0epaymentMethods\x1a\x9d\x01\n" +
