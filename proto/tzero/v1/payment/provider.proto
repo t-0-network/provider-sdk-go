@@ -5,6 +5,7 @@ package tzero.v1.payment;
 import "tzero/v1/common/payment_method.proto";
 import "tzero/v1/common/payment_receipt.proto";
 import "tzero/v1/common/common.proto";
+import "ivms101/v1/ivms/ivms101.proto";
 import "google/protobuf/timestamp.proto";
 import "buf/validate/validate.proto";
 
@@ -182,15 +183,23 @@ message PayoutRequest {
    */
 
   optional tzero.v1.common.PaymentMethod payout_method = 60;
-  /**
-   * optional reference for the payment, up to 140 characters
-   */
-  optional string reference = 70;
 
   /**
    * Pay-in provider id which initiated the pay out.
    */
   uint32 pay_in_provider_id = 80;
+
+
+  optional TravelRuleData travel_rule_data = 200;
+
+  message TravelRuleData {
+    // the natural or legal person that requests payment with originating provider
+    repeated ivms101.Person originator = 10 [(buf.validate.field).repeated.min_items = 1];
+
+    // the natural or legal person or legal arrangement who is identified
+    // by the originator as the receiver of the requested payment.
+    repeated ivms101.Person beneficiary = 20 [(buf.validate.field).repeated.min_items = 1];
+  }
 }
 
 message PayoutResponse {
