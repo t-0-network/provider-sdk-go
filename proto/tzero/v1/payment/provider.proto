@@ -199,6 +199,8 @@ message PayoutRequest {
     // the natural or legal person or legal arrangement who is identified
     // by the originator as the receiver of the requested payment.
     repeated ivms101.Person beneficiary = 20 [(buf.validate.field).repeated.min_items = 1];
+
+    optional ivms101.Person originator_provider = 30;
   }
 }
 
@@ -257,6 +259,12 @@ message UpdatePaymentRequest {
 
   message Accepted {
     tzero.v1.common.Decimal payout_amount = 10; // amount in currency of the payout
+
+    optional TravelRuleData travel_rule_data = 20;
+
+    message TravelRuleData {
+      optional ivms101.Person beneficiary_provider = 10;
+    }
   }
 
   message Failed {
