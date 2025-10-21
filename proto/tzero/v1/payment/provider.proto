@@ -73,21 +73,10 @@ message AppendLedgerEntriesRequest {
      */
     oneof transaction_details {
       option (buf.validate.oneof).required = true;
-      PayIn pay_in = 110;
-      PayoutReservation payout_reservation = 120;
       Payout payout = 130;
       ProviderSettlement provider_settlement = 140;
       FeeSettlement fee_settlement = 150;
-      PayoutReservationRelease payout_reservation_release = 160;
     };
-
-    message PayIn {
-      uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0];
-    }
-
-    message PayoutReservation {
-      uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0];
-    }
 
     message Payout {
       uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0];
@@ -100,10 +89,6 @@ message AppendLedgerEntriesRequest {
     message FeeSettlement {
       uint64 fee_settlement_id = 10 [(buf.validate.field).uint64.gt = 0];
     }
-
-    message PayoutReservationRelease {
-      uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0];
-    }
   }
 
   message LedgerEntry {
@@ -115,11 +100,6 @@ message AppendLedgerEntriesRequest {
      */
     AccountType account_type = 20;
     /**
-     * It is the currency of the entry. If the transaction contains entries with multiple currencies, the exchange_rate
-     * field should be provided to be used to convert the amounts to USD.
-     */
-    string currency = 30;
-    /**
      * debit is the amount that was debited from the account.
      * If the entry is a credit, this field should be 0.
      */
@@ -129,25 +109,16 @@ message AppendLedgerEntriesRequest {
      * If the entry is a debit, this field should be 0.
      */
     tzero.v1.common.Decimal credit = 50;
-    /**
-     * exchange_rate is the exchange rate of the currency to USD if the currency is not USD and the transaction contains
-     * entries with multiple currencies. Exchange rate for the base currency USD and the quote currency provided in the entry.
-     */
-    tzero.v1.common.Decimal exchange_rate = 60;
   }
+  
   enum AccountType {
     ACCOUNT_TYPE_UNSPECIFIED = 0;
-    ACCOUNT_TYPE_USER_PAYABLE = 10; // Reflects the user's payable balance, the amount that the provider owes to the user.
-    ACCOUNT_TYPE_CASH = 20; // Reflects the cash balance of the provider.
-    ACCOUNT_TYPE_RESERVE = 30; // This is the reserve account of the provider, which reflects the reserve of balance to reduce the limit available from one provider to another.
-    ACCOUNT_TYPE_RESERVE_USAGE = 40; // This is the mirror account for the reserve. To keep the double entry accounting principle.
-    ACCOUNT_TYPE_PROVIDER_PAYABLE = 50; // Reflects how much the provider owes to the network or other participants.
-    ACCOUNT_TYPE_PROVIDER_RECEIVABLE = 60; // Reflects how much the provider is owed by the network or other participants.
-    ACCOUNT_TYPE_PROVIDER_SETTLEMENT = 70; // Reflects the settlement balance of the provider with the network or other participants.
-    ACCOUNT_TYPE_FEE_PAYABLE = 80; // Reflects the fees that the provider owes to the network.
-    ACCOUNT_TYPE_FEE_RECEIVABLE = 90; // Reflects the fees that the network is owed by the provider.
-    ACCOUNT_TYPE_FEE_EXPENSE = 100; // Reflects the fees that the provider has to pay for the services provided by the network.
-    ACCOUNT_TYPE_FEE_SETTLEMENT = 110;
+    ACCOUNT_TYPE_BALANCE = 20;
+    ACCOUNT_TYPE_PAY_IN = 40;
+    ACCOUNT_TYPE_PAY_OUT = 50;
+    ACCOUNT_TYPE_FEE_EXPENSE = 60; // Reflects the fees that the provider has to pay for the services provided by the network.
+    ACCOUNT_TYPE_SETTLEMENT_IN = 80;
+    ACCOUNT_TYPE_SETTLEMENT_OUT = 90;
   }
 }
 
@@ -199,6 +170,8 @@ message PayoutRequest {
     // the natural or legal person or legal arrangement who is identified
     // by the originator as the receiver of the requested payment.
     repeated ivms101.Person beneficiary = 20 [(buf.validate.field).repeated.min_items = 1];
+
+    optional ivms101.Person originator_provider = 30;
   }
 }
 
@@ -257,6 +230,12 @@ message UpdatePaymentRequest {
 
   message Accepted {
     tzero.v1.common.Decimal payout_amount = 10; // amount in currency of the payout
+
+    optional TravelRuleData travel_rule_data = 20;
+
+    message TravelRuleData {
+      optional ivms101.Person beneficiary_provider = 10;
+    }
   }
 
   message Failed {
