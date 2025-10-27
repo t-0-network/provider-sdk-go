@@ -74,16 +74,19 @@ func (QuoteType) EnumDescriptor() ([]byte, []int) {
 type CreatePaymentResponse_Failure_Reason int32
 
 const (
-	CreatePaymentResponse_Failure_REASON_UNSPECIFIED CreatePaymentResponse_Failure_Reason = 0
+	CreatePaymentResponse_Failure_REASON_UNSPECIFIED     CreatePaymentResponse_Failure_Reason = 0
+	CreatePaymentResponse_Failure_REASON_QUOTE_NOT_FOUND CreatePaymentResponse_Failure_Reason = 10 // No matching quote par for the specified pay-in and payout currencies found or provider limits would exceed by processing this payment
 )
 
 // Enum value maps for CreatePaymentResponse_Failure_Reason.
 var (
 	CreatePaymentResponse_Failure_Reason_name = map[int32]string{
-		0: "REASON_UNSPECIFIED",
+		0:  "REASON_UNSPECIFIED",
+		10: "REASON_QUOTE_NOT_FOUND",
 	}
 	CreatePaymentResponse_Failure_Reason_value = map[string]int32{
-		"REASON_UNSPECIFIED": 0,
+		"REASON_UNSPECIFIED":     0,
+		"REASON_QUOTE_NOT_FOUND": 10,
 	}
 )
 
@@ -295,9 +298,9 @@ func (x *GetQuoteRequest) GetQuoteType() QuoteType {
 
 type GetQuoteResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Rate          *common.Decimal        `protobuf:"bytes,10,opt,name=rate,proto3" json:"rate,omitempty"`                      // rate in USD/currency, e.g. 1.2345 for 1 USD = 1.2345 EUR
-	Expiration    *timestamppb.Timestamp `protobuf:"bytes,20,opt,name=expiration,proto3" json:"expiration,omitempty"`          // expiration time of the quote
-	QuoteId       *QuoteId               `protobuf:"bytes,30,opt,name=quote_id,json=quoteId,proto3" json:"quote_id,omitempty"` //
+	Rate          *common.Decimal        `protobuf:"bytes,10,opt,name=rate,proto3" json:"rate,omitempty"`                      // exchange rate as pay_out_currency_rate/pay_in_currency_rate, e.g. BRL/EUR
+	Expiration    *timestamppb.Timestamp `protobuf:"bytes,20,opt,name=expiration,proto3" json:"expiration,omitempty"`          // expiration time of the payout quote
+	QuoteId       *QuoteId               `protobuf:"bytes,30,opt,name=quote_id,json=quoteId,proto3" json:"quote_id,omitempty"` // id of the payout quote
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -355,11 +358,11 @@ func (x *GetQuoteResponse) GetQuoteId() *QuoteId {
 
 type CreatePaymentRequest struct {
 	state           protoimpl.MessageState               `protogen:"open.v1"`
-	PaymentClientId string                               `protobuf:"bytes,10,opt,name=payment_client_id,json=paymentClientId,proto3" json:"payment_client_id,omitempty"` // unique client generated id for this payment
-	Amount          *PaymentAmount                       `protobuf:"bytes,30,opt,name=amount,proto3" json:"amount,omitempty"`
-	PayIn           *CreatePaymentRequest_PayIn          `protobuf:"bytes,40,opt,name=pay_in,json=payIn,proto3" json:"pay_in,omitempty"`
-	PayOut          *CreatePaymentRequest_PayOut         `protobuf:"bytes,45,opt,name=pay_out,json=payOut,proto3" json:"pay_out,omitempty"`
-	TravelRuleData  *CreatePaymentRequest_TravelRuleData `protobuf:"bytes,100,opt,name=travel_rule_data,json=travelRuleData,proto3,oneof" json:"travel_rule_data,omitempty"`
+	PaymentClientId string                               `protobuf:"bytes,10,opt,name=payment_client_id,json=paymentClientId,proto3" json:"payment_client_id,omitempty"`     // unique client generated id for this payment
+	Amount          *PaymentAmount                       `protobuf:"bytes,30,opt,name=amount,proto3" json:"amount,omitempty"`                                                // payment amount
+	PayIn           *CreatePaymentRequest_PayIn          `protobuf:"bytes,40,opt,name=pay_in,json=payIn,proto3" json:"pay_in,omitempty"`                                     // pay-in details
+	PayOut          *CreatePaymentRequest_PayOut         `protobuf:"bytes,45,opt,name=pay_out,json=payOut,proto3" json:"pay_out,omitempty"`                                  // payout details
+	TravelRuleData  *CreatePaymentRequest_TravelRuleData `protobuf:"bytes,100,opt,name=travel_rule_data,json=travelRuleData,proto3,oneof" json:"travel_rule_data,omitempty"` // travel rule data
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -907,8 +910,8 @@ func (x *UpdateQuoteRequest_Quote_Band) GetRate() *common.Decimal {
 // Provider must submit quotes to the network for the specified pay-in currency and payment method
 type CreatePaymentRequest_PayIn struct {
 	state         protoimpl.MessageState   `protogen:"open.v1"`
-	Currency      string                   `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`
-	PaymentMethod common.PaymentMethodType `protobuf:"varint,20,opt,name=payment_method,json=paymentMethod,proto3,enum=tzero.v1.common.PaymentMethodType" json:"payment_method,omitempty"`
+	Currency      string                   `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`                                                                        // pay-in currency
+	PaymentMethod common.PaymentMethodType `protobuf:"varint,20,opt,name=payment_method,json=paymentMethod,proto3,enum=tzero.v1.common.PaymentMethodType" json:"payment_method,omitempty"` // pay-in payment method
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -959,9 +962,9 @@ func (x *CreatePaymentRequest_PayIn) GetPaymentMethod() common.PaymentMethodType
 
 type CreatePaymentRequest_PayOut struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Currency      string                 `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`
-	PaymentMethod *common.PaymentMethod  `protobuf:"bytes,20,opt,name=payment_method,json=paymentMethod,proto3" json:"payment_method,omitempty"`
-	QuoteId       *QuoteId               `protobuf:"bytes,100,opt,name=quote_id,json=quoteId,proto3,oneof" json:"quote_id,omitempty"` // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method otherwise last available quote will be used
+	Currency      string                 `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`                                // pay-out currency
+	PaymentMethod *common.PaymentMethod  `protobuf:"bytes,20,opt,name=payment_method,json=paymentMethod,proto3" json:"payment_method,omitempty"` // pay-in payment details
+	QuoteId       *QuoteId               `protobuf:"bytes,100,opt,name=quote_id,json=quoteId,proto3,oneof" json:"quote_id,omitempty"`            // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method otherwise last available quote will be used
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1019,8 +1022,10 @@ func (x *CreatePaymentRequest_PayOut) GetQuoteId() *QuoteId {
 
 type CreatePaymentRequest_TravelRuleData struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// *
 	// the natural or legal person that requests payment with originating provider
 	Originator []*ivms.Person `protobuf:"bytes,10,rep,name=originator,proto3" json:"originator,omitempty"`
+	// *
 	// the natural or legal person or legal arrangement who is identified
 	// by the originator as the receiver of the requested payment.
 	Beneficiary   []*ivms.Person `protobuf:"bytes,20,rep,name=beneficiary,proto3" json:"beneficiary,omitempty"`
@@ -1074,7 +1079,7 @@ func (x *CreatePaymentRequest_TravelRuleData) GetBeneficiary() []*ivms.Person {
 
 type CreatePaymentResponse_Success struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	PaymentId        uint64                 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"` // payment id assigned by the network
+	PaymentId        uint64                 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"` // payment ID assigned by the network
 	PayInAmount      *common.Decimal        `protobuf:"bytes,20,opt,name=pay_in_amount,json=payInAmount,proto3" json:"pay_in_amount,omitempty"`
 	SettlementAmount *common.Decimal        `protobuf:"bytes,30,opt,name=settlement_amount,json=settlementAmount,proto3" json:"settlement_amount,omitempty"`
 	unknownFields    protoimpl.UnknownFields
@@ -1133,7 +1138,8 @@ func (x *CreatePaymentResponse_Success) GetSettlementAmount() *common.Decimal {
 }
 
 type CreatePaymentResponse_Failure struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpl.MessageState               `protogen:"open.v1"`
+	Reason        CreatePaymentResponse_Failure_Reason `protobuf:"varint,10,opt,name=reason,proto3,enum=tzero.v1.payment.CreatePaymentResponse_Failure_Reason" json:"reason,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1166,6 +1172,13 @@ func (x *CreatePaymentResponse_Failure) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CreatePaymentResponse_Failure.ProtoReflect.Descriptor instead.
 func (*CreatePaymentResponse_Failure) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_payment_network_proto_rawDescGZIP(), []int{6, 1}
+}
+
+func (x *CreatePaymentResponse_Failure) GetReason() CreatePaymentResponse_Failure_Reason {
+	if x != nil {
+		return x.Reason
+	}
+	return CreatePaymentResponse_Failure_REASON_UNSPECIFIED
 }
 
 var File_tzero_v1_payment_network_proto protoreflect.FileDescriptor
@@ -1243,7 +1256,7 @@ const file_tzero_v1_payment_network_proto_rawDesc = "" +
 	"\aQuoteId\x12\"\n" +
 	"\bquote_id\x18\x1e \x01(\x03B\a\xbaH\x04\"\x02 \x00R\aquoteId\x12(\n" +
 	"\vprovider_id\x18( \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\n" +
-	"providerId\"\xed\x03\n" +
+	"providerId\"\xda\x04\n" +
 	"\x15CreatePaymentResponse\x123\n" +
 	"\x11payment_client_id\x18\n" +
 	" \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x0fpaymentClientId\x12K\n" +
@@ -1254,10 +1267,14 @@ const file_tzero_v1_payment_network_proto_rawDesc = "" +
 	"payment_id\x18\n" +
 	" \x01(\x04B\a\xbaH\x042\x02 \x00R\tpaymentId\x12D\n" +
 	"\rpay_in_amount\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\vpayInAmount\x12M\n" +
-	"\x11settlement_amount\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\x10settlementAmount\x1a+\n" +
-	"\aFailure\" \n" +
+	"\x11settlement_amount\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\x10settlementAmount\x1a\x97\x01\n" +
+	"\aFailure\x12N\n" +
+	"\x06reason\x18\n" +
+	" \x01(\x0e26.tzero.v1.payment.CreatePaymentResponse.Failure.ReasonR\x06reason\"<\n" +
 	"\x06Reason\x12\x16\n" +
-	"\x12REASON_UNSPECIFIED\x10\x00B\x0f\n" +
+	"\x12REASON_UNSPECIFIED\x10\x00\x12\x1a\n" +
+	"\x16REASON_QUOTE_NOT_FOUND\x10\n" +
+	"B\x0f\n" +
 	"\x06result\x12\x05\xbaH\x02\b\x01\"\x9f\x01\n" +
 	"\x14ConfirmPayoutRequest\x12&\n" +
 	"\n" +
@@ -1355,19 +1372,20 @@ var file_tzero_v1_payment_network_proto_depIdxs = []int32{
 	24, // 29: tzero.v1.payment.CreatePaymentRequest.TravelRuleData.beneficiary:type_name -> ivms101.Person
 	20, // 30: tzero.v1.payment.CreatePaymentResponse.Success.pay_in_amount:type_name -> tzero.v1.common.Decimal
 	20, // 31: tzero.v1.payment.CreatePaymentResponse.Success.settlement_amount:type_name -> tzero.v1.common.Decimal
-	2,  // 32: tzero.v1.payment.NetworkService.UpdateQuote:input_type -> tzero.v1.payment.UpdateQuoteRequest
-	4,  // 33: tzero.v1.payment.NetworkService.GetQuote:input_type -> tzero.v1.payment.GetQuoteRequest
-	6,  // 34: tzero.v1.payment.NetworkService.CreatePayment:input_type -> tzero.v1.payment.CreatePaymentRequest
-	9,  // 35: tzero.v1.payment.NetworkService.ConfirmPayout:input_type -> tzero.v1.payment.ConfirmPayoutRequest
-	3,  // 36: tzero.v1.payment.NetworkService.UpdateQuote:output_type -> tzero.v1.payment.UpdateQuoteResponse
-	5,  // 37: tzero.v1.payment.NetworkService.GetQuote:output_type -> tzero.v1.payment.GetQuoteResponse
-	8,  // 38: tzero.v1.payment.NetworkService.CreatePayment:output_type -> tzero.v1.payment.CreatePaymentResponse
-	10, // 39: tzero.v1.payment.NetworkService.ConfirmPayout:output_type -> tzero.v1.payment.ConfirmPayoutResponse
-	36, // [36:40] is the sub-list for method output_type
-	32, // [32:36] is the sub-list for method input_type
-	32, // [32:32] is the sub-list for extension type_name
-	32, // [32:32] is the sub-list for extension extendee
-	0,  // [0:32] is the sub-list for field type_name
+	1,  // 32: tzero.v1.payment.CreatePaymentResponse.Failure.reason:type_name -> tzero.v1.payment.CreatePaymentResponse.Failure.Reason
+	2,  // 33: tzero.v1.payment.NetworkService.UpdateQuote:input_type -> tzero.v1.payment.UpdateQuoteRequest
+	4,  // 34: tzero.v1.payment.NetworkService.GetQuote:input_type -> tzero.v1.payment.GetQuoteRequest
+	6,  // 35: tzero.v1.payment.NetworkService.CreatePayment:input_type -> tzero.v1.payment.CreatePaymentRequest
+	9,  // 36: tzero.v1.payment.NetworkService.ConfirmPayout:input_type -> tzero.v1.payment.ConfirmPayoutRequest
+	3,  // 37: tzero.v1.payment.NetworkService.UpdateQuote:output_type -> tzero.v1.payment.UpdateQuoteResponse
+	5,  // 38: tzero.v1.payment.NetworkService.GetQuote:output_type -> tzero.v1.payment.GetQuoteResponse
+	8,  // 39: tzero.v1.payment.NetworkService.CreatePayment:output_type -> tzero.v1.payment.CreatePaymentResponse
+	10, // 40: tzero.v1.payment.NetworkService.ConfirmPayout:output_type -> tzero.v1.payment.ConfirmPayoutResponse
+	37, // [37:41] is the sub-list for method output_type
+	33, // [33:37] is the sub-list for method input_type
+	33, // [33:33] is the sub-list for extension type_name
+	33, // [33:33] is the sub-list for extension extendee
+	0,  // [0:33] is the sub-list for field type_name
 }
 
 func init() { file_tzero_v1_payment_network_proto_init() }
