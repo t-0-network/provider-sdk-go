@@ -55,6 +55,7 @@ type NetworkServiceClient interface {
 	// *
 	// Request the best available quote for a payout in a specific currency, for a given amount.
 	// If the payout quote exists, but the credit limit is exceeded, this quote will not be considered.
+	// Before calling this endpoint UpdateQuote should be periodically triggered in order to put pay-in quotes into the network.
 	GetQuote(context.Context, *connect.Request[payment.GetQuoteRequest]) (*connect.Response[payment.GetQuoteResponse], error)
 	// *
 	// Submit a request to create a new payment. PayIn currency and QuoteId are the optional parameters.
@@ -152,6 +153,7 @@ type NetworkServiceHandler interface {
 	// *
 	// Request the best available quote for a payout in a specific currency, for a given amount.
 	// If the payout quote exists, but the credit limit is exceeded, this quote will not be considered.
+	// Before calling this endpoint UpdateQuote should be periodically triggered in order to put pay-in quotes into the network.
 	GetQuote(context.Context, *connect.Request[payment.GetQuoteRequest]) (*connect.Response[payment.GetQuoteResponse], error)
 	// *
 	// Submit a request to create a new payment. PayIn currency and QuoteId are the optional parameters.
