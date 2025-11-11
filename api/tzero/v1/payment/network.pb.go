@@ -71,19 +71,71 @@ func (QuoteType) EnumDescriptor() ([]byte, []int) {
 	return file_tzero_v1_payment_network_proto_rawDescGZIP(), []int{0}
 }
 
+type GetQuoteResponse_Failure_Reason int32
+
+const (
+	GetQuoteResponse_Failure_REASON_UNSPECIFIED     GetQuoteResponse_Failure_Reason = 0
+	GetQuoteResponse_Failure_REASON_QUOTE_NOT_FOUND GetQuoteResponse_Failure_Reason = 10 // No matching quote par for the specified pay-in and payout currencies found or provider limits would exceed by processing this payment
+)
+
+// Enum value maps for GetQuoteResponse_Failure_Reason.
+var (
+	GetQuoteResponse_Failure_Reason_name = map[int32]string{
+		0:  "REASON_UNSPECIFIED",
+		10: "REASON_QUOTE_NOT_FOUND",
+	}
+	GetQuoteResponse_Failure_Reason_value = map[string]int32{
+		"REASON_UNSPECIFIED":     0,
+		"REASON_QUOTE_NOT_FOUND": 10,
+	}
+)
+
+func (x GetQuoteResponse_Failure_Reason) Enum() *GetQuoteResponse_Failure_Reason {
+	p := new(GetQuoteResponse_Failure_Reason)
+	*p = x
+	return p
+}
+
+func (x GetQuoteResponse_Failure_Reason) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GetQuoteResponse_Failure_Reason) Descriptor() protoreflect.EnumDescriptor {
+	return file_tzero_v1_payment_network_proto_enumTypes[1].Descriptor()
+}
+
+func (GetQuoteResponse_Failure_Reason) Type() protoreflect.EnumType {
+	return &file_tzero_v1_payment_network_proto_enumTypes[1]
+}
+
+func (x GetQuoteResponse_Failure_Reason) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GetQuoteResponse_Failure_Reason.Descriptor instead.
+func (GetQuoteResponse_Failure_Reason) EnumDescriptor() ([]byte, []int) {
+	return file_tzero_v1_payment_network_proto_rawDescGZIP(), []int{3, 1, 0}
+}
+
 type CreatePaymentResponse_Failure_Reason int32
 
 const (
-	CreatePaymentResponse_Failure_REASON_UNSPECIFIED CreatePaymentResponse_Failure_Reason = 0
+	CreatePaymentResponse_Failure_REASON_UNSPECIFIED                   CreatePaymentResponse_Failure_Reason = 0
+	CreatePaymentResponse_Failure_REASON_QUOTE_NOT_FOUND               CreatePaymentResponse_Failure_Reason = 10 // No matching quote par for the specified pay-in and payout currencies found or provider limits would exceed by processing this payment
+	CreatePaymentResponse_Failure_REASON_CREDIT_OR_PREDEPOSIT_REQUIRED CreatePaymentResponse_Failure_Reason = 20 // Payments with amount in pay out currency require available credit or pre-deposit
 )
 
 // Enum value maps for CreatePaymentResponse_Failure_Reason.
 var (
 	CreatePaymentResponse_Failure_Reason_name = map[int32]string{
-		0: "REASON_UNSPECIFIED",
+		0:  "REASON_UNSPECIFIED",
+		10: "REASON_QUOTE_NOT_FOUND",
+		20: "REASON_CREDIT_OR_PREDEPOSIT_REQUIRED",
 	}
 	CreatePaymentResponse_Failure_Reason_value = map[string]int32{
-		"REASON_UNSPECIFIED": 0,
+		"REASON_UNSPECIFIED":                   0,
+		"REASON_QUOTE_NOT_FOUND":               10,
+		"REASON_CREDIT_OR_PREDEPOSIT_REQUIRED": 20,
 	}
 )
 
@@ -98,11 +150,11 @@ func (x CreatePaymentResponse_Failure_Reason) String() string {
 }
 
 func (CreatePaymentResponse_Failure_Reason) Descriptor() protoreflect.EnumDescriptor {
-	return file_tzero_v1_payment_network_proto_enumTypes[1].Descriptor()
+	return file_tzero_v1_payment_network_proto_enumTypes[2].Descriptor()
 }
 
 func (CreatePaymentResponse_Failure_Reason) Type() protoreflect.EnumType {
-	return &file_tzero_v1_payment_network_proto_enumTypes[1]
+	return &file_tzero_v1_payment_network_proto_enumTypes[2]
 }
 
 func (x CreatePaymentResponse_Failure_Reason) Number() protoreflect.EnumNumber {
@@ -294,10 +346,12 @@ func (x *GetQuoteRequest) GetQuoteType() QuoteType {
 }
 
 type GetQuoteResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Rate          *common.Decimal        `protobuf:"bytes,10,opt,name=rate,proto3" json:"rate,omitempty"`                      // rate in USD/currency, e.g. 1.2345 for 1 USD = 1.2345 EUR
-	Expiration    *timestamppb.Timestamp `protobuf:"bytes,20,opt,name=expiration,proto3" json:"expiration,omitempty"`          // expiration time of the quote
-	QuoteId       *QuoteId               `protobuf:"bytes,30,opt,name=quote_id,json=quoteId,proto3" json:"quote_id,omitempty"` //
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Result:
+	//
+	//	*GetQuoteResponse_Success_
+	//	*GetQuoteResponse_Failure_
+	Result        isGetQuoteResponse_Result `protobuf_oneof:"result"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -332,34 +386,60 @@ func (*GetQuoteResponse) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_payment_network_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetQuoteResponse) GetRate() *common.Decimal {
+func (x *GetQuoteResponse) GetResult() isGetQuoteResponse_Result {
 	if x != nil {
-		return x.Rate
+		return x.Result
 	}
 	return nil
 }
 
-func (x *GetQuoteResponse) GetExpiration() *timestamppb.Timestamp {
+func (x *GetQuoteResponse) GetSuccess() *GetQuoteResponse_Success {
 	if x != nil {
-		return x.Expiration
+		if x, ok := x.Result.(*GetQuoteResponse_Success_); ok {
+			return x.Success
+		}
 	}
 	return nil
 }
 
-func (x *GetQuoteResponse) GetQuoteId() *QuoteId {
+func (x *GetQuoteResponse) GetFailure() *GetQuoteResponse_Failure {
 	if x != nil {
-		return x.QuoteId
+		if x, ok := x.Result.(*GetQuoteResponse_Failure_); ok {
+			return x.Failure
+		}
 	}
 	return nil
 }
+
+type isGetQuoteResponse_Result interface {
+	isGetQuoteResponse_Result()
+}
+
+type GetQuoteResponse_Success_ struct {
+	// *
+	// Success response - the network found a suitable quote for the provided parameters and with available credit or pre-settlement option.
+	// The returned quoteId can be used later to call the create payment endpoint.
+	Success *GetQuoteResponse_Success `protobuf:"bytes,20,opt,name=success,proto3,oneof"`
+}
+
+type GetQuoteResponse_Failure_ struct {
+	// *
+	// Failure response - means the quote was not found for the specified parameters, or provider limits
+	// would exceed by processing the payment amount with the specified amount.
+	Failure *GetQuoteResponse_Failure `protobuf:"bytes,30,opt,name=failure,proto3,oneof"`
+}
+
+func (*GetQuoteResponse_Success_) isGetQuoteResponse_Result() {}
+
+func (*GetQuoteResponse_Failure_) isGetQuoteResponse_Result() {}
 
 type CreatePaymentRequest struct {
 	state           protoimpl.MessageState               `protogen:"open.v1"`
-	PaymentClientId string                               `protobuf:"bytes,10,opt,name=payment_client_id,json=paymentClientId,proto3" json:"payment_client_id,omitempty"` // unique client generated id for this payment
-	Amount          *PaymentAmount                       `protobuf:"bytes,30,opt,name=amount,proto3" json:"amount,omitempty"`
-	PayIn           *CreatePaymentRequest_PayIn          `protobuf:"bytes,40,opt,name=pay_in,json=payIn,proto3" json:"pay_in,omitempty"`
-	PayOut          *CreatePaymentRequest_PayOut         `protobuf:"bytes,45,opt,name=pay_out,json=payOut,proto3" json:"pay_out,omitempty"`
-	TravelRuleData  *CreatePaymentRequest_TravelRuleData `protobuf:"bytes,100,opt,name=travel_rule_data,json=travelRuleData,proto3,oneof" json:"travel_rule_data,omitempty"`
+	PaymentClientId string                               `protobuf:"bytes,10,opt,name=payment_client_id,json=paymentClientId,proto3" json:"payment_client_id,omitempty"`     // unique client generated id for this payment
+	Amount          *PaymentAmount                       `protobuf:"bytes,30,opt,name=amount,proto3" json:"amount,omitempty"`                                                // payment amount
+	PayIn           *CreatePaymentRequest_PayIn          `protobuf:"bytes,40,opt,name=pay_in,json=payIn,proto3" json:"pay_in,omitempty"`                                     // pay-in details
+	PayOut          *CreatePaymentRequest_PayOut         `protobuf:"bytes,45,opt,name=pay_out,json=payOut,proto3" json:"pay_out,omitempty"`                                  // payout details
+	TravelRuleData  *CreatePaymentRequest_TravelRuleData `protobuf:"bytes,100,opt,name=travel_rule_data,json=travelRuleData,proto3,oneof" json:"travel_rule_data,omitempty"` // travel rule data
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -904,18 +984,122 @@ func (x *UpdateQuoteRequest_Quote_Band) GetRate() *common.Decimal {
 	return nil
 }
 
+type GetQuoteResponse_Success struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Rate          *common.Decimal        `protobuf:"bytes,10,opt,name=rate,proto3" json:"rate,omitempty"`                      // exchange rate as pay_out_currency_rate/pay_in_currency_rate, e.g. BRL/EUR
+	Expiration    *timestamppb.Timestamp `protobuf:"bytes,20,opt,name=expiration,proto3" json:"expiration,omitempty"`          // expiration time of the payout quote
+	QuoteId       *QuoteId               `protobuf:"bytes,30,opt,name=quote_id,json=quoteId,proto3" json:"quote_id,omitempty"` // id of the payout quote
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetQuoteResponse_Success) Reset() {
+	*x = GetQuoteResponse_Success{}
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetQuoteResponse_Success) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetQuoteResponse_Success) ProtoMessage() {}
+
+func (x *GetQuoteResponse_Success) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetQuoteResponse_Success.ProtoReflect.Descriptor instead.
+func (*GetQuoteResponse_Success) Descriptor() ([]byte, []int) {
+	return file_tzero_v1_payment_network_proto_rawDescGZIP(), []int{3, 0}
+}
+
+func (x *GetQuoteResponse_Success) GetRate() *common.Decimal {
+	if x != nil {
+		return x.Rate
+	}
+	return nil
+}
+
+func (x *GetQuoteResponse_Success) GetExpiration() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Expiration
+	}
+	return nil
+}
+
+func (x *GetQuoteResponse_Success) GetQuoteId() *QuoteId {
+	if x != nil {
+		return x.QuoteId
+	}
+	return nil
+}
+
+type GetQuoteResponse_Failure struct {
+	state         protoimpl.MessageState          `protogen:"open.v1"`
+	Reason        GetQuoteResponse_Failure_Reason `protobuf:"varint,10,opt,name=reason,proto3,enum=tzero.v1.payment.GetQuoteResponse_Failure_Reason" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetQuoteResponse_Failure) Reset() {
+	*x = GetQuoteResponse_Failure{}
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetQuoteResponse_Failure) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetQuoteResponse_Failure) ProtoMessage() {}
+
+func (x *GetQuoteResponse_Failure) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetQuoteResponse_Failure.ProtoReflect.Descriptor instead.
+func (*GetQuoteResponse_Failure) Descriptor() ([]byte, []int) {
+	return file_tzero_v1_payment_network_proto_rawDescGZIP(), []int{3, 1}
+}
+
+func (x *GetQuoteResponse_Failure) GetReason() GetQuoteResponse_Failure_Reason {
+	if x != nil {
+		return x.Reason
+	}
+	return GetQuoteResponse_Failure_REASON_UNSPECIFIED
+}
+
 // Provider must submit quotes to the network for the specified pay-in currency and payment method
 type CreatePaymentRequest_PayIn struct {
 	state         protoimpl.MessageState   `protogen:"open.v1"`
-	Currency      string                   `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`
-	PaymentMethod common.PaymentMethodType `protobuf:"varint,20,opt,name=payment_method,json=paymentMethod,proto3,enum=tzero.v1.common.PaymentMethodType" json:"payment_method,omitempty"`
+	Currency      string                   `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`                                                                        // pay-in currency
+	PaymentMethod common.PaymentMethodType `protobuf:"varint,20,opt,name=payment_method,json=paymentMethod,proto3,enum=tzero.v1.common.PaymentMethodType" json:"payment_method,omitempty"` // pay-in payment method
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreatePaymentRequest_PayIn) Reset() {
 	*x = CreatePaymentRequest_PayIn{}
-	mi := &file_tzero_v1_payment_network_proto_msgTypes[12]
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -927,7 +1111,7 @@ func (x *CreatePaymentRequest_PayIn) String() string {
 func (*CreatePaymentRequest_PayIn) ProtoMessage() {}
 
 func (x *CreatePaymentRequest_PayIn) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_payment_network_proto_msgTypes[12]
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -959,16 +1143,16 @@ func (x *CreatePaymentRequest_PayIn) GetPaymentMethod() common.PaymentMethodType
 
 type CreatePaymentRequest_PayOut struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Currency      string                 `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`
-	PaymentMethod *common.PaymentMethod  `protobuf:"bytes,20,opt,name=payment_method,json=paymentMethod,proto3" json:"payment_method,omitempty"`
-	QuoteId       *QuoteId               `protobuf:"bytes,100,opt,name=quote_id,json=quoteId,proto3,oneof" json:"quote_id,omitempty"` // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method otherwise last available quote will be used
+	Currency      string                 `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`                                // pay-out currency
+	PaymentMethod *common.PaymentMethod  `protobuf:"bytes,20,opt,name=payment_method,json=paymentMethod,proto3" json:"payment_method,omitempty"` // pay-in payment details
+	QuoteId       *QuoteId               `protobuf:"bytes,100,opt,name=quote_id,json=quoteId,proto3,oneof" json:"quote_id,omitempty"`            // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method otherwise last available quote will be used
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreatePaymentRequest_PayOut) Reset() {
 	*x = CreatePaymentRequest_PayOut{}
-	mi := &file_tzero_v1_payment_network_proto_msgTypes[13]
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -980,7 +1164,7 @@ func (x *CreatePaymentRequest_PayOut) String() string {
 func (*CreatePaymentRequest_PayOut) ProtoMessage() {}
 
 func (x *CreatePaymentRequest_PayOut) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_payment_network_proto_msgTypes[13]
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1019,8 +1203,10 @@ func (x *CreatePaymentRequest_PayOut) GetQuoteId() *QuoteId {
 
 type CreatePaymentRequest_TravelRuleData struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// *
 	// the natural or legal person that requests payment with originating provider
 	Originator []*ivms.Person `protobuf:"bytes,10,rep,name=originator,proto3" json:"originator,omitempty"`
+	// *
 	// the natural or legal person or legal arrangement who is identified
 	// by the originator as the receiver of the requested payment.
 	Beneficiary   []*ivms.Person `protobuf:"bytes,20,rep,name=beneficiary,proto3" json:"beneficiary,omitempty"`
@@ -1030,7 +1216,7 @@ type CreatePaymentRequest_TravelRuleData struct {
 
 func (x *CreatePaymentRequest_TravelRuleData) Reset() {
 	*x = CreatePaymentRequest_TravelRuleData{}
-	mi := &file_tzero_v1_payment_network_proto_msgTypes[14]
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1042,7 +1228,7 @@ func (x *CreatePaymentRequest_TravelRuleData) String() string {
 func (*CreatePaymentRequest_TravelRuleData) ProtoMessage() {}
 
 func (x *CreatePaymentRequest_TravelRuleData) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_payment_network_proto_msgTypes[14]
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1074,7 +1260,7 @@ func (x *CreatePaymentRequest_TravelRuleData) GetBeneficiary() []*ivms.Person {
 
 type CreatePaymentResponse_Success struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	PaymentId        uint64                 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"` // payment id assigned by the network
+	PaymentId        uint64                 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"` // payment ID assigned by the network
 	PayInAmount      *common.Decimal        `protobuf:"bytes,20,opt,name=pay_in_amount,json=payInAmount,proto3" json:"pay_in_amount,omitempty"`
 	SettlementAmount *common.Decimal        `protobuf:"bytes,30,opt,name=settlement_amount,json=settlementAmount,proto3" json:"settlement_amount,omitempty"`
 	unknownFields    protoimpl.UnknownFields
@@ -1083,7 +1269,7 @@ type CreatePaymentResponse_Success struct {
 
 func (x *CreatePaymentResponse_Success) Reset() {
 	*x = CreatePaymentResponse_Success{}
-	mi := &file_tzero_v1_payment_network_proto_msgTypes[15]
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1095,7 +1281,7 @@ func (x *CreatePaymentResponse_Success) String() string {
 func (*CreatePaymentResponse_Success) ProtoMessage() {}
 
 func (x *CreatePaymentResponse_Success) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_payment_network_proto_msgTypes[15]
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1133,14 +1319,15 @@ func (x *CreatePaymentResponse_Success) GetSettlementAmount() *common.Decimal {
 }
 
 type CreatePaymentResponse_Failure struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpl.MessageState               `protogen:"open.v1"`
+	Reason        CreatePaymentResponse_Failure_Reason `protobuf:"varint,10,opt,name=reason,proto3,enum=tzero.v1.payment.CreatePaymentResponse_Failure_Reason" json:"reason,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreatePaymentResponse_Failure) Reset() {
 	*x = CreatePaymentResponse_Failure{}
-	mi := &file_tzero_v1_payment_network_proto_msgTypes[16]
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1152,7 +1339,7 @@ func (x *CreatePaymentResponse_Failure) String() string {
 func (*CreatePaymentResponse_Failure) ProtoMessage() {}
 
 func (x *CreatePaymentResponse_Failure) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_payment_network_proto_msgTypes[16]
+	mi := &file_tzero_v1_payment_network_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1166,6 +1353,13 @@ func (x *CreatePaymentResponse_Failure) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CreatePaymentResponse_Failure.ProtoReflect.Descriptor instead.
 func (*CreatePaymentResponse_Failure) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_payment_network_proto_rawDescGZIP(), []int{6, 1}
+}
+
+func (x *CreatePaymentResponse_Failure) GetReason() CreatePaymentResponse_Failure_Reason {
+	if x != nil {
+		return x.Reason
+	}
+	return CreatePaymentResponse_Failure_REASON_UNSPECIFIED
 }
 
 var File_tzero_v1_payment_network_proto protoreflect.FileDescriptor
@@ -1206,14 +1400,25 @@ const file_tzero_v1_payment_network_proto_rawDesc = "" +
 	"^[A-Z]{3}$\x98\x01\x03R\x0epayOutCurrency\x12P\n" +
 	"\x0epay_out_method\x182 \x01(\x0e2\".tzero.v1.common.PaymentMethodTypeB\x06\xbaH\x03\xc8\x01\x01R\fpayOutMethod\x12B\n" +
 	"\n" +
-	"quote_type\x18< \x01(\x0e2\x1b.tzero.v1.payment.QuoteTypeB\x06\xbaH\x03\xc8\x01\x01R\tquoteType\"\xcc\x01\n" +
-	"\x10GetQuoteResponse\x124\n" +
+	"quote_type\x18< \x01(\x0e2\x1b.tzero.v1.payment.QuoteTypeB\x06\xbaH\x03\xc8\x01\x01R\tquoteType\"\x8e\x04\n" +
+	"\x10GetQuoteResponse\x12F\n" +
+	"\asuccess\x18\x14 \x01(\v2*.tzero.v1.payment.GetQuoteResponse.SuccessH\x00R\asuccess\x12F\n" +
+	"\afailure\x18\x1e \x01(\v2*.tzero.v1.payment.GetQuoteResponse.FailureH\x00R\afailure\x1a\xc3\x01\n" +
+	"\aSuccess\x124\n" +
 	"\x04rate\x18\n" +
 	" \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\x04rate\x12D\n" +
 	"\n" +
 	"expiration\x18\x14 \x01(\v2\x1a.google.protobuf.TimestampB\b\xbaH\x05\xb2\x01\x02@\x01R\n" +
 	"expiration\x12<\n" +
-	"\bquote_id\x18\x1e \x01(\v2\x19.tzero.v1.payment.QuoteIdB\x06\xbaH\x03\xc8\x01\x01R\aquoteId\"\x94\a\n" +
+	"\bquote_id\x18\x1e \x01(\v2\x19.tzero.v1.payment.QuoteIdB\x06\xbaH\x03\xc8\x01\x01R\aquoteId\x1a\x92\x01\n" +
+	"\aFailure\x12I\n" +
+	"\x06reason\x18\n" +
+	" \x01(\x0e21.tzero.v1.payment.GetQuoteResponse.Failure.ReasonR\x06reason\"<\n" +
+	"\x06Reason\x12\x16\n" +
+	"\x12REASON_UNSPECIFIED\x10\x00\x12\x1a\n" +
+	"\x16REASON_QUOTE_NOT_FOUND\x10\n" +
+	"B\x0f\n" +
+	"\x06result\x12\x05\xbaH\x02\b\x01\"\x94\a\n" +
 	"\x14CreatePaymentRequest\x125\n" +
 	"\x11payment_client_id\x18\n" +
 	" \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18@R\x0fpaymentClientId\x12?\n" +
@@ -1243,7 +1448,7 @@ const file_tzero_v1_payment_network_proto_rawDesc = "" +
 	"\aQuoteId\x12\"\n" +
 	"\bquote_id\x18\x1e \x01(\x03B\a\xbaH\x04\"\x02 \x00R\aquoteId\x12(\n" +
 	"\vprovider_id\x18( \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\n" +
-	"providerId\"\xed\x03\n" +
+	"providerId\"\x84\x05\n" +
 	"\x15CreatePaymentResponse\x123\n" +
 	"\x11payment_client_id\x18\n" +
 	" \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x0fpaymentClientId\x12K\n" +
@@ -1254,10 +1459,15 @@ const file_tzero_v1_payment_network_proto_rawDesc = "" +
 	"payment_id\x18\n" +
 	" \x01(\x04B\a\xbaH\x042\x02 \x00R\tpaymentId\x12D\n" +
 	"\rpay_in_amount\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\vpayInAmount\x12M\n" +
-	"\x11settlement_amount\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\x10settlementAmount\x1a+\n" +
-	"\aFailure\" \n" +
+	"\x11settlement_amount\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\x10settlementAmount\x1a\xc1\x01\n" +
+	"\aFailure\x12N\n" +
+	"\x06reason\x18\n" +
+	" \x01(\x0e26.tzero.v1.payment.CreatePaymentResponse.Failure.ReasonR\x06reason\"f\n" +
 	"\x06Reason\x12\x16\n" +
-	"\x12REASON_UNSPECIFIED\x10\x00B\x0f\n" +
+	"\x12REASON_UNSPECIFIED\x10\x00\x12\x1a\n" +
+	"\x16REASON_QUOTE_NOT_FOUND\x10\n" +
+	"\x12(\n" +
+	"$REASON_CREDIT_OR_PREDEPOSIT_REQUIRED\x10\x14B\x0f\n" +
 	"\x06result\x12\x05\xbaH\x02\b\x01\"\x9f\x01\n" +
 	"\x14ConfirmPayoutRequest\x12&\n" +
 	"\n" +
@@ -1293,87 +1503,98 @@ func file_tzero_v1_payment_network_proto_rawDescGZIP() []byte {
 	return file_tzero_v1_payment_network_proto_rawDescData
 }
 
-var file_tzero_v1_payment_network_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_tzero_v1_payment_network_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_tzero_v1_payment_network_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_tzero_v1_payment_network_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_tzero_v1_payment_network_proto_goTypes = []any{
-	(QuoteType)(0), // 0: tzero.v1.payment.QuoteType
-	(CreatePaymentResponse_Failure_Reason)(0),   // 1: tzero.v1.payment.CreatePaymentResponse.Failure.Reason
-	(*UpdateQuoteRequest)(nil),                  // 2: tzero.v1.payment.UpdateQuoteRequest
-	(*UpdateQuoteResponse)(nil),                 // 3: tzero.v1.payment.UpdateQuoteResponse
-	(*GetQuoteRequest)(nil),                     // 4: tzero.v1.payment.GetQuoteRequest
-	(*GetQuoteResponse)(nil),                    // 5: tzero.v1.payment.GetQuoteResponse
-	(*CreatePaymentRequest)(nil),                // 6: tzero.v1.payment.CreatePaymentRequest
-	(*QuoteId)(nil),                             // 7: tzero.v1.payment.QuoteId
-	(*CreatePaymentResponse)(nil),               // 8: tzero.v1.payment.CreatePaymentResponse
-	(*ConfirmPayoutRequest)(nil),                // 9: tzero.v1.payment.ConfirmPayoutRequest
-	(*ConfirmPayoutResponse)(nil),               // 10: tzero.v1.payment.ConfirmPayoutResponse
-	(*PaymentAmount)(nil),                       // 11: tzero.v1.payment.PaymentAmount
-	(*UpdateQuoteRequest_Quote)(nil),            // 12: tzero.v1.payment.UpdateQuoteRequest.Quote
-	(*UpdateQuoteRequest_Quote_Band)(nil),       // 13: tzero.v1.payment.UpdateQuoteRequest.Quote.Band
-	(*CreatePaymentRequest_PayIn)(nil),          // 14: tzero.v1.payment.CreatePaymentRequest.PayIn
-	(*CreatePaymentRequest_PayOut)(nil),         // 15: tzero.v1.payment.CreatePaymentRequest.PayOut
-	(*CreatePaymentRequest_TravelRuleData)(nil), // 16: tzero.v1.payment.CreatePaymentRequest.TravelRuleData
-	(*CreatePaymentResponse_Success)(nil),       // 17: tzero.v1.payment.CreatePaymentResponse.Success
-	(*CreatePaymentResponse_Failure)(nil),       // 18: tzero.v1.payment.CreatePaymentResponse.Failure
-	(common.PaymentMethodType)(0),               // 19: tzero.v1.common.PaymentMethodType
-	(*common.Decimal)(nil),                      // 20: tzero.v1.common.Decimal
-	(*timestamppb.Timestamp)(nil),               // 21: google.protobuf.Timestamp
-	(*common.PaymentReceipt)(nil),               // 22: tzero.v1.common.PaymentReceipt
-	(*common.PaymentMethod)(nil),                // 23: tzero.v1.common.PaymentMethod
-	(*ivms.Person)(nil),                         // 24: ivms101.Person
+	(QuoteType)(0),                              // 0: tzero.v1.payment.QuoteType
+	(GetQuoteResponse_Failure_Reason)(0),        // 1: tzero.v1.payment.GetQuoteResponse.Failure.Reason
+	(CreatePaymentResponse_Failure_Reason)(0),   // 2: tzero.v1.payment.CreatePaymentResponse.Failure.Reason
+	(*UpdateQuoteRequest)(nil),                  // 3: tzero.v1.payment.UpdateQuoteRequest
+	(*UpdateQuoteResponse)(nil),                 // 4: tzero.v1.payment.UpdateQuoteResponse
+	(*GetQuoteRequest)(nil),                     // 5: tzero.v1.payment.GetQuoteRequest
+	(*GetQuoteResponse)(nil),                    // 6: tzero.v1.payment.GetQuoteResponse
+	(*CreatePaymentRequest)(nil),                // 7: tzero.v1.payment.CreatePaymentRequest
+	(*QuoteId)(nil),                             // 8: tzero.v1.payment.QuoteId
+	(*CreatePaymentResponse)(nil),               // 9: tzero.v1.payment.CreatePaymentResponse
+	(*ConfirmPayoutRequest)(nil),                // 10: tzero.v1.payment.ConfirmPayoutRequest
+	(*ConfirmPayoutResponse)(nil),               // 11: tzero.v1.payment.ConfirmPayoutResponse
+	(*PaymentAmount)(nil),                       // 12: tzero.v1.payment.PaymentAmount
+	(*UpdateQuoteRequest_Quote)(nil),            // 13: tzero.v1.payment.UpdateQuoteRequest.Quote
+	(*UpdateQuoteRequest_Quote_Band)(nil),       // 14: tzero.v1.payment.UpdateQuoteRequest.Quote.Band
+	(*GetQuoteResponse_Success)(nil),            // 15: tzero.v1.payment.GetQuoteResponse.Success
+	(*GetQuoteResponse_Failure)(nil),            // 16: tzero.v1.payment.GetQuoteResponse.Failure
+	(*CreatePaymentRequest_PayIn)(nil),          // 17: tzero.v1.payment.CreatePaymentRequest.PayIn
+	(*CreatePaymentRequest_PayOut)(nil),         // 18: tzero.v1.payment.CreatePaymentRequest.PayOut
+	(*CreatePaymentRequest_TravelRuleData)(nil), // 19: tzero.v1.payment.CreatePaymentRequest.TravelRuleData
+	(*CreatePaymentResponse_Success)(nil),       // 20: tzero.v1.payment.CreatePaymentResponse.Success
+	(*CreatePaymentResponse_Failure)(nil),       // 21: tzero.v1.payment.CreatePaymentResponse.Failure
+	(common.PaymentMethodType)(0),               // 22: tzero.v1.common.PaymentMethodType
+	(*common.PaymentReceipt)(nil),               // 23: tzero.v1.common.PaymentReceipt
+	(*common.Decimal)(nil),                      // 24: tzero.v1.common.Decimal
+	(*timestamppb.Timestamp)(nil),               // 25: google.protobuf.Timestamp
+	(*common.PaymentMethod)(nil),                // 26: tzero.v1.common.PaymentMethod
+	(*ivms.Person)(nil),                         // 27: ivms101.Person
 }
 var file_tzero_v1_payment_network_proto_depIdxs = []int32{
-	12, // 0: tzero.v1.payment.UpdateQuoteRequest.pay_out:type_name -> tzero.v1.payment.UpdateQuoteRequest.Quote
-	12, // 1: tzero.v1.payment.UpdateQuoteRequest.pay_in:type_name -> tzero.v1.payment.UpdateQuoteRequest.Quote
-	11, // 2: tzero.v1.payment.GetQuoteRequest.amount:type_name -> tzero.v1.payment.PaymentAmount
-	19, // 3: tzero.v1.payment.GetQuoteRequest.pay_in_method:type_name -> tzero.v1.common.PaymentMethodType
-	19, // 4: tzero.v1.payment.GetQuoteRequest.pay_out_method:type_name -> tzero.v1.common.PaymentMethodType
+	13, // 0: tzero.v1.payment.UpdateQuoteRequest.pay_out:type_name -> tzero.v1.payment.UpdateQuoteRequest.Quote
+	13, // 1: tzero.v1.payment.UpdateQuoteRequest.pay_in:type_name -> tzero.v1.payment.UpdateQuoteRequest.Quote
+	12, // 2: tzero.v1.payment.GetQuoteRequest.amount:type_name -> tzero.v1.payment.PaymentAmount
+	22, // 3: tzero.v1.payment.GetQuoteRequest.pay_in_method:type_name -> tzero.v1.common.PaymentMethodType
+	22, // 4: tzero.v1.payment.GetQuoteRequest.pay_out_method:type_name -> tzero.v1.common.PaymentMethodType
 	0,  // 5: tzero.v1.payment.GetQuoteRequest.quote_type:type_name -> tzero.v1.payment.QuoteType
-	20, // 6: tzero.v1.payment.GetQuoteResponse.rate:type_name -> tzero.v1.common.Decimal
-	21, // 7: tzero.v1.payment.GetQuoteResponse.expiration:type_name -> google.protobuf.Timestamp
-	7,  // 8: tzero.v1.payment.GetQuoteResponse.quote_id:type_name -> tzero.v1.payment.QuoteId
-	11, // 9: tzero.v1.payment.CreatePaymentRequest.amount:type_name -> tzero.v1.payment.PaymentAmount
-	14, // 10: tzero.v1.payment.CreatePaymentRequest.pay_in:type_name -> tzero.v1.payment.CreatePaymentRequest.PayIn
-	15, // 11: tzero.v1.payment.CreatePaymentRequest.pay_out:type_name -> tzero.v1.payment.CreatePaymentRequest.PayOut
-	16, // 12: tzero.v1.payment.CreatePaymentRequest.travel_rule_data:type_name -> tzero.v1.payment.CreatePaymentRequest.TravelRuleData
-	17, // 13: tzero.v1.payment.CreatePaymentResponse.success:type_name -> tzero.v1.payment.CreatePaymentResponse.Success
-	18, // 14: tzero.v1.payment.CreatePaymentResponse.failure:type_name -> tzero.v1.payment.CreatePaymentResponse.Failure
-	22, // 15: tzero.v1.payment.ConfirmPayoutRequest.receipt:type_name -> tzero.v1.common.PaymentReceipt
-	20, // 16: tzero.v1.payment.PaymentAmount.pay_in_amount:type_name -> tzero.v1.common.Decimal
-	20, // 17: tzero.v1.payment.PaymentAmount.pay_out_amount:type_name -> tzero.v1.common.Decimal
-	0,  // 18: tzero.v1.payment.UpdateQuoteRequest.Quote.quote_type:type_name -> tzero.v1.payment.QuoteType
-	19, // 19: tzero.v1.payment.UpdateQuoteRequest.Quote.payment_method:type_name -> tzero.v1.common.PaymentMethodType
-	13, // 20: tzero.v1.payment.UpdateQuoteRequest.Quote.bands:type_name -> tzero.v1.payment.UpdateQuoteRequest.Quote.Band
-	21, // 21: tzero.v1.payment.UpdateQuoteRequest.Quote.expiration:type_name -> google.protobuf.Timestamp
-	21, // 22: tzero.v1.payment.UpdateQuoteRequest.Quote.timestamp:type_name -> google.protobuf.Timestamp
-	20, // 23: tzero.v1.payment.UpdateQuoteRequest.Quote.Band.max_amount:type_name -> tzero.v1.common.Decimal
-	20, // 24: tzero.v1.payment.UpdateQuoteRequest.Quote.Band.rate:type_name -> tzero.v1.common.Decimal
-	19, // 25: tzero.v1.payment.CreatePaymentRequest.PayIn.payment_method:type_name -> tzero.v1.common.PaymentMethodType
-	23, // 26: tzero.v1.payment.CreatePaymentRequest.PayOut.payment_method:type_name -> tzero.v1.common.PaymentMethod
-	7,  // 27: tzero.v1.payment.CreatePaymentRequest.PayOut.quote_id:type_name -> tzero.v1.payment.QuoteId
-	24, // 28: tzero.v1.payment.CreatePaymentRequest.TravelRuleData.originator:type_name -> ivms101.Person
-	24, // 29: tzero.v1.payment.CreatePaymentRequest.TravelRuleData.beneficiary:type_name -> ivms101.Person
-	20, // 30: tzero.v1.payment.CreatePaymentResponse.Success.pay_in_amount:type_name -> tzero.v1.common.Decimal
-	20, // 31: tzero.v1.payment.CreatePaymentResponse.Success.settlement_amount:type_name -> tzero.v1.common.Decimal
-	2,  // 32: tzero.v1.payment.NetworkService.UpdateQuote:input_type -> tzero.v1.payment.UpdateQuoteRequest
-	4,  // 33: tzero.v1.payment.NetworkService.GetQuote:input_type -> tzero.v1.payment.GetQuoteRequest
-	6,  // 34: tzero.v1.payment.NetworkService.CreatePayment:input_type -> tzero.v1.payment.CreatePaymentRequest
-	9,  // 35: tzero.v1.payment.NetworkService.ConfirmPayout:input_type -> tzero.v1.payment.ConfirmPayoutRequest
-	3,  // 36: tzero.v1.payment.NetworkService.UpdateQuote:output_type -> tzero.v1.payment.UpdateQuoteResponse
-	5,  // 37: tzero.v1.payment.NetworkService.GetQuote:output_type -> tzero.v1.payment.GetQuoteResponse
-	8,  // 38: tzero.v1.payment.NetworkService.CreatePayment:output_type -> tzero.v1.payment.CreatePaymentResponse
-	10, // 39: tzero.v1.payment.NetworkService.ConfirmPayout:output_type -> tzero.v1.payment.ConfirmPayoutResponse
-	36, // [36:40] is the sub-list for method output_type
-	32, // [32:36] is the sub-list for method input_type
-	32, // [32:32] is the sub-list for extension type_name
-	32, // [32:32] is the sub-list for extension extendee
-	0,  // [0:32] is the sub-list for field type_name
+	15, // 6: tzero.v1.payment.GetQuoteResponse.success:type_name -> tzero.v1.payment.GetQuoteResponse.Success
+	16, // 7: tzero.v1.payment.GetQuoteResponse.failure:type_name -> tzero.v1.payment.GetQuoteResponse.Failure
+	12, // 8: tzero.v1.payment.CreatePaymentRequest.amount:type_name -> tzero.v1.payment.PaymentAmount
+	17, // 9: tzero.v1.payment.CreatePaymentRequest.pay_in:type_name -> tzero.v1.payment.CreatePaymentRequest.PayIn
+	18, // 10: tzero.v1.payment.CreatePaymentRequest.pay_out:type_name -> tzero.v1.payment.CreatePaymentRequest.PayOut
+	19, // 11: tzero.v1.payment.CreatePaymentRequest.travel_rule_data:type_name -> tzero.v1.payment.CreatePaymentRequest.TravelRuleData
+	20, // 12: tzero.v1.payment.CreatePaymentResponse.success:type_name -> tzero.v1.payment.CreatePaymentResponse.Success
+	21, // 13: tzero.v1.payment.CreatePaymentResponse.failure:type_name -> tzero.v1.payment.CreatePaymentResponse.Failure
+	23, // 14: tzero.v1.payment.ConfirmPayoutRequest.receipt:type_name -> tzero.v1.common.PaymentReceipt
+	24, // 15: tzero.v1.payment.PaymentAmount.pay_in_amount:type_name -> tzero.v1.common.Decimal
+	24, // 16: tzero.v1.payment.PaymentAmount.pay_out_amount:type_name -> tzero.v1.common.Decimal
+	0,  // 17: tzero.v1.payment.UpdateQuoteRequest.Quote.quote_type:type_name -> tzero.v1.payment.QuoteType
+	22, // 18: tzero.v1.payment.UpdateQuoteRequest.Quote.payment_method:type_name -> tzero.v1.common.PaymentMethodType
+	14, // 19: tzero.v1.payment.UpdateQuoteRequest.Quote.bands:type_name -> tzero.v1.payment.UpdateQuoteRequest.Quote.Band
+	25, // 20: tzero.v1.payment.UpdateQuoteRequest.Quote.expiration:type_name -> google.protobuf.Timestamp
+	25, // 21: tzero.v1.payment.UpdateQuoteRequest.Quote.timestamp:type_name -> google.protobuf.Timestamp
+	24, // 22: tzero.v1.payment.UpdateQuoteRequest.Quote.Band.max_amount:type_name -> tzero.v1.common.Decimal
+	24, // 23: tzero.v1.payment.UpdateQuoteRequest.Quote.Band.rate:type_name -> tzero.v1.common.Decimal
+	24, // 24: tzero.v1.payment.GetQuoteResponse.Success.rate:type_name -> tzero.v1.common.Decimal
+	25, // 25: tzero.v1.payment.GetQuoteResponse.Success.expiration:type_name -> google.protobuf.Timestamp
+	8,  // 26: tzero.v1.payment.GetQuoteResponse.Success.quote_id:type_name -> tzero.v1.payment.QuoteId
+	1,  // 27: tzero.v1.payment.GetQuoteResponse.Failure.reason:type_name -> tzero.v1.payment.GetQuoteResponse.Failure.Reason
+	22, // 28: tzero.v1.payment.CreatePaymentRequest.PayIn.payment_method:type_name -> tzero.v1.common.PaymentMethodType
+	26, // 29: tzero.v1.payment.CreatePaymentRequest.PayOut.payment_method:type_name -> tzero.v1.common.PaymentMethod
+	8,  // 30: tzero.v1.payment.CreatePaymentRequest.PayOut.quote_id:type_name -> tzero.v1.payment.QuoteId
+	27, // 31: tzero.v1.payment.CreatePaymentRequest.TravelRuleData.originator:type_name -> ivms101.Person
+	27, // 32: tzero.v1.payment.CreatePaymentRequest.TravelRuleData.beneficiary:type_name -> ivms101.Person
+	24, // 33: tzero.v1.payment.CreatePaymentResponse.Success.pay_in_amount:type_name -> tzero.v1.common.Decimal
+	24, // 34: tzero.v1.payment.CreatePaymentResponse.Success.settlement_amount:type_name -> tzero.v1.common.Decimal
+	2,  // 35: tzero.v1.payment.CreatePaymentResponse.Failure.reason:type_name -> tzero.v1.payment.CreatePaymentResponse.Failure.Reason
+	3,  // 36: tzero.v1.payment.NetworkService.UpdateQuote:input_type -> tzero.v1.payment.UpdateQuoteRequest
+	5,  // 37: tzero.v1.payment.NetworkService.GetQuote:input_type -> tzero.v1.payment.GetQuoteRequest
+	7,  // 38: tzero.v1.payment.NetworkService.CreatePayment:input_type -> tzero.v1.payment.CreatePaymentRequest
+	10, // 39: tzero.v1.payment.NetworkService.ConfirmPayout:input_type -> tzero.v1.payment.ConfirmPayoutRequest
+	4,  // 40: tzero.v1.payment.NetworkService.UpdateQuote:output_type -> tzero.v1.payment.UpdateQuoteResponse
+	6,  // 41: tzero.v1.payment.NetworkService.GetQuote:output_type -> tzero.v1.payment.GetQuoteResponse
+	9,  // 42: tzero.v1.payment.NetworkService.CreatePayment:output_type -> tzero.v1.payment.CreatePaymentResponse
+	11, // 43: tzero.v1.payment.NetworkService.ConfirmPayout:output_type -> tzero.v1.payment.ConfirmPayoutResponse
+	40, // [40:44] is the sub-list for method output_type
+	36, // [36:40] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_tzero_v1_payment_network_proto_init() }
 func file_tzero_v1_payment_network_proto_init() {
 	if File_tzero_v1_payment_network_proto != nil {
 		return
+	}
+	file_tzero_v1_payment_network_proto_msgTypes[3].OneofWrappers = []any{
+		(*GetQuoteResponse_Success_)(nil),
+		(*GetQuoteResponse_Failure_)(nil),
 	}
 	file_tzero_v1_payment_network_proto_msgTypes[4].OneofWrappers = []any{}
 	file_tzero_v1_payment_network_proto_msgTypes[6].OneofWrappers = []any{
@@ -1384,14 +1605,14 @@ func file_tzero_v1_payment_network_proto_init() {
 		(*PaymentAmount_PayInAmount)(nil),
 		(*PaymentAmount_PayOutAmount)(nil),
 	}
-	file_tzero_v1_payment_network_proto_msgTypes[13].OneofWrappers = []any{}
+	file_tzero_v1_payment_network_proto_msgTypes[15].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tzero_v1_payment_network_proto_rawDesc), len(file_tzero_v1_payment_network_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   17,
+			NumEnums:      3,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
