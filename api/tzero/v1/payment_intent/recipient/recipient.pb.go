@@ -40,8 +40,8 @@ type CreatePaymentIntentRequest struct {
 	// Payout currency
 	PayOutCurrency string `protobuf:"bytes,40,opt,name=pay_out_currency,json=payOutCurrency,proto3" json:"pay_out_currency,omitempty"`
 	// *
-	// Payout payment method
-	PayOutMethod  *common.PaymentMethod `protobuf:"bytes,50,opt,name=pay_out_method,json=payOutMethod,proto3" json:"pay_out_method,omitempty"`
+	// Payout payment details
+	PayOutDetails *common.PaymentDetails `protobuf:"bytes,50,opt,name=pay_out_details,json=payOutDetails,proto3" json:"pay_out_details,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -104,9 +104,9 @@ func (x *CreatePaymentIntentRequest) GetPayOutCurrency() string {
 	return ""
 }
 
-func (x *CreatePaymentIntentRequest) GetPayOutMethod() *common.PaymentMethod {
+func (x *CreatePaymentIntentRequest) GetPayOutDetails() *common.PaymentDetails {
 	if x != nil {
-		return x.PayOutMethod
+		return x.PayOutDetails
 	}
 	return nil
 }
@@ -795,7 +795,7 @@ var File_tzero_v1_payment_intent_recipient_recipient_proto protoreflect.FileDesc
 
 const file_tzero_v1_payment_intent_recipient_recipient_proto_rawDesc = "" +
 	"\n" +
-	"1tzero/v1/payment_intent/recipient/recipient.proto\x12!tzero.v1.payment_intent.recipient\x1a\x1ctzero/v1/common/common.proto\x1a$tzero/v1/common/payment_method.proto\x1a%tzero/v1/common/payment_receipt.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\"\xe6\x02\n" +
+	"1tzero/v1/payment_intent/recipient/recipient.proto\x12!tzero.v1.payment_intent.recipient\x1a\x1ctzero/v1/common/common.proto\x1a$tzero/v1/common/payment_method.proto\x1a%tzero/v1/common/payment_receipt.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\"\xe9\x02\n" +
 	"\x1aCreatePaymentIntentRequest\x126\n" +
 	"\x11payment_reference\x18\n" +
 	" \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18@R\x10paymentReference\x12<\n" +
@@ -803,8 +803,8 @@ const file_tzero_v1_payment_intent_recipient_recipient_proto_rawDesc = "" +
 	"^[A-Z]{3}$\x98\x01\x03R\rpayInCurrency\x12D\n" +
 	"\rpay_in_amount\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\vpayInAmount\x12>\n" +
 	"\x10pay_out_currency\x18( \x01(\tB\x14\xbaH\x11r\x0f2\n" +
-	"^[A-Z]{3}$\x98\x01\x03R\x0epayOutCurrency\x12L\n" +
-	"\x0epay_out_method\x182 \x01(\v2\x1e.tzero.v1.common.PaymentMethodB\x06\xbaH\x03\xc8\x01\x01R\fpayOutMethod\"\xaa\x03\n" +
+	"^[A-Z]{3}$\x98\x01\x03R\x0epayOutCurrency\x12O\n" +
+	"\x0fpay_out_details\x182 \x01(\v2\x1f.tzero.v1.common.PaymentDetailsB\x06\xbaH\x03\xc8\x01\x01R\rpayOutDetails\"\xaa\x03\n" +
 	"\x1bCreatePaymentIntentResponse\x123\n" +
 	"\x11payment_intent_id\x18\n" +
 	" \x01(\x04B\a\xbaH\x042\x02 \x00R\x0fpaymentIntentId\x12\x8b\x01\n" +
@@ -893,14 +893,14 @@ var file_tzero_v1_payment_intent_recipient_recipient_proto_goTypes = []any{
 	(*GetQuoteResponse_Quote)(nil),                    // 11: tzero.v1.payment_intent.recipient.GetQuoteResponse.Quote
 	(*GetQuoteResponse_NotFound)(nil),                 // 12: tzero.v1.payment_intent.recipient.GetQuoteResponse.NotFound
 	(*common.Decimal)(nil),                            // 13: tzero.v1.common.Decimal
-	(*common.PaymentMethod)(nil),                      // 14: tzero.v1.common.PaymentMethod
+	(*common.PaymentDetails)(nil),                     // 14: tzero.v1.common.PaymentDetails
 	(common.PaymentMethodType)(0),                     // 15: tzero.v1.common.PaymentMethodType
 	(*common.PaymentReceipt)(nil),                     // 16: tzero.v1.common.PaymentReceipt
 	(*timestamppb.Timestamp)(nil),                     // 17: google.protobuf.Timestamp
 }
 var file_tzero_v1_payment_intent_recipient_recipient_proto_depIdxs = []int32{
 	13, // 0: tzero.v1.payment_intent.recipient.CreatePaymentIntentRequest.pay_in_amount:type_name -> tzero.v1.common.Decimal
-	14, // 1: tzero.v1.payment_intent.recipient.CreatePaymentIntentRequest.pay_out_method:type_name -> tzero.v1.common.PaymentMethod
+	14, // 1: tzero.v1.payment_intent.recipient.CreatePaymentIntentRequest.pay_out_details:type_name -> tzero.v1.common.PaymentDetails
 	10, // 2: tzero.v1.payment_intent.recipient.CreatePaymentIntentResponse.pay_in_payment_methods:type_name -> tzero.v1.payment_intent.recipient.CreatePaymentIntentResponse.PaymentMethod
 	13, // 3: tzero.v1.payment_intent.recipient.GetQuoteRequest.pay_in_amount:type_name -> tzero.v1.common.Decimal
 	15, // 4: tzero.v1.payment_intent.recipient.GetQuoteRequest.pay_in_payment_method:type_name -> tzero.v1.common.PaymentMethodType

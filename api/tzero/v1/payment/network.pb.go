@@ -1142,12 +1142,12 @@ func (x *CreatePaymentRequest_PayIn) GetPaymentMethod() common.PaymentMethodType
 }
 
 type CreatePaymentRequest_PayOut struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Currency      string                 `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`                                // pay-out currency
-	PaymentMethod *common.PaymentMethod  `protobuf:"bytes,20,opt,name=payment_method,json=paymentMethod,proto3" json:"payment_method,omitempty"` // pay-in payment details
-	QuoteId       *QuoteId               `protobuf:"bytes,100,opt,name=quote_id,json=quoteId,proto3,oneof" json:"quote_id,omitempty"`            // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method otherwise last available quote will be used
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Currency       string                 `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`                                   // pay-out currency
+	PaymentDetails *common.PaymentDetails `protobuf:"bytes,20,opt,name=payment_details,json=paymentDetails,proto3" json:"payment_details,omitempty"` // pay-in payment details
+	QuoteId        *QuoteId               `protobuf:"bytes,100,opt,name=quote_id,json=quoteId,proto3,oneof" json:"quote_id,omitempty"`               // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method otherwise last available quote will be used
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *CreatePaymentRequest_PayOut) Reset() {
@@ -1187,9 +1187,9 @@ func (x *CreatePaymentRequest_PayOut) GetCurrency() string {
 	return ""
 }
 
-func (x *CreatePaymentRequest_PayOut) GetPaymentMethod() *common.PaymentMethod {
+func (x *CreatePaymentRequest_PayOut) GetPaymentDetails() *common.PaymentDetails {
 	if x != nil {
-		return x.PaymentMethod
+		return x.PaymentDetails
 	}
 	return nil
 }
@@ -1418,7 +1418,7 @@ const file_tzero_v1_payment_network_proto_rawDesc = "" +
 	"\x12REASON_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16REASON_QUOTE_NOT_FOUND\x10\n" +
 	"B\x0f\n" +
-	"\x06result\x12\x05\xbaH\x02\b\x01\"\x94\a\n" +
+	"\x06result\x12\x05\xbaH\x02\b\x01\"\x97\a\n" +
 	"\x14CreatePaymentRequest\x125\n" +
 	"\x11payment_client_id\x18\n" +
 	" \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18@R\x0fpaymentClientId\x12?\n" +
@@ -1430,12 +1430,12 @@ const file_tzero_v1_payment_network_proto_rawDesc = "" +
 	"\bcurrency\x18\n" +
 	" \x01(\tB\x14\xbaH\x11r\x0f2\n" +
 	"^[A-Z]{3}$\x98\x01\x03R\bcurrency\x12Q\n" +
-	"\x0epayment_method\x18\x14 \x01(\x0e2\".tzero.v1.common.PaymentMethodTypeB\x06\xbaH\x03\xc8\x01\x01R\rpaymentMethod\x1a\xd1\x01\n" +
+	"\x0epayment_method\x18\x14 \x01(\x0e2\".tzero.v1.common.PaymentMethodTypeB\x06\xbaH\x03\xc8\x01\x01R\rpaymentMethod\x1a\xd4\x01\n" +
 	"\x06PayOut\x120\n" +
 	"\bcurrency\x18\n" +
 	" \x01(\tB\x14\xbaH\x11r\x0f2\n" +
-	"^[A-Z]{3}$\x98\x01\x03R\bcurrency\x12M\n" +
-	"\x0epayment_method\x18\x14 \x01(\v2\x1e.tzero.v1.common.PaymentMethodB\x06\xbaH\x03\xc8\x01\x01R\rpaymentMethod\x129\n" +
+	"^[A-Z]{3}$\x98\x01\x03R\bcurrency\x12P\n" +
+	"\x0fpayment_details\x18\x14 \x01(\v2\x1f.tzero.v1.common.PaymentDetailsB\x06\xbaH\x03\xc8\x01\x01R\x0epaymentDetails\x129\n" +
 	"\bquote_id\x18d \x01(\v2\x19.tzero.v1.payment.QuoteIdH\x00R\aquoteId\x88\x01\x01B\v\n" +
 	"\t_quote_id\x1a\x88\x01\n" +
 	"\x0eTravelRuleData\x129\n" +
@@ -1532,7 +1532,7 @@ var file_tzero_v1_payment_network_proto_goTypes = []any{
 	(*common.PaymentReceipt)(nil),               // 23: tzero.v1.common.PaymentReceipt
 	(*common.Decimal)(nil),                      // 24: tzero.v1.common.Decimal
 	(*timestamppb.Timestamp)(nil),               // 25: google.protobuf.Timestamp
-	(*common.PaymentMethod)(nil),                // 26: tzero.v1.common.PaymentMethod
+	(*common.PaymentDetails)(nil),               // 26: tzero.v1.common.PaymentDetails
 	(*ivms.Person)(nil),                         // 27: ivms101.Person
 }
 var file_tzero_v1_payment_network_proto_depIdxs = []int32{
@@ -1565,7 +1565,7 @@ var file_tzero_v1_payment_network_proto_depIdxs = []int32{
 	8,  // 26: tzero.v1.payment.GetQuoteResponse.Success.quote_id:type_name -> tzero.v1.payment.QuoteId
 	1,  // 27: tzero.v1.payment.GetQuoteResponse.Failure.reason:type_name -> tzero.v1.payment.GetQuoteResponse.Failure.Reason
 	22, // 28: tzero.v1.payment.CreatePaymentRequest.PayIn.payment_method:type_name -> tzero.v1.common.PaymentMethodType
-	26, // 29: tzero.v1.payment.CreatePaymentRequest.PayOut.payment_method:type_name -> tzero.v1.common.PaymentMethod
+	26, // 29: tzero.v1.payment.CreatePaymentRequest.PayOut.payment_details:type_name -> tzero.v1.common.PaymentDetails
 	8,  // 30: tzero.v1.payment.CreatePaymentRequest.PayOut.quote_id:type_name -> tzero.v1.payment.QuoteId
 	27, // 31: tzero.v1.payment.CreatePaymentRequest.TravelRuleData.originator:type_name -> ivms101.Person
 	27, // 32: tzero.v1.payment.CreatePaymentRequest.TravelRuleData.beneficiary:type_name -> ivms101.Person
