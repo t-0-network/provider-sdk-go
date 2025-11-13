@@ -274,8 +274,11 @@ type PayoutRequest struct {
 	// *
 	// amount in currency of the payout
 	// This is the amount that should be paid out to the recipient.
-	Amount       *common.Decimal       `protobuf:"bytes,50,opt,name=amount,proto3" json:"amount,omitempty"`
-	PayoutMethod *common.PaymentMethod `protobuf:"bytes,60,opt,name=payout_method,json=payoutMethod,proto3,oneof" json:"payout_method,omitempty"`
+	Amount *common.Decimal `protobuf:"bytes,50,opt,name=amount,proto3" json:"amount,omitempty"`
+	// *
+	// payout_method is the payment method for the payout, e.g. bank transfer, crypto transfer, etc.
+	// This is used to specify how the payout should be made.
+	PayoutDetails *common.PaymentDetails `protobuf:"bytes,60,opt,name=payout_details,json=payoutDetails,proto3,oneof" json:"payout_details,omitempty"`
 	// *
 	// Pay-in provider id which initiated the pay out.
 	PayInProviderId uint32                        `protobuf:"varint,80,opt,name=pay_in_provider_id,json=payInProviderId,proto3" json:"pay_in_provider_id,omitempty"`
@@ -349,9 +352,9 @@ func (x *PayoutRequest) GetAmount() *common.Decimal {
 	return nil
 }
 
-func (x *PayoutRequest) GetPayoutMethod() *common.PaymentMethod {
+func (x *PayoutRequest) GetPayoutDetails() *common.PaymentDetails {
 	if x != nil {
-		return x.PayoutMethod
+		return x.PayoutDetails
 	}
 	return nil
 }
@@ -1508,7 +1511,7 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\x18ACCOUNT_TYPE_FEE_EXPENSE\x10<\x12\x1e\n" +
 	"\x1aACCOUNT_TYPE_SETTLEMENT_IN\x10P\x12\x1f\n" +
 	"\x1bACCOUNT_TYPE_SETTLEMENT_OUT\x10Z\"\x1d\n" +
-	"\x1bAppendLedgerEntriesResponse\"\xa9\x05\n" +
+	"\x1bAppendLedgerEntriesResponse\"\xad\x05\n" +
 	"\rPayoutRequest\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\n" +
@@ -1516,8 +1519,8 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\tpayout_id\x18\x14 \x01(\x04R\bpayoutId\x12\x1a\n" +
 	"\bcurrency\x18\x1e \x01(\tR\bcurrency\x12&\n" +
 	"\x0fclient_quote_id\x18( \x01(\tR\rclientQuoteId\x120\n" +
-	"\x06amount\x182 \x01(\v2\x18.tzero.v1.common.DecimalR\x06amount\x12H\n" +
-	"\rpayout_method\x18< \x01(\v2\x1e.tzero.v1.common.PaymentMethodH\x00R\fpayoutMethod\x88\x01\x01\x12+\n" +
+	"\x06amount\x182 \x01(\v2\x18.tzero.v1.common.DecimalR\x06amount\x12K\n" +
+	"\x0epayout_details\x18< \x01(\v2\x1f.tzero.v1.common.PaymentDetailsH\x00R\rpayoutDetails\x88\x01\x01\x12+\n" +
 	"\x12pay_in_provider_id\x18P \x01(\rR\x0fpayInProviderId\x12^\n" +
 	"\x10travel_rule_data\x18\xc8\x01 \x01(\v2..tzero.v1.payment.PayoutRequest.TravelRuleDataH\x01R\x0etravelRuleData\x88\x01\x01\x1a\xe7\x01\n" +
 	"\x0eTravelRuleData\x129\n" +
@@ -1527,8 +1530,8 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"originator\x12;\n" +
 	"\vbeneficiary\x18\x14 \x03(\v2\x0f.ivms101.PersonB\b\xbaH\x05\x92\x01\x02\b\x01R\vbeneficiary\x12E\n" +
 	"\x13originator_provider\x18\x1e \x01(\v2\x0f.ivms101.PersonH\x00R\x12originatorProvider\x88\x01\x01B\x16\n" +
-	"\x14_originator_providerB\x10\n" +
-	"\x0e_payout_methodB\x13\n" +
+	"\x14_originator_providerB\x11\n" +
+	"\x0f_payout_detailsB\x13\n" +
 	"\x11_travel_rule_data\"\xa6\x02\n" +
 	"\x0ePayoutResponse\x12G\n" +
 	"\baccepted\x18\x14 \x01(\v2).tzero.v1.payment.PayoutResponse.AcceptedH\x00R\baccepted\x12A\n" +
@@ -1628,7 +1631,7 @@ var file_tzero_v1_payment_provider_proto_goTypes = []any{
 	(*UpdatePaymentRequest_Accepted_TravelRuleData)(nil),              // 22: tzero.v1.payment.UpdatePaymentRequest.Accepted.TravelRuleData
 	(*UpdateLimitRequest_Limit)(nil),                                  // 23: tzero.v1.payment.UpdateLimitRequest.Limit
 	(*common.Decimal)(nil),                                            // 24: tzero.v1.common.Decimal
-	(*common.PaymentMethod)(nil),                                      // 25: tzero.v1.common.PaymentMethod
+	(*common.PaymentDetails)(nil),                                     // 25: tzero.v1.common.PaymentDetails
 	(*ivms.Person)(nil),                                               // 26: ivms101.Person
 	(*timestamppb.Timestamp)(nil),                                     // 27: google.protobuf.Timestamp
 	(*common.PaymentReceipt)(nil),                                     // 28: tzero.v1.common.PaymentReceipt
@@ -1636,7 +1639,7 @@ var file_tzero_v1_payment_provider_proto_goTypes = []any{
 var file_tzero_v1_payment_provider_proto_depIdxs = []int32{
 	11, // 0: tzero.v1.payment.AppendLedgerEntriesRequest.transactions:type_name -> tzero.v1.payment.AppendLedgerEntriesRequest.Transaction
 	24, // 1: tzero.v1.payment.PayoutRequest.amount:type_name -> tzero.v1.common.Decimal
-	25, // 2: tzero.v1.payment.PayoutRequest.payout_method:type_name -> tzero.v1.common.PaymentMethod
+	25, // 2: tzero.v1.payment.PayoutRequest.payout_details:type_name -> tzero.v1.common.PaymentDetails
 	16, // 3: tzero.v1.payment.PayoutRequest.travel_rule_data:type_name -> tzero.v1.payment.PayoutRequest.TravelRuleData
 	17, // 4: tzero.v1.payment.PayoutResponse.accepted:type_name -> tzero.v1.payment.PayoutResponse.Accepted
 	18, // 5: tzero.v1.payment.PayoutResponse.failed:type_name -> tzero.v1.payment.PayoutResponse.Failed

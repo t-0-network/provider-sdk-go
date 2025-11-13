@@ -15,110 +15,110 @@ enum PaymentMethodType {
   PAYMENT_METHOD_TYPE_WIRE = 60;
 }
 
-message PaymentMethod {
+message PaymentDetails {
   oneof details {
     option (buf.validate.oneof).required = true;
-    SepaPaymentDetails sepa = 10;
-    SwiftPaymentDetails swift = 30;
-    StablecoinPaymentDetails stablecoin = 40;
-    AchPaymentDetails ach = 50;
-    WirePaymentDetails wire = 60;
+    Sepa sepa = 10;
+    Swift swift = 30;
+    Stablecoin stablecoin = 40;
+    Ach ach = 50;
+    Wire wire = 60;
   };
-}
 
-message SepaPaymentDetails {
-  string iban = 20 [(buf.validate.field).string = {
-    min_len: 15,
-    max_len: 34,
-    pattern: "^[A-Z]{2}[0-9]{2}[A-Z0-9]+$"
-  }];
-  string beneficiary_name = 30 [(buf.validate.field).string = {
-    min_len: 1,
-    max_len: 70
-  }];
-  string payment_reference = 40 [(buf.validate.field).string = {
-    max_len: 140
-  }];
-}
-
-message SwiftPaymentDetails {
-
-}
-
-message StablecoinPaymentDetails {
-  tzero.v1.common.Blockchain blockchain = 10 [(buf.validate.field).required = true];
-
-  tzero.v1.common.Stablecoin stablecoin = 20 [(buf.validate.field).required = true];
-
-  string address = 30 [(buf.validate.field).string = {
-    min_len: 20,
-    max_len: 64,
-    pattern: "^(0x)?[a-fA-F0-9]+$"
-  }];
-}
-
-message AchPaymentDetails {
-  string routing_number = 10 [(buf.validate.field).string = {
-    min_len: 9,
-    max_len: 9,
-    pattern: "^[0-9]{9}$"
-  }];
-
-  string account_number = 20 [(buf.validate.field).string = {
-    min_len: 1,
-    max_len: 17,
-    pattern: "^[0-9]+$"
-  }];
-
-  string account_holder_name = 30 [(buf.validate.field).string = {
-    min_len: 1,
-    max_len: 70
-  }];
-
-  AchAccountType account_type = 40 [(buf.validate.field).enum = {
-    not_in: [0]
-  }];
-
-  enum AchAccountType {
-    ACH_ACCOUNT_TYPE_UNSPECIFIED = 0;
-    ACH_ACCOUNT_TYPE_CHECKING = 10;
-    ACH_ACCOUNT_TYPE_SAVINGS = 20;
+  message Sepa {
+    string iban = 20 [(buf.validate.field).string = {
+      min_len: 15,
+      max_len: 34,
+      pattern: "^[A-Z]{2}[0-9]{2}[A-Z0-9]+$"
+    }];
+    string beneficiary_name = 30 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 70
+    }];
+    string payment_reference = 40 [(buf.validate.field).string = {
+      max_len: 140
+    }];
   }
-}
 
-message WirePaymentDetails {
-  string bank_name = 10 [(buf.validate.field).string = {
-    min_len: 1,
-    max_len: 70
-  }];
+  message Swift {
 
-  string bank_address = 20 [(buf.validate.field).string = {
-    min_len: 1,
-    max_len: 140
-  }];
+  }
 
-  string swift_code = 30 [(buf.validate.field).string = {
-    min_len: 8,
-    max_len: 11,
-    pattern: "^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$"
-  }];
+  message Stablecoin {
+    tzero.v1.common.Blockchain blockchain = 10 [(buf.validate.field).required = true];
 
-  string account_number = 40 [(buf.validate.field).string = {
-    min_len: 1,
-    max_len: 34
-  }];
+    tzero.v1.common.Stablecoin stablecoin = 20 [(buf.validate.field).required = true];
 
-  string beneficiary_name = 50 [(buf.validate.field).string = {
-    min_len: 1,
-    max_len: 70
-  }];
+    string address = 30 [(buf.validate.field).string = {
+      min_len: 20,
+      max_len: 64,
+      pattern: "^(0x)?[a-fA-F0-9]+$"
+    }];
+  }
 
-  string beneficiary_address = 60 [(buf.validate.field).string = {
-    min_len: 1,
-    max_len: 140
-  }];
+  message Ach {
+    string routing_number = 10 [(buf.validate.field).string = {
+      min_len: 9,
+      max_len: 9,
+      pattern: "^[0-9]{9}$"
+    }];
 
-  string wire_reference = 70 [(buf.validate.field).string = {
-    max_len: 140
-  }];
+    string account_number = 20 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 17,
+      pattern: "^[0-9]+$"
+    }];
+
+    string account_holder_name = 30 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 70
+    }];
+
+    AchAccountType account_type = 40 [(buf.validate.field).enum = {
+      not_in: [0]
+    }];
+
+    enum AchAccountType {
+      ACH_ACCOUNT_TYPE_UNSPECIFIED = 0;
+      ACH_ACCOUNT_TYPE_CHECKING = 10;
+      ACH_ACCOUNT_TYPE_SAVINGS = 20;
+    }
+  }
+
+  message Wire {
+    string bank_name = 10 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 70
+    }];
+
+    string bank_address = 20 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 140
+    }];
+
+    string swift_code = 30 [(buf.validate.field).string = {
+      min_len: 8,
+      max_len: 11,
+      pattern: "^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$"
+    }];
+
+    string account_number = 40 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 34
+    }];
+
+    string beneficiary_name = 50 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 70
+    }];
+
+    string beneficiary_address = 60 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 140
+    }];
+
+    string wire_reference = 70 [(buf.validate.field).string = {
+      max_len: 140
+    }];
+  }
 }

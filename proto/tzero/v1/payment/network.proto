@@ -167,7 +167,7 @@ message CreatePaymentRequest{
 
   message PayOut {
     string currency = 10 [(buf.validate.field).string = {len: 3, pattern: "^[A-Z]{3}$"}]; // pay-out currency
-    tzero.v1.common.PaymentMethod payment_method = 20 [(buf.validate.field).required = true]; // pay-in payment details
+    tzero.v1.common.PaymentDetails payment_details = 20 [(buf.validate.field).required = true]; // pay-in payment details
     optional QuoteId quote_id = 100; // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method otherwise last available quote will be used
   }
 

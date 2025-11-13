@@ -148,12 +148,12 @@ message PayoutRequest {
    * This is the amount that should be paid out to the recipient.
    */
   tzero.v1.common.Decimal amount = 50;
+
   /**
    * payout_method is the payment method for the payout, e.g. bank transfer, crypto transfer, etc.
    * This is used to specify how the payout should be made.
    */
-
-  optional tzero.v1.common.PaymentMethod payout_method = 60;
+  optional tzero.v1.common.PaymentDetails payout_details = 60;
 
   /**
    * Pay-in provider id which initiated the pay out.

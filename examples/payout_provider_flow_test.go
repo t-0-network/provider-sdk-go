@@ -48,8 +48,8 @@ func _ExamplePayoutProviderBasicFlow() {
 		PaymentId: 1, // This is the payment ID that the network provided in the pay-out request.
 		PayoutId:  1, // This is the pay-out ID that the network provided in the pay-out request.
 		// The receipt contains the details about the pay-out, e.g. transaction hash.
-		Receipt: &common.PaymentReceipt{Details: &common.PaymentReceipt_Stablecoin{
-			Stablecoin: &common.StablecoinReceipt{TransactionHash: "0x1234567890abcdef"},
+		Receipt: &common.PaymentReceipt{Details: &common.PaymentReceipt_Stablecoin_{
+			Stablecoin: &common.PaymentReceipt_Stablecoin{TransactionHash: "0x1234567890abcdef"},
 		}},
 		// Result:    &payment.UpdatePayoutRequest_Failure_{},
 	}))
