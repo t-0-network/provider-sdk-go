@@ -75,9 +75,9 @@ message CreatePaymentIntentRequest {
     pattern: "^[A-Z]{3}$"
   }];
   /**
-  * Payout payment method
+  * Payout payment details
   **/
-  tzero.v1.common.PaymentMethod pay_out_method = 50 [(buf.validate.field).required = true];
+  tzero.v1.common.PaymentDetails pay_out_details = 50 [(buf.validate.field).required = true];
 }
 
 message CreatePaymentIntentResponse {
