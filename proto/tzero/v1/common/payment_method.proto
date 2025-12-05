@@ -17,6 +17,8 @@ enum PaymentMethodType {
   PAYMENT_METHOD_TYPE_M_PESA = 80;
   PAYMENT_METHOD_TYPE_G_CASH = 90;
   PAYMENT_METHOD_TYPE_INDIAN_BANK_TRANSFER = 100;
+  PAYMENT_METHOD_TYPE_PESONET = 110;
+  PAYMENT_METHOD_TYPE_INSTAPAY = 120;
 }
 
 message PaymentDetails {
@@ -56,6 +58,14 @@ message PaymentDetails {
     // Indian Bank Transfer - Domestic electronic funds transfer (IMPS/NEFT/RTGS)
     // India
     IndianBankTransfer  indian_bank_transfer = 100;
+
+    // PESONet - Real-time domestic payments system
+    // Philippines
+    Pesonet pesonet = 110;
+
+    // Instapay - Real-time domestic payments system
+    // Philippines
+    Instapay instapay = 120;
   };
 
   message Sepa {
@@ -114,11 +124,11 @@ message PaymentDetails {
 
   message GCash {
     string beneficiary_name = 10 [(buf.validate.field).string = {
-        min_len: 1,
-        max_len: 100
-      }];
+      min_len: 1,
+      max_len: 100
+    }];
 
-      // Recipient phone
+    // Recipient phone
     string beneficiary_phone = 20 [(buf.validate.field).string = {
       min_len: 10,
       max_len: 20,
@@ -188,7 +198,7 @@ message PaymentDetails {
       max_len: 30
     }];
 
-   string payment_reference = 50 [(buf.validate.field).string = {
+    string payment_reference = 50 [(buf.validate.field).string = {
       max_len: 140,
     }];
   }
@@ -299,6 +309,58 @@ message PaymentDetails {
     }];
 
     string wire_reference = 70 [(buf.validate.field).string = {
+      max_len: 140
+    }];
+  }
+
+  message Pesonet {
+    //Recipient institution: receiving bank or participating non‑bank chosen from a PESONet list.
+    string recipient_financial_institution = 10 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 70
+    }];
+
+    //Recipient identifier:
+    //Account number (some banks also allow email/mobile).
+    string recipient_identifier = 20 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 70
+    }];
+
+    string recipient_account_name = 30 [(buf.validate.field).string = {
+      max_len: 18
+    }];
+
+    // Purpose of Transfer (Optional/Mandatory depending on bank)
+    optional string purpose_of_transfer = 40 [(buf.validate.field).string = {
+      max_len: 140
+    }];
+
+    // Recipient's Address/Email (Optional/Mandatory depending on bank)
+    optional string recipient_address_email = 50 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 512
+    }];
+  }
+
+  message Instapay {
+    //Recipient institution: receiving bank or e‑money issuer selected from an InstaPay list.
+    string recipient_institution = 10 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 70
+    }];
+    //Recipient identifier (one of): Account number, or Mobile number, or Email address, or QR code (scanned/uploaded “InstaPay QR”).
+    string recipient_identifier = 20 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 70
+    }];
+    //Recipient account name: the name as registered on the account or wallet (may be auto-displayed but is logically required for correct routing/confirmation).
+    string recipient_account_name = 30 [(buf.validate.field).string = {
+      max_len: 50
+    }];
+
+    //Purpose of Transfer (Optional/Mandatory depending on bank)
+    optional string purpose_of_transfer = 40 [(buf.validate.field).string = {
       max_len: 140
     }];
   }
