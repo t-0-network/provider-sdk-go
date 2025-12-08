@@ -19,6 +19,12 @@ enum PaymentMethodType {
   PAYMENT_METHOD_TYPE_INDIAN_BANK_TRANSFER = 100;
   PAYMENT_METHOD_TYPE_PESONET = 110;
   PAYMENT_METHOD_TYPE_INSTAPAY = 120;
+  // Pakistan domestic bank transfer via IBAN
+  PAYMENT_METHOD_TYPE_PAKISTAN_BANK_TRANSFER = 130;
+  // Pakistan mobile wallet (JazzCash, Easypaisa, etc.) - sometimes also called ID Wallet
+  PAYMENT_METHOD_TYPE_PAKISTAN_MOBILE_WALLET = 140;
+  // PIX - Brazilian instant payment system
+  PAYMENT_METHOD_TYPE_PIX = 150;
 }
 
 message PaymentDetails {
@@ -66,6 +72,18 @@ message PaymentDetails {
     // Instapay - Real-time domestic payments system
     // Philippines
     Instapay instapay = 120;
+
+    // Pakistan Bank Transfer - Domestic bank transfers using Pakistani IBAN
+    // Pakistan
+    PakistanBankTransfer pakistan_bank_transfer = 130;
+
+    // Pakistan Mobile Wallet - JazzCash, Easypaisa, SadaPay, NayaPay and other wallets
+    // Pakistan
+    PakistanMobileWallet pakistan_mobile_wallet = 140;
+
+    // PIX - Brazilian instant payment system
+    // Brazil
+    Pix pix = 150;
   };
 
   message Sepa {
@@ -363,5 +381,127 @@ message PaymentDetails {
     optional string purpose_of_transfer = 40 [(buf.validate.field).string = {
       max_len: 140
     }];
+  }
+
+  // Pakistan Bank Transfer - Domestic transfers using Pakistani IBAN
+  // Pakistan uses 24-character IBAN: PK + 2 check digits + 4-char bank code + 16-char account number
+  message PakistanBankTransfer {
+    // Pakistani IBAN (24 characters: PK + 2 check digits + 4-char bank identifier + 16-char account)
+    // Example: PK36SCBL0000001123456702
+    string iban = 10 [(buf.validate.field).string = {
+      min_len: 24,
+      max_len: 24,
+      pattern: "^PK[0-9]{2}[A-Z]{4}[0-9]{16}$"
+    }];
+
+    // Beneficiary's full name
+    string beneficiary_name = 20 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 140
+    }];
+
+    // (Optional) Beneficiary CNIC (13 digits, no dashes) — sometimes required by receiving banks
+    optional string beneficiary_cnic = 25 [(buf.validate.field).string = {
+      min_len: 13,
+      max_len: 13,
+      pattern: "^[0-9]{13}$"
+    }];
+
+    // Payment reference/description
+    string payment_reference = 30 [(buf.validate.field).string = {
+      max_len: 140
+    }];
+  }
+
+  // Pakistan Mobile Wallet - JazzCash, Easypaisa, SadaPay, NayaPay and other wallets
+  // Transfers are made using the mobile number linked to the wallet account; CNIC is required for verification
+  message PakistanMobileWallet {
+    // Wallet provider
+    PakistanWalletProvider wallet_provider = 10 [(buf.validate.field).enum = {not_in: [0]}];
+
+    // Mobile number linked to the wallet (Pak local 03XXXXXXXXX or international 923XXXXXXXXX)
+    string mobile_number = 20 [(buf.validate.field).string = {
+      min_len: 11,
+      max_len: 12,
+      pattern: "^(03[0-9]{9}|923[0-9]{9})$"
+    }];
+
+    // CNIC (Computerized National Identity Card) - 13 digits without dashes
+    string cnic = 30 [(buf.validate.field).string = {
+      min_len: 13,
+      max_len: 13,
+      pattern: "^[0-9]{13}$"
+    }];
+
+    // Beneficiary's full name as registered with the wallet
+    string beneficiary_name = 40 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 140
+    }];
+
+    // Payment reference/description (optional)
+    optional string payment_reference = 50 [(buf.validate.field).string = {
+      max_len: 140
+    }];
+
+    enum PakistanWalletProvider {
+      PAKISTAN_WALLET_PROVIDER_UNSPECIFIED = 0;
+      PAKISTAN_WALLET_PROVIDER_JAZZCASH = 10;
+      PAKISTAN_WALLET_PROVIDER_EASYPAISA = 20;
+      PAKISTAN_WALLET_PROVIDER_SADAPAY = 30;
+      PAKISTAN_WALLET_PROVIDER_NAYAPAY = 40;
+      PAKISTAN_WALLET_PROVIDER_OTHER = 100;
+    }
+  }
+
+  // PIX - Brazilian instant payment system
+  // PIX allows transfers using a Pix key (CPF, CNPJ, email, phone, or random EVP)
+  // or traditional bank account details (bank code, branch, account number)
+  message Pix {
+    // Pix key type - determines the format of pix_key_value
+    KeyType key_type = 10 [(buf.validate.field).enum = {not_in: [0]}];
+
+    // Pix key value - format depends on pix_key_type:
+    // - CPF: 11 digits (e.g., "12345678901")
+    // - CNPJ: 14 digits (e.g., "12345678000195")
+    // - EMAIL: valid email address
+    // - PHONE: international format with country code (e.g., "+5511999999999")
+    // - EVP: 32-character UUID (e.g., "123e4567-e89b-12d3-a456-426614174000")
+    string key_value = 20 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 77
+    }];
+
+    // Beneficiary's full name
+    string beneficiary_name = 30 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 140
+    }];
+
+    // (Optional) Beneficiary's CPF (11 digits) or CNPJ (14 digits) for verification
+    optional string beneficiary_tax_id = 40 [(buf.validate.field).string = {
+      min_len: 11,
+      max_len: 14,
+      pattern: "^[0-9]{11,14}$"
+    }];
+
+    // (Optional) Payment description/reference
+    optional string payment_reference = 50 [(buf.validate.field).string = {
+      max_len: 140
+    }];
+
+    enum KeyType {
+      KEY_TYPE_UNSPECIFIED = 0;
+      // CPF - Cadastro de Pessoas Físicas (Individual Taxpayer Registry) - 11 digits
+      KEY_TYPE_CPF = 10;
+      // CNPJ - Cadastro Nacional da Pessoa Jurídica (Business Tax ID) - 14 digits
+      KEY_TYPE_CNPJ = 20;
+      // Email address
+      KEY_TYPE_EMAIL = 30;
+      // Phone number in international format
+      KEY_TYPE_PHONE = 40;
+      // EVP - Random key (UUID format)
+      KEY_TYPE_EVP = 50;
+    }
   }
 }

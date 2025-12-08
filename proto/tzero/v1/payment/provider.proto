@@ -271,10 +271,10 @@ message UpdateLimitRequest {
        */
     int64 version = 10;
     /**
-     * the Id of the counterparty (creditor) provider, e.g. the provider that is providing the credit limit.
+     * the Id of the counterparty provider, e.g. the provider that is providing the credit limit.
      * It's usually the payOut provider, which provides the credit line to the payIn provider.
      */
-    int32 creditor_id = 15;
+    int32 counterpart_id = 15;
     /**
      * payout_limit = credit_limit - credit_usage, negative value means credit limit is exceeded,
      * e.g. if counterparty decreased credit limit
