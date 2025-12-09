@@ -55,8 +55,8 @@ func ExampleProviderServiceHandler() {
 	req := connect.NewRequest(&payment.UpdateLimitRequest{
 		Limits: []*payment.UpdateLimitRequest_Limit{
 			{
-				Version:    1,
-				CreditorId: 3,
+				Version:       1,
+				CounterpartId: 3,
 				PayoutLimit: &common.Decimal{
 					Unscaled: 100,
 					Exponent: 0,

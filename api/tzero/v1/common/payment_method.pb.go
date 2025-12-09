@@ -38,6 +38,12 @@ const (
 	PaymentMethodType_PAYMENT_METHOD_TYPE_INDIAN_BANK_TRANSFER PaymentMethodType = 100
 	PaymentMethodType_PAYMENT_METHOD_TYPE_PESONET              PaymentMethodType = 110
 	PaymentMethodType_PAYMENT_METHOD_TYPE_INSTAPAY             PaymentMethodType = 120
+	// Pakistan domestic bank transfer via IBAN
+	PaymentMethodType_PAYMENT_METHOD_TYPE_PAKISTAN_BANK_TRANSFER PaymentMethodType = 130
+	// Pakistan mobile wallet (JazzCash, Easypaisa, etc.) - sometimes also called ID Wallet
+	PaymentMethodType_PAYMENT_METHOD_TYPE_PAKISTAN_MOBILE_WALLET PaymentMethodType = 140
+	// PIX - Brazilian instant payment system
+	PaymentMethodType_PAYMENT_METHOD_TYPE_PIX PaymentMethodType = 150
 )
 
 // Enum value maps for PaymentMethodType.
@@ -56,21 +62,27 @@ var (
 		100: "PAYMENT_METHOD_TYPE_INDIAN_BANK_TRANSFER",
 		110: "PAYMENT_METHOD_TYPE_PESONET",
 		120: "PAYMENT_METHOD_TYPE_INSTAPAY",
+		130: "PAYMENT_METHOD_TYPE_PAKISTAN_BANK_TRANSFER",
+		140: "PAYMENT_METHOD_TYPE_PAKISTAN_MOBILE_WALLET",
+		150: "PAYMENT_METHOD_TYPE_PIX",
 	}
 	PaymentMethodType_value = map[string]int32{
-		"PAYMENT_METHOD_TYPE_UNSPECIFIED":          0,
-		"PAYMENT_METHOD_TYPE_SEPA":                 10,
-		"PAYMENT_METHOD_TYPE_SWIFT":                20,
-		"PAYMENT_METHOD_TYPE_CARD":                 30,
-		"PAYMENT_METHOD_TYPE_STABLECOIN":           40,
-		"PAYMENT_METHOD_TYPE_ACH":                  50,
-		"PAYMENT_METHOD_TYPE_WIRE":                 60,
-		"PAYMENT_METHOD_TYPE_FPS":                  70,
-		"PAYMENT_METHOD_TYPE_M_PESA":               80,
-		"PAYMENT_METHOD_TYPE_G_CASH":               90,
-		"PAYMENT_METHOD_TYPE_INDIAN_BANK_TRANSFER": 100,
-		"PAYMENT_METHOD_TYPE_PESONET":              110,
-		"PAYMENT_METHOD_TYPE_INSTAPAY":             120,
+		"PAYMENT_METHOD_TYPE_UNSPECIFIED":            0,
+		"PAYMENT_METHOD_TYPE_SEPA":                   10,
+		"PAYMENT_METHOD_TYPE_SWIFT":                  20,
+		"PAYMENT_METHOD_TYPE_CARD":                   30,
+		"PAYMENT_METHOD_TYPE_STABLECOIN":             40,
+		"PAYMENT_METHOD_TYPE_ACH":                    50,
+		"PAYMENT_METHOD_TYPE_WIRE":                   60,
+		"PAYMENT_METHOD_TYPE_FPS":                    70,
+		"PAYMENT_METHOD_TYPE_M_PESA":                 80,
+		"PAYMENT_METHOD_TYPE_G_CASH":                 90,
+		"PAYMENT_METHOD_TYPE_INDIAN_BANK_TRANSFER":   100,
+		"PAYMENT_METHOD_TYPE_PESONET":                110,
+		"PAYMENT_METHOD_TYPE_INSTAPAY":               120,
+		"PAYMENT_METHOD_TYPE_PAKISTAN_BANK_TRANSFER": 130,
+		"PAYMENT_METHOD_TYPE_PAKISTAN_MOBILE_WALLET": 140,
+		"PAYMENT_METHOD_TYPE_PIX":                    150,
 	}
 )
 
@@ -150,6 +162,127 @@ func (PaymentDetails_Ach_AchAccountType) EnumDescriptor() ([]byte, []int) {
 	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{0, 7, 0}
 }
 
+type PaymentDetails_PakistanMobileWallet_PakistanWalletProvider int32
+
+const (
+	PaymentDetails_PakistanMobileWallet_PAKISTAN_WALLET_PROVIDER_UNSPECIFIED PaymentDetails_PakistanMobileWallet_PakistanWalletProvider = 0
+	PaymentDetails_PakistanMobileWallet_PAKISTAN_WALLET_PROVIDER_JAZZCASH    PaymentDetails_PakistanMobileWallet_PakistanWalletProvider = 10
+	PaymentDetails_PakistanMobileWallet_PAKISTAN_WALLET_PROVIDER_EASYPAISA   PaymentDetails_PakistanMobileWallet_PakistanWalletProvider = 20
+	PaymentDetails_PakistanMobileWallet_PAKISTAN_WALLET_PROVIDER_SADAPAY     PaymentDetails_PakistanMobileWallet_PakistanWalletProvider = 30
+	PaymentDetails_PakistanMobileWallet_PAKISTAN_WALLET_PROVIDER_NAYAPAY     PaymentDetails_PakistanMobileWallet_PakistanWalletProvider = 40
+	PaymentDetails_PakistanMobileWallet_PAKISTAN_WALLET_PROVIDER_OTHER       PaymentDetails_PakistanMobileWallet_PakistanWalletProvider = 100
+)
+
+// Enum value maps for PaymentDetails_PakistanMobileWallet_PakistanWalletProvider.
+var (
+	PaymentDetails_PakistanMobileWallet_PakistanWalletProvider_name = map[int32]string{
+		0:   "PAKISTAN_WALLET_PROVIDER_UNSPECIFIED",
+		10:  "PAKISTAN_WALLET_PROVIDER_JAZZCASH",
+		20:  "PAKISTAN_WALLET_PROVIDER_EASYPAISA",
+		30:  "PAKISTAN_WALLET_PROVIDER_SADAPAY",
+		40:  "PAKISTAN_WALLET_PROVIDER_NAYAPAY",
+		100: "PAKISTAN_WALLET_PROVIDER_OTHER",
+	}
+	PaymentDetails_PakistanMobileWallet_PakistanWalletProvider_value = map[string]int32{
+		"PAKISTAN_WALLET_PROVIDER_UNSPECIFIED": 0,
+		"PAKISTAN_WALLET_PROVIDER_JAZZCASH":    10,
+		"PAKISTAN_WALLET_PROVIDER_EASYPAISA":   20,
+		"PAKISTAN_WALLET_PROVIDER_SADAPAY":     30,
+		"PAKISTAN_WALLET_PROVIDER_NAYAPAY":     40,
+		"PAKISTAN_WALLET_PROVIDER_OTHER":       100,
+	}
+)
+
+func (x PaymentDetails_PakistanMobileWallet_PakistanWalletProvider) Enum() *PaymentDetails_PakistanMobileWallet_PakistanWalletProvider {
+	p := new(PaymentDetails_PakistanMobileWallet_PakistanWalletProvider)
+	*p = x
+	return p
+}
+
+func (x PaymentDetails_PakistanMobileWallet_PakistanWalletProvider) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PaymentDetails_PakistanMobileWallet_PakistanWalletProvider) Descriptor() protoreflect.EnumDescriptor {
+	return file_tzero_v1_common_payment_method_proto_enumTypes[2].Descriptor()
+}
+
+func (PaymentDetails_PakistanMobileWallet_PakistanWalletProvider) Type() protoreflect.EnumType {
+	return &file_tzero_v1_common_payment_method_proto_enumTypes[2]
+}
+
+func (x PaymentDetails_PakistanMobileWallet_PakistanWalletProvider) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PaymentDetails_PakistanMobileWallet_PakistanWalletProvider.Descriptor instead.
+func (PaymentDetails_PakistanMobileWallet_PakistanWalletProvider) EnumDescriptor() ([]byte, []int) {
+	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{0, 12, 0}
+}
+
+type PaymentDetails_Pix_KeyType int32
+
+const (
+	PaymentDetails_Pix_KEY_TYPE_UNSPECIFIED PaymentDetails_Pix_KeyType = 0
+	// CPF - Cadastro de Pessoas Físicas (Individual Taxpayer Registry) - 11 digits
+	PaymentDetails_Pix_KEY_TYPE_CPF PaymentDetails_Pix_KeyType = 10
+	// CNPJ - Cadastro Nacional da Pessoa Jurídica (Business Tax ID) - 14 digits
+	PaymentDetails_Pix_KEY_TYPE_CNPJ PaymentDetails_Pix_KeyType = 20
+	// Email address
+	PaymentDetails_Pix_KEY_TYPE_EMAIL PaymentDetails_Pix_KeyType = 30
+	// Phone number in international format
+	PaymentDetails_Pix_KEY_TYPE_PHONE PaymentDetails_Pix_KeyType = 40
+	// EVP - Random key (UUID format)
+	PaymentDetails_Pix_KEY_TYPE_EVP PaymentDetails_Pix_KeyType = 50
+)
+
+// Enum value maps for PaymentDetails_Pix_KeyType.
+var (
+	PaymentDetails_Pix_KeyType_name = map[int32]string{
+		0:  "KEY_TYPE_UNSPECIFIED",
+		10: "KEY_TYPE_CPF",
+		20: "KEY_TYPE_CNPJ",
+		30: "KEY_TYPE_EMAIL",
+		40: "KEY_TYPE_PHONE",
+		50: "KEY_TYPE_EVP",
+	}
+	PaymentDetails_Pix_KeyType_value = map[string]int32{
+		"KEY_TYPE_UNSPECIFIED": 0,
+		"KEY_TYPE_CPF":         10,
+		"KEY_TYPE_CNPJ":        20,
+		"KEY_TYPE_EMAIL":       30,
+		"KEY_TYPE_PHONE":       40,
+		"KEY_TYPE_EVP":         50,
+	}
+)
+
+func (x PaymentDetails_Pix_KeyType) Enum() *PaymentDetails_Pix_KeyType {
+	p := new(PaymentDetails_Pix_KeyType)
+	*p = x
+	return p
+}
+
+func (x PaymentDetails_Pix_KeyType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PaymentDetails_Pix_KeyType) Descriptor() protoreflect.EnumDescriptor {
+	return file_tzero_v1_common_payment_method_proto_enumTypes[3].Descriptor()
+}
+
+func (PaymentDetails_Pix_KeyType) Type() protoreflect.EnumType {
+	return &file_tzero_v1_common_payment_method_proto_enumTypes[3]
+}
+
+func (x PaymentDetails_Pix_KeyType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PaymentDetails_Pix_KeyType.Descriptor instead.
+func (PaymentDetails_Pix_KeyType) EnumDescriptor() ([]byte, []int) {
+	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{0, 13, 0}
+}
+
 type PaymentDetails struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Details:
@@ -165,6 +298,9 @@ type PaymentDetails struct {
 	//	*PaymentDetails_IndianBankTransfer_
 	//	*PaymentDetails_Pesonet_
 	//	*PaymentDetails_Instapay_
+	//	*PaymentDetails_PakistanBankTransfer_
+	//	*PaymentDetails_PakistanMobileWallet_
+	//	*PaymentDetails_Pix_
 	Details       isPaymentDetails_Details `protobuf_oneof:"details"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -306,6 +442,33 @@ func (x *PaymentDetails) GetInstapay() *PaymentDetails_Instapay {
 	return nil
 }
 
+func (x *PaymentDetails) GetPakistanBankTransfer() *PaymentDetails_PakistanBankTransfer {
+	if x != nil {
+		if x, ok := x.Details.(*PaymentDetails_PakistanBankTransfer_); ok {
+			return x.PakistanBankTransfer
+		}
+	}
+	return nil
+}
+
+func (x *PaymentDetails) GetPakistanMobileWallet() *PaymentDetails_PakistanMobileWallet {
+	if x != nil {
+		if x, ok := x.Details.(*PaymentDetails_PakistanMobileWallet_); ok {
+			return x.PakistanMobileWallet
+		}
+	}
+	return nil
+}
+
+func (x *PaymentDetails) GetPix() *PaymentDetails_Pix {
+	if x != nil {
+		if x, ok := x.Details.(*PaymentDetails_Pix_); ok {
+			return x.Pix
+		}
+	}
+	return nil
+}
+
 type isPaymentDetails_Details interface {
 	isPaymentDetails_Details()
 }
@@ -375,6 +538,24 @@ type PaymentDetails_Instapay_ struct {
 	Instapay *PaymentDetails_Instapay `protobuf:"bytes,120,opt,name=instapay,proto3,oneof"`
 }
 
+type PaymentDetails_PakistanBankTransfer_ struct {
+	// Pakistan Bank Transfer - Domestic bank transfers using Pakistani IBAN
+	// Pakistan
+	PakistanBankTransfer *PaymentDetails_PakistanBankTransfer `protobuf:"bytes,130,opt,name=pakistan_bank_transfer,json=pakistanBankTransfer,proto3,oneof"`
+}
+
+type PaymentDetails_PakistanMobileWallet_ struct {
+	// Pakistan Mobile Wallet - JazzCash, Easypaisa, SadaPay, NayaPay and other wallets
+	// Pakistan
+	PakistanMobileWallet *PaymentDetails_PakistanMobileWallet `protobuf:"bytes,140,opt,name=pakistan_mobile_wallet,json=pakistanMobileWallet,proto3,oneof"`
+}
+
+type PaymentDetails_Pix_ struct {
+	// PIX - Brazilian instant payment system
+	// Brazil
+	Pix *PaymentDetails_Pix `protobuf:"bytes,150,opt,name=pix,proto3,oneof"`
+}
+
 func (*PaymentDetails_Sepa_) isPaymentDetails_Details() {}
 
 func (*PaymentDetails_Swift_) isPaymentDetails_Details() {}
@@ -396,6 +577,12 @@ func (*PaymentDetails_IndianBankTransfer_) isPaymentDetails_Details() {}
 func (*PaymentDetails_Pesonet_) isPaymentDetails_Details() {}
 
 func (*PaymentDetails_Instapay_) isPaymentDetails_Details() {}
+
+func (*PaymentDetails_PakistanBankTransfer_) isPaymentDetails_Details() {}
+
+func (*PaymentDetails_PakistanMobileWallet_) isPaymentDetails_Details() {}
+
+func (*PaymentDetails_Pix_) isPaymentDetails_Details() {}
 
 type PaymentDetails_Sepa struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
@@ -1207,6 +1394,253 @@ func (x *PaymentDetails_Instapay) GetPurposeOfTransfer() string {
 	return ""
 }
 
+// Pakistan Bank Transfer - Domestic transfers using Pakistani IBAN
+// Pakistan uses 24-character IBAN: PK + 2 check digits + 4-char bank code + 16-char account number
+type PaymentDetails_PakistanBankTransfer struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Pakistani IBAN (24 characters: PK + 2 check digits + 4-char bank identifier + 16-char account)
+	// Example: PK36SCBL0000001123456702
+	Iban string `protobuf:"bytes,10,opt,name=iban,proto3" json:"iban,omitempty"`
+	// Beneficiary's full name
+	BeneficiaryName string `protobuf:"bytes,20,opt,name=beneficiary_name,json=beneficiaryName,proto3" json:"beneficiary_name,omitempty"`
+	// (Optional) Beneficiary CNIC (13 digits, no dashes) — sometimes required by receiving banks
+	BeneficiaryCnic *string `protobuf:"bytes,25,opt,name=beneficiary_cnic,json=beneficiaryCnic,proto3,oneof" json:"beneficiary_cnic,omitempty"`
+	// Payment reference/description
+	PaymentReference string `protobuf:"bytes,30,opt,name=payment_reference,json=paymentReference,proto3" json:"payment_reference,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *PaymentDetails_PakistanBankTransfer) Reset() {
+	*x = PaymentDetails_PakistanBankTransfer{}
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PaymentDetails_PakistanBankTransfer) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PaymentDetails_PakistanBankTransfer) ProtoMessage() {}
+
+func (x *PaymentDetails_PakistanBankTransfer) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PaymentDetails_PakistanBankTransfer.ProtoReflect.Descriptor instead.
+func (*PaymentDetails_PakistanBankTransfer) Descriptor() ([]byte, []int) {
+	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{0, 11}
+}
+
+func (x *PaymentDetails_PakistanBankTransfer) GetIban() string {
+	if x != nil {
+		return x.Iban
+	}
+	return ""
+}
+
+func (x *PaymentDetails_PakistanBankTransfer) GetBeneficiaryName() string {
+	if x != nil {
+		return x.BeneficiaryName
+	}
+	return ""
+}
+
+func (x *PaymentDetails_PakistanBankTransfer) GetBeneficiaryCnic() string {
+	if x != nil && x.BeneficiaryCnic != nil {
+		return *x.BeneficiaryCnic
+	}
+	return ""
+}
+
+func (x *PaymentDetails_PakistanBankTransfer) GetPaymentReference() string {
+	if x != nil {
+		return x.PaymentReference
+	}
+	return ""
+}
+
+// Pakistan Mobile Wallet - JazzCash, Easypaisa, SadaPay, NayaPay and other wallets
+// Transfers are made using the mobile number linked to the wallet account; CNIC is required for verification
+type PaymentDetails_PakistanMobileWallet struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Wallet provider
+	WalletProvider PaymentDetails_PakistanMobileWallet_PakistanWalletProvider `protobuf:"varint,10,opt,name=wallet_provider,json=walletProvider,proto3,enum=tzero.v1.common.PaymentDetails_PakistanMobileWallet_PakistanWalletProvider" json:"wallet_provider,omitempty"`
+	// Mobile number linked to the wallet (Pak local 03XXXXXXXXX or international 923XXXXXXXXX)
+	MobileNumber string `protobuf:"bytes,20,opt,name=mobile_number,json=mobileNumber,proto3" json:"mobile_number,omitempty"`
+	// CNIC (Computerized National Identity Card) - 13 digits without dashes
+	Cnic string `protobuf:"bytes,30,opt,name=cnic,proto3" json:"cnic,omitempty"`
+	// Beneficiary's full name as registered with the wallet
+	BeneficiaryName string `protobuf:"bytes,40,opt,name=beneficiary_name,json=beneficiaryName,proto3" json:"beneficiary_name,omitempty"`
+	// Payment reference/description (optional)
+	PaymentReference *string `protobuf:"bytes,50,opt,name=payment_reference,json=paymentReference,proto3,oneof" json:"payment_reference,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *PaymentDetails_PakistanMobileWallet) Reset() {
+	*x = PaymentDetails_PakistanMobileWallet{}
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PaymentDetails_PakistanMobileWallet) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PaymentDetails_PakistanMobileWallet) ProtoMessage() {}
+
+func (x *PaymentDetails_PakistanMobileWallet) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PaymentDetails_PakistanMobileWallet.ProtoReflect.Descriptor instead.
+func (*PaymentDetails_PakistanMobileWallet) Descriptor() ([]byte, []int) {
+	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{0, 12}
+}
+
+func (x *PaymentDetails_PakistanMobileWallet) GetWalletProvider() PaymentDetails_PakistanMobileWallet_PakistanWalletProvider {
+	if x != nil {
+		return x.WalletProvider
+	}
+	return PaymentDetails_PakistanMobileWallet_PAKISTAN_WALLET_PROVIDER_UNSPECIFIED
+}
+
+func (x *PaymentDetails_PakistanMobileWallet) GetMobileNumber() string {
+	if x != nil {
+		return x.MobileNumber
+	}
+	return ""
+}
+
+func (x *PaymentDetails_PakistanMobileWallet) GetCnic() string {
+	if x != nil {
+		return x.Cnic
+	}
+	return ""
+}
+
+func (x *PaymentDetails_PakistanMobileWallet) GetBeneficiaryName() string {
+	if x != nil {
+		return x.BeneficiaryName
+	}
+	return ""
+}
+
+func (x *PaymentDetails_PakistanMobileWallet) GetPaymentReference() string {
+	if x != nil && x.PaymentReference != nil {
+		return *x.PaymentReference
+	}
+	return ""
+}
+
+// PIX - Brazilian instant payment system
+// PIX allows transfers using a Pix key (CPF, CNPJ, email, phone, or random EVP)
+// or traditional bank account details (bank code, branch, account number)
+type PaymentDetails_Pix struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Pix key type - determines the format of pix_key_value
+	KeyType PaymentDetails_Pix_KeyType `protobuf:"varint,10,opt,name=key_type,json=keyType,proto3,enum=tzero.v1.common.PaymentDetails_Pix_KeyType" json:"key_type,omitempty"`
+	// Pix key value - format depends on pix_key_type:
+	// - CPF: 11 digits (e.g., "12345678901")
+	// - CNPJ: 14 digits (e.g., "12345678000195")
+	// - EMAIL: valid email address
+	// - PHONE: international format with country code (e.g., "+5511999999999")
+	// - EVP: 32-character UUID (e.g., "123e4567-e89b-12d3-a456-426614174000")
+	KeyValue string `protobuf:"bytes,20,opt,name=key_value,json=keyValue,proto3" json:"key_value,omitempty"`
+	// Beneficiary's full name
+	BeneficiaryName string `protobuf:"bytes,30,opt,name=beneficiary_name,json=beneficiaryName,proto3" json:"beneficiary_name,omitempty"`
+	// (Optional) Beneficiary's CPF (11 digits) or CNPJ (14 digits) for verification
+	BeneficiaryTaxId *string `protobuf:"bytes,40,opt,name=beneficiary_tax_id,json=beneficiaryTaxId,proto3,oneof" json:"beneficiary_tax_id,omitempty"`
+	// (Optional) Payment description/reference
+	PaymentReference *string `protobuf:"bytes,50,opt,name=payment_reference,json=paymentReference,proto3,oneof" json:"payment_reference,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *PaymentDetails_Pix) Reset() {
+	*x = PaymentDetails_Pix{}
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PaymentDetails_Pix) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PaymentDetails_Pix) ProtoMessage() {}
+
+func (x *PaymentDetails_Pix) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PaymentDetails_Pix.ProtoReflect.Descriptor instead.
+func (*PaymentDetails_Pix) Descriptor() ([]byte, []int) {
+	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{0, 13}
+}
+
+func (x *PaymentDetails_Pix) GetKeyType() PaymentDetails_Pix_KeyType {
+	if x != nil {
+		return x.KeyType
+	}
+	return PaymentDetails_Pix_KEY_TYPE_UNSPECIFIED
+}
+
+func (x *PaymentDetails_Pix) GetKeyValue() string {
+	if x != nil {
+		return x.KeyValue
+	}
+	return ""
+}
+
+func (x *PaymentDetails_Pix) GetBeneficiaryName() string {
+	if x != nil {
+		return x.BeneficiaryName
+	}
+	return ""
+}
+
+func (x *PaymentDetails_Pix) GetBeneficiaryTaxId() string {
+	if x != nil && x.BeneficiaryTaxId != nil {
+		return *x.BeneficiaryTaxId
+	}
+	return ""
+}
+
+func (x *PaymentDetails_Pix) GetPaymentReference() string {
+	if x != nil && x.PaymentReference != nil {
+		return *x.PaymentReference
+	}
+	return ""
+}
+
 type PaymentDetails_IndianBankTransfer_AccountIFSC struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Beneficiary bank account number
@@ -1219,7 +1653,7 @@ type PaymentDetails_IndianBankTransfer_AccountIFSC struct {
 
 func (x *PaymentDetails_IndianBankTransfer_AccountIFSC) Reset() {
 	*x = PaymentDetails_IndianBankTransfer_AccountIFSC{}
-	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[12]
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1231,7 +1665,7 @@ func (x *PaymentDetails_IndianBankTransfer_AccountIFSC) String() string {
 func (*PaymentDetails_IndianBankTransfer_AccountIFSC) ProtoMessage() {}
 
 func (x *PaymentDetails_IndianBankTransfer_AccountIFSC) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[12]
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1274,7 +1708,7 @@ type PaymentDetails_IndianBankTransfer_IMPS struct {
 
 func (x *PaymentDetails_IndianBankTransfer_IMPS) Reset() {
 	*x = PaymentDetails_IndianBankTransfer_IMPS{}
-	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[13]
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1286,7 +1720,7 @@ func (x *PaymentDetails_IndianBankTransfer_IMPS) String() string {
 func (*PaymentDetails_IndianBankTransfer_IMPS) ProtoMessage() {}
 
 func (x *PaymentDetails_IndianBankTransfer_IMPS) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[13]
+	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1320,7 +1754,7 @@ var File_tzero_v1_common_payment_method_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_common_payment_method_proto_rawDesc = "" +
 	"\n" +
-	"$tzero/v1/common/payment_method.proto\x12\x0ftzero.v1.common\x1a\x1ctzero/v1/common/common.proto\x1a\x1bbuf/validate/validate.proto\"\xea \n" +
+	"$tzero/v1/common/payment_method.proto\x12\x0ftzero.v1.common\x1a\x1ctzero/v1/common/common.proto\x1a\x1bbuf/validate/validate.proto\"\xb7.\n" +
 	"\x0ePaymentDetails\x12:\n" +
 	"\x04sepa\x18\n" +
 	" \x01(\v2$.tzero.v1.common.PaymentDetails.SepaH\x00R\x04sepa\x12=\n" +
@@ -1335,7 +1769,10 @@ const file_tzero_v1_common_payment_method_proto_rawDesc = "" +
 	"\x05gcash\x18Z \x01(\v2%.tzero.v1.common.PaymentDetails.GCashH\x00R\x05gcash\x12f\n" +
 	"\x14indian_bank_transfer\x18d \x01(\v22.tzero.v1.common.PaymentDetails.IndianBankTransferH\x00R\x12indianBankTransfer\x12C\n" +
 	"\apesonet\x18n \x01(\v2'.tzero.v1.common.PaymentDetails.PesonetH\x00R\apesonet\x12F\n" +
-	"\binstapay\x18x \x01(\v2(.tzero.v1.common.PaymentDetails.InstapayH\x00R\binstapay\x1a\xaf\x01\n" +
+	"\binstapay\x18x \x01(\v2(.tzero.v1.common.PaymentDetails.InstapayH\x00R\binstapay\x12m\n" +
+	"\x16pakistan_bank_transfer\x18\x82\x01 \x01(\v24.tzero.v1.common.PaymentDetails.PakistanBankTransferH\x00R\x14pakistanBankTransfer\x12m\n" +
+	"\x16pakistan_mobile_wallet\x18\x8c\x01 \x01(\v24.tzero.v1.common.PaymentDetails.PakistanMobileWalletH\x00R\x14pakistanMobileWallet\x128\n" +
+	"\x03pix\x18\x96\x01 \x01(\v2#.tzero.v1.common.PaymentDetails.PixH\x00R\x03pix\x1a\xaf\x01\n" +
 	"\x04Sepa\x12:\n" +
 	"\x04iban\x18\x14 \x01(\tB&\xbaH#r!\x10\x0f\x18\"2\x1b^[A-Z]{2}[0-9]{2}[A-Z0-9]+$R\x04iban\x124\n" +
 	"\x10beneficiary_name\x18\x1e \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18FR\x0fbeneficiaryName\x125\n" +
@@ -1437,8 +1874,51 @@ const file_tzero_v1_common_payment_method_proto_rawDesc = "" +
 	"\x14recipient_identifier\x18\x14 \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18FR\x13recipientIdentifier\x12=\n" +
 	"\x16recipient_account_name\x18\x1e \x01(\tB\a\xbaH\x04r\x02\x182R\x14recipientAccountName\x12=\n" +
 	"\x13purpose_of_transfer\x18( \x01(\tB\b\xbaH\x05r\x03\x18\x8c\x01H\x00R\x11purposeOfTransfer\x88\x01\x01B\x16\n" +
-	"\x14_purpose_of_transferB\x10\n" +
-	"\adetails\x12\x05\xbaH\x02\b\x01*\xc0\x03\n" +
+	"\x14_purpose_of_transfer\x1a\x9f\x02\n" +
+	"\x14PakistanBankTransfer\x12<\n" +
+	"\x04iban\x18\n" +
+	" \x01(\tB(\xbaH%r#\x10\x18\x18\x182\x1d^PK[0-9]{2}[A-Z]{4}[0-9]{16}$R\x04iban\x125\n" +
+	"\x10beneficiary_name\x18\x14 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x8c\x01R\x0fbeneficiaryName\x12F\n" +
+	"\x10beneficiary_cnic\x18\x19 \x01(\tB\x16\xbaH\x13r\x11\x10\r\x18\r2\v^[0-9]{13}$H\x00R\x0fbeneficiaryCnic\x88\x01\x01\x125\n" +
+	"\x11payment_reference\x18\x1e \x01(\tB\b\xbaH\x05r\x03\x18\x8c\x01R\x10paymentReferenceB\x13\n" +
+	"\x11_beneficiary_cnic\x1a\x9b\x05\n" +
+	"\x14PakistanMobileWallet\x12~\n" +
+	"\x0fwallet_provider\x18\n" +
+	" \x01(\x0e2K.tzero.v1.common.PaymentDetails.PakistanMobileWallet.PakistanWalletProviderB\b\xbaH\x05\x82\x01\x02 \x00R\x0ewalletProvider\x12J\n" +
+	"\rmobile_number\x18\x14 \x01(\tB%\xbaH\"r \x10\v\x18\f2\x1a^(03[0-9]{9}|923[0-9]{9})$R\fmobileNumber\x12*\n" +
+	"\x04cnic\x18\x1e \x01(\tB\x16\xbaH\x13r\x11\x10\r\x18\r2\v^[0-9]{13}$R\x04cnic\x125\n" +
+	"\x10beneficiary_name\x18( \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x8c\x01R\x0fbeneficiaryName\x12:\n" +
+	"\x11payment_reference\x182 \x01(\tB\b\xbaH\x05r\x03\x18\x8c\x01H\x00R\x10paymentReference\x88\x01\x01\"\x81\x02\n" +
+	"\x16PakistanWalletProvider\x12(\n" +
+	"$PAKISTAN_WALLET_PROVIDER_UNSPECIFIED\x10\x00\x12%\n" +
+	"!PAKISTAN_WALLET_PROVIDER_JAZZCASH\x10\n" +
+	"\x12&\n" +
+	"\"PAKISTAN_WALLET_PROVIDER_EASYPAISA\x10\x14\x12$\n" +
+	" PAKISTAN_WALLET_PROVIDER_SADAPAY\x10\x1e\x12$\n" +
+	" PAKISTAN_WALLET_PROVIDER_NAYAPAY\x10(\x12\"\n" +
+	"\x1ePAKISTAN_WALLET_PROVIDER_OTHER\x10dB\x14\n" +
+	"\x12_payment_reference\x1a\xf2\x03\n" +
+	"\x03Pix\x12P\n" +
+	"\bkey_type\x18\n" +
+	" \x01(\x0e2+.tzero.v1.common.PaymentDetails.Pix.KeyTypeB\b\xbaH\x05\x82\x01\x02 \x00R\akeyType\x12&\n" +
+	"\tkey_value\x18\x14 \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18MR\bkeyValue\x125\n" +
+	"\x10beneficiary_name\x18\x1e \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x8c\x01R\x0fbeneficiaryName\x12L\n" +
+	"\x12beneficiary_tax_id\x18( \x01(\tB\x19\xbaH\x16r\x14\x10\v\x18\x0e2\x0e^[0-9]{11,14}$H\x00R\x10beneficiaryTaxId\x88\x01\x01\x12:\n" +
+	"\x11payment_reference\x182 \x01(\tB\b\xbaH\x05r\x03\x18\x8c\x01H\x01R\x10paymentReference\x88\x01\x01\"\x82\x01\n" +
+	"\aKeyType\x12\x18\n" +
+	"\x14KEY_TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
+	"\fKEY_TYPE_CPF\x10\n" +
+	"\x12\x11\n" +
+	"\rKEY_TYPE_CNPJ\x10\x14\x12\x12\n" +
+	"\x0eKEY_TYPE_EMAIL\x10\x1e\x12\x12\n" +
+	"\x0eKEY_TYPE_PHONE\x10(\x12\x10\n" +
+	"\fKEY_TYPE_EVP\x102B\x15\n" +
+	"\x13_beneficiary_tax_idB\x14\n" +
+	"\x12_payment_referenceB\x10\n" +
+	"\adetails\x12\x05\xbaH\x02\b\x01*\xc0\x04\n" +
 	"\x11PaymentMethodType\x12#\n" +
 	"\x1fPAYMENT_METHOD_TYPE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18PAYMENT_METHOD_TYPE_SEPA\x10\n" +
@@ -1453,7 +1933,10 @@ const file_tzero_v1_common_payment_method_proto_rawDesc = "" +
 	"\x1aPAYMENT_METHOD_TYPE_G_CASH\x10Z\x12,\n" +
 	"(PAYMENT_METHOD_TYPE_INDIAN_BANK_TRANSFER\x10d\x12\x1f\n" +
 	"\x1bPAYMENT_METHOD_TYPE_PESONET\x10n\x12 \n" +
-	"\x1cPAYMENT_METHOD_TYPE_INSTAPAY\x10xB\xc3\x01\n" +
+	"\x1cPAYMENT_METHOD_TYPE_INSTAPAY\x10x\x12/\n" +
+	"*PAYMENT_METHOD_TYPE_PAKISTAN_BANK_TRANSFER\x10\x82\x01\x12/\n" +
+	"*PAYMENT_METHOD_TYPE_PAKISTAN_MOBILE_WALLET\x10\x8c\x01\x12\x1c\n" +
+	"\x17PAYMENT_METHOD_TYPE_PIX\x10\x96\x01B\xc3\x01\n" +
 	"\x13com.tzero.v1.commonB\x12PaymentMethodProtoP\x01Z:github.com/t-0-network/provider-sdk-go/api/tzero/v1/common\xa2\x02\x03TVC\xaa\x02\x0fTzero.V1.Common\xca\x02\x0fTzero\\V1\\Common\xe2\x02\x1bTzero\\V1\\Common\\GPBMetadata\xea\x02\x11Tzero::V1::Commonb\x06proto3"
 
 var (
@@ -1468,50 +1951,60 @@ func file_tzero_v1_common_payment_method_proto_rawDescGZIP() []byte {
 	return file_tzero_v1_common_payment_method_proto_rawDescData
 }
 
-var file_tzero_v1_common_payment_method_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_tzero_v1_common_payment_method_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_tzero_v1_common_payment_method_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_tzero_v1_common_payment_method_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_tzero_v1_common_payment_method_proto_goTypes = []any{
-	(PaymentMethodType)(0),                                // 0: tzero.v1.common.PaymentMethodType
-	(PaymentDetails_Ach_AchAccountType)(0),                // 1: tzero.v1.common.PaymentDetails.Ach.AchAccountType
-	(*PaymentDetails)(nil),                                // 2: tzero.v1.common.PaymentDetails
-	(*PaymentDetails_Sepa)(nil),                           // 3: tzero.v1.common.PaymentDetails.Sepa
-	(*PaymentDetails_Fps)(nil),                            // 4: tzero.v1.common.PaymentDetails.Fps
-	(*PaymentDetails_MPesa)(nil),                          // 5: tzero.v1.common.PaymentDetails.MPesa
-	(*PaymentDetails_GCash)(nil),                          // 6: tzero.v1.common.PaymentDetails.GCash
-	(*PaymentDetails_IndianBankTransfer)(nil),             // 7: tzero.v1.common.PaymentDetails.IndianBankTransfer
-	(*PaymentDetails_Swift)(nil),                          // 8: tzero.v1.common.PaymentDetails.Swift
-	(*PaymentDetails_Stablecoin)(nil),                     // 9: tzero.v1.common.PaymentDetails.Stablecoin
-	(*PaymentDetails_Ach)(nil),                            // 10: tzero.v1.common.PaymentDetails.Ach
-	(*PaymentDetails_Wire)(nil),                           // 11: tzero.v1.common.PaymentDetails.Wire
-	(*PaymentDetails_Pesonet)(nil),                        // 12: tzero.v1.common.PaymentDetails.Pesonet
-	(*PaymentDetails_Instapay)(nil),                       // 13: tzero.v1.common.PaymentDetails.Instapay
-	(*PaymentDetails_IndianBankTransfer_AccountIFSC)(nil), // 14: tzero.v1.common.PaymentDetails.IndianBankTransfer.AccountIFSC
-	(*PaymentDetails_IndianBankTransfer_IMPS)(nil),        // 15: tzero.v1.common.PaymentDetails.IndianBankTransfer.IMPS
-	(Blockchain)(0),                                       // 16: tzero.v1.common.Blockchain
-	(Stablecoin)(0),                                       // 17: tzero.v1.common.Stablecoin
+	(PaymentMethodType)(0),                                          // 0: tzero.v1.common.PaymentMethodType
+	(PaymentDetails_Ach_AchAccountType)(0),                          // 1: tzero.v1.common.PaymentDetails.Ach.AchAccountType
+	(PaymentDetails_PakistanMobileWallet_PakistanWalletProvider)(0), // 2: tzero.v1.common.PaymentDetails.PakistanMobileWallet.PakistanWalletProvider
+	(PaymentDetails_Pix_KeyType)(0),                                 // 3: tzero.v1.common.PaymentDetails.Pix.KeyType
+	(*PaymentDetails)(nil),                                          // 4: tzero.v1.common.PaymentDetails
+	(*PaymentDetails_Sepa)(nil),                                     // 5: tzero.v1.common.PaymentDetails.Sepa
+	(*PaymentDetails_Fps)(nil),                                      // 6: tzero.v1.common.PaymentDetails.Fps
+	(*PaymentDetails_MPesa)(nil),                                    // 7: tzero.v1.common.PaymentDetails.MPesa
+	(*PaymentDetails_GCash)(nil),                                    // 8: tzero.v1.common.PaymentDetails.GCash
+	(*PaymentDetails_IndianBankTransfer)(nil),                       // 9: tzero.v1.common.PaymentDetails.IndianBankTransfer
+	(*PaymentDetails_Swift)(nil),                                    // 10: tzero.v1.common.PaymentDetails.Swift
+	(*PaymentDetails_Stablecoin)(nil),                               // 11: tzero.v1.common.PaymentDetails.Stablecoin
+	(*PaymentDetails_Ach)(nil),                                      // 12: tzero.v1.common.PaymentDetails.Ach
+	(*PaymentDetails_Wire)(nil),                                     // 13: tzero.v1.common.PaymentDetails.Wire
+	(*PaymentDetails_Pesonet)(nil),                                  // 14: tzero.v1.common.PaymentDetails.Pesonet
+	(*PaymentDetails_Instapay)(nil),                                 // 15: tzero.v1.common.PaymentDetails.Instapay
+	(*PaymentDetails_PakistanBankTransfer)(nil),                     // 16: tzero.v1.common.PaymentDetails.PakistanBankTransfer
+	(*PaymentDetails_PakistanMobileWallet)(nil),                     // 17: tzero.v1.common.PaymentDetails.PakistanMobileWallet
+	(*PaymentDetails_Pix)(nil),                                      // 18: tzero.v1.common.PaymentDetails.Pix
+	(*PaymentDetails_IndianBankTransfer_AccountIFSC)(nil),           // 19: tzero.v1.common.PaymentDetails.IndianBankTransfer.AccountIFSC
+	(*PaymentDetails_IndianBankTransfer_IMPS)(nil),                  // 20: tzero.v1.common.PaymentDetails.IndianBankTransfer.IMPS
+	(Blockchain)(0),                                                 // 21: tzero.v1.common.Blockchain
+	(Stablecoin)(0),                                                 // 22: tzero.v1.common.Stablecoin
 }
 var file_tzero_v1_common_payment_method_proto_depIdxs = []int32{
-	3,  // 0: tzero.v1.common.PaymentDetails.sepa:type_name -> tzero.v1.common.PaymentDetails.Sepa
-	8,  // 1: tzero.v1.common.PaymentDetails.swift:type_name -> tzero.v1.common.PaymentDetails.Swift
-	9,  // 2: tzero.v1.common.PaymentDetails.stablecoin:type_name -> tzero.v1.common.PaymentDetails.Stablecoin
-	10, // 3: tzero.v1.common.PaymentDetails.ach:type_name -> tzero.v1.common.PaymentDetails.Ach
-	11, // 4: tzero.v1.common.PaymentDetails.wire:type_name -> tzero.v1.common.PaymentDetails.Wire
-	4,  // 5: tzero.v1.common.PaymentDetails.fps:type_name -> tzero.v1.common.PaymentDetails.Fps
-	5,  // 6: tzero.v1.common.PaymentDetails.mpesa:type_name -> tzero.v1.common.PaymentDetails.MPesa
-	6,  // 7: tzero.v1.common.PaymentDetails.gcash:type_name -> tzero.v1.common.PaymentDetails.GCash
-	7,  // 8: tzero.v1.common.PaymentDetails.indian_bank_transfer:type_name -> tzero.v1.common.PaymentDetails.IndianBankTransfer
-	12, // 9: tzero.v1.common.PaymentDetails.pesonet:type_name -> tzero.v1.common.PaymentDetails.Pesonet
-	13, // 10: tzero.v1.common.PaymentDetails.instapay:type_name -> tzero.v1.common.PaymentDetails.Instapay
-	14, // 11: tzero.v1.common.PaymentDetails.IndianBankTransfer.account_ifsc:type_name -> tzero.v1.common.PaymentDetails.IndianBankTransfer.AccountIFSC
-	15, // 12: tzero.v1.common.PaymentDetails.IndianBankTransfer.imps:type_name -> tzero.v1.common.PaymentDetails.IndianBankTransfer.IMPS
-	16, // 13: tzero.v1.common.PaymentDetails.Stablecoin.blockchain:type_name -> tzero.v1.common.Blockchain
-	17, // 14: tzero.v1.common.PaymentDetails.Stablecoin.stablecoin:type_name -> tzero.v1.common.Stablecoin
-	1,  // 15: tzero.v1.common.PaymentDetails.Ach.account_type:type_name -> tzero.v1.common.PaymentDetails.Ach.AchAccountType
-	16, // [16:16] is the sub-list for method output_type
-	16, // [16:16] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	5,  // 0: tzero.v1.common.PaymentDetails.sepa:type_name -> tzero.v1.common.PaymentDetails.Sepa
+	10, // 1: tzero.v1.common.PaymentDetails.swift:type_name -> tzero.v1.common.PaymentDetails.Swift
+	11, // 2: tzero.v1.common.PaymentDetails.stablecoin:type_name -> tzero.v1.common.PaymentDetails.Stablecoin
+	12, // 3: tzero.v1.common.PaymentDetails.ach:type_name -> tzero.v1.common.PaymentDetails.Ach
+	13, // 4: tzero.v1.common.PaymentDetails.wire:type_name -> tzero.v1.common.PaymentDetails.Wire
+	6,  // 5: tzero.v1.common.PaymentDetails.fps:type_name -> tzero.v1.common.PaymentDetails.Fps
+	7,  // 6: tzero.v1.common.PaymentDetails.mpesa:type_name -> tzero.v1.common.PaymentDetails.MPesa
+	8,  // 7: tzero.v1.common.PaymentDetails.gcash:type_name -> tzero.v1.common.PaymentDetails.GCash
+	9,  // 8: tzero.v1.common.PaymentDetails.indian_bank_transfer:type_name -> tzero.v1.common.PaymentDetails.IndianBankTransfer
+	14, // 9: tzero.v1.common.PaymentDetails.pesonet:type_name -> tzero.v1.common.PaymentDetails.Pesonet
+	15, // 10: tzero.v1.common.PaymentDetails.instapay:type_name -> tzero.v1.common.PaymentDetails.Instapay
+	16, // 11: tzero.v1.common.PaymentDetails.pakistan_bank_transfer:type_name -> tzero.v1.common.PaymentDetails.PakistanBankTransfer
+	17, // 12: tzero.v1.common.PaymentDetails.pakistan_mobile_wallet:type_name -> tzero.v1.common.PaymentDetails.PakistanMobileWallet
+	18, // 13: tzero.v1.common.PaymentDetails.pix:type_name -> tzero.v1.common.PaymentDetails.Pix
+	19, // 14: tzero.v1.common.PaymentDetails.IndianBankTransfer.account_ifsc:type_name -> tzero.v1.common.PaymentDetails.IndianBankTransfer.AccountIFSC
+	20, // 15: tzero.v1.common.PaymentDetails.IndianBankTransfer.imps:type_name -> tzero.v1.common.PaymentDetails.IndianBankTransfer.IMPS
+	21, // 16: tzero.v1.common.PaymentDetails.Stablecoin.blockchain:type_name -> tzero.v1.common.Blockchain
+	22, // 17: tzero.v1.common.PaymentDetails.Stablecoin.stablecoin:type_name -> tzero.v1.common.Stablecoin
+	1,  // 18: tzero.v1.common.PaymentDetails.Ach.account_type:type_name -> tzero.v1.common.PaymentDetails.Ach.AchAccountType
+	2,  // 19: tzero.v1.common.PaymentDetails.PakistanMobileWallet.wallet_provider:type_name -> tzero.v1.common.PaymentDetails.PakistanMobileWallet.PakistanWalletProvider
+	3,  // 20: tzero.v1.common.PaymentDetails.Pix.key_type:type_name -> tzero.v1.common.PaymentDetails.Pix.KeyType
+	21, // [21:21] is the sub-list for method output_type
+	21, // [21:21] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_tzero_v1_common_payment_method_proto_init() }
@@ -1532,6 +2025,9 @@ func file_tzero_v1_common_payment_method_proto_init() {
 		(*PaymentDetails_IndianBankTransfer_)(nil),
 		(*PaymentDetails_Pesonet_)(nil),
 		(*PaymentDetails_Instapay_)(nil),
+		(*PaymentDetails_PakistanBankTransfer_)(nil),
+		(*PaymentDetails_PakistanMobileWallet_)(nil),
+		(*PaymentDetails_Pix_)(nil),
 	}
 	file_tzero_v1_common_payment_method_proto_msgTypes[5].OneofWrappers = []any{
 		(*PaymentDetails_IndianBankTransfer_AccountIfsc)(nil),
@@ -1539,13 +2035,16 @@ func file_tzero_v1_common_payment_method_proto_init() {
 	}
 	file_tzero_v1_common_payment_method_proto_msgTypes[10].OneofWrappers = []any{}
 	file_tzero_v1_common_payment_method_proto_msgTypes[11].OneofWrappers = []any{}
+	file_tzero_v1_common_payment_method_proto_msgTypes[12].OneofWrappers = []any{}
+	file_tzero_v1_common_payment_method_proto_msgTypes[13].OneofWrappers = []any{}
+	file_tzero_v1_common_payment_method_proto_msgTypes[14].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tzero_v1_common_payment_method_proto_rawDesc), len(file_tzero_v1_common_payment_method_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   14,
+			NumEnums:      4,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

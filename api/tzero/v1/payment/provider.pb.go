@@ -1387,9 +1387,9 @@ type UpdateLimitRequest_Limit struct {
 	// Incrementally growing for the provider - same as in Ledger.
 	Version int64 `protobuf:"varint,10,opt,name=version,proto3" json:"version,omitempty"`
 	// *
-	// the Id of the counterparty (creditor) provider, e.g. the provider that is providing the credit limit.
+	// the Id of the counterparty provider, e.g. the provider that is providing the credit limit.
 	// It's usually the payOut provider, which provides the credit line to the payIn provider.
-	CreditorId int32 `protobuf:"varint,15,opt,name=creditor_id,json=creditorId,proto3" json:"creditor_id,omitempty"`
+	CounterpartId int32 `protobuf:"varint,15,opt,name=counterpart_id,json=counterpartId,proto3" json:"counterpart_id,omitempty"`
 	// *
 	// payout_limit = credit_limit - credit_usage, negative value means credit limit is exceeded,
 	// e.g. if counterparty decreased credit limit
@@ -1443,9 +1443,9 @@ func (x *UpdateLimitRequest_Limit) GetVersion() int64 {
 	return 0
 }
 
-func (x *UpdateLimitRequest_Limit) GetCreditorId() int32 {
+func (x *UpdateLimitRequest_Limit) GetCounterpartId() int32 {
 	if x != nil {
-		return x.CreditorId
+		return x.CounterpartId
 	}
 	return 0
 }
@@ -1571,15 +1571,14 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\tpaidOutAt\x129\n" +
 	"\areceipt\x18\x14 \x01(\v2\x1f.tzero.v1.common.PaymentReceiptR\areceiptB\b\n" +
 	"\x06result\"\x17\n" +
-	"\x15UpdatePaymentResponse\"\xd4\x02\n" +
+	"\x15UpdatePaymentResponse\"\xda\x02\n" +
 	"\x12UpdateLimitRequest\x12B\n" +
 	"\x06limits\x18\n" +
-	" \x03(\v2*.tzero.v1.payment.UpdateLimitRequest.LimitR\x06limits\x1a\xf9\x01\n" +
+	" \x03(\v2*.tzero.v1.payment.UpdateLimitRequest.LimitR\x06limits\x1a\xff\x01\n" +
 	"\x05Limit\x12\x18\n" +
 	"\aversion\x18\n" +
-	" \x01(\x03R\aversion\x12\x1f\n" +
-	"\vcreditor_id\x18\x0f \x01(\x05R\n" +
-	"creditorId\x12;\n" +
+	" \x01(\x03R\aversion\x12%\n" +
+	"\x0ecounterpart_id\x18\x0f \x01(\x05R\rcounterpartId\x12;\n" +
 	"\fpayout_limit\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalR\vpayoutLimit\x12;\n" +
 	"\fcredit_limit\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalR\vcreditLimit\x12;\n" +
 	"\fcredit_usage\x18( \x01(\v2\x18.tzero.v1.common.DecimalR\vcreditUsage\"\x15\n" +
