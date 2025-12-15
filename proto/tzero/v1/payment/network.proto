@@ -55,6 +55,16 @@ service NetworkService {
   rpc ConfirmPayout(ConfirmPayoutRequest) returns (ConfirmPayoutResponse)  {
     option idempotency_level = IDEMPOTENT;
   };
+
+
+  /**
+   * Pay-out provider reports the result of manual AML check.
+   * This endpoint is called after the manual AML check is completed. The network will find the new best quotes for the
+   * payment and will return the updated settlement/payout amount along with the updated quotes in the response.
+   */
+  rpc CompleteManualAmlCheck(CompleteManualAmlCheckRequest) returns (CompleteManualAmlCheckResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
 }
 
 /*
@@ -235,10 +245,57 @@ message ConfirmPayoutRequest{
   /**
   * Payment receipt might contain metadata about payment recognizable by pay-in provider.
   */
-  tzero.v1.common.PaymentReceipt receipt = 30;
+  optional tzero.v1.common.PaymentReceipt receipt = 30;
 }
 
 message ConfirmPayoutResponse{}
+
+message CompleteManualAmlCheckRequest {
+  uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0];
+
+  oneof result {
+    option (buf.validate.oneof).required = true;
+    Approved approved = 30;
+    Rejected rejected = 40;
+  }
+
+  message Approved {}
+
+  message Rejected {
+    string reason = 10 [(buf.validate.field).string.max_len = 1024];
+  }
+}
+
+message CompleteManualAmlCheckResponse {
+  oneof result {
+    option (buf.validate.oneof).required = true;
+    Approved approved = 30;
+    Rejected rejected = 40;
+  }
+
+  message Approved {
+    /**
+     * amount in currency of the payout
+     * This is the updated amount that should be paid out to the recipient.
+     */
+    tzero.v1.common.Decimal pay_out_amount = 10 [(buf.validate.field).required = true];
+
+    /*
+
+     */
+    tzero.v1.common.Decimal settlement_amount = 20 [(buf.validate.field).required = true];
+
+    /*
+     unique identifier of the pay-out quote
+     */
+    int64 pay_out_quote_id = 30 [(buf.validate.field).int64.gt = 0];
+  }
+
+  // Rejected means that the updated quotes were rejected by pay-in provider, and the payout provider should not proceed
+  // with the payout.
+  message Rejected {}
+}
+
 
 // Payment amount could be specified eiter as pay-in amount and then converted to corresponding amount of pay-out amount
 // or as pay-out amount, so that pay-in and settlement amounts are calculated accordingly
