@@ -44,6 +44,9 @@ const (
 	// ProviderServiceAppendLedgerEntriesProcedure is the fully-qualified name of the ProviderService's
 	// AppendLedgerEntries RPC.
 	ProviderServiceAppendLedgerEntriesProcedure = "/tzero.v1.payment.ProviderService/AppendLedgerEntries"
+	// ProviderServiceApprovePaymentQuotesProcedure is the fully-qualified name of the ProviderService's
+	// ApprovePaymentQuotes RPC.
+	ProviderServiceApprovePaymentQuotesProcedure = "/tzero.v1.payment.ProviderService/ApprovePaymentQuotes"
 )
 
 // ProviderServiceClient is a client for the tzero.v1.payment.ProviderService service.
@@ -63,6 +66,12 @@ type ProviderServiceClient interface {
 	// Network can send all the updates about ledger entries of the provider's accounts. It can be used to
 	// keep track of the provider's exposure to other participants and other important financial events. (see the list in the message below)
 	AppendLedgerEntries(context.Context, *connect.Request[payment.AppendLedgerEntriesRequest]) (*connect.Response[payment.AppendLedgerEntriesResponse], error)
+	// *
+	// Pay-in provider approves the final pay-out quotes.
+	// This is the "Last Look" endpoint - it must be called after manual AML check completes
+	// (if one was required). It allows pay-in provider to verify and approve final rates
+	// before payment is executed.
+	ApprovePaymentQuotes(context.Context, *connect.Request[payment.ApprovePaymentQuoteRequest]) (*connect.Response[payment.ApprovePaymentQuoteResponse], error)
 }
 
 // NewProviderServiceClient constructs a client for the tzero.v1.payment.ProviderService service. By
@@ -104,15 +113,23 @@ func NewProviderServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithIdempotency(connect.IdempotencyIdempotent),
 			connect.WithClientOptions(opts...),
 		),
+		approvePaymentQuotes: connect.NewClient[payment.ApprovePaymentQuoteRequest, payment.ApprovePaymentQuoteResponse](
+			httpClient,
+			baseURL+ProviderServiceApprovePaymentQuotesProcedure,
+			connect.WithSchema(providerServiceMethods.ByName("ApprovePaymentQuotes")),
+			connect.WithIdempotency(connect.IdempotencyIdempotent),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // providerServiceClient implements ProviderServiceClient.
 type providerServiceClient struct {
-	payOut              *connect.Client[payment.PayoutRequest, payment.PayoutResponse]
-	updatePayment       *connect.Client[payment.UpdatePaymentRequest, payment.UpdatePaymentResponse]
-	updateLimit         *connect.Client[payment.UpdateLimitRequest, payment.UpdateLimitResponse]
-	appendLedgerEntries *connect.Client[payment.AppendLedgerEntriesRequest, payment.AppendLedgerEntriesResponse]
+	payOut               *connect.Client[payment.PayoutRequest, payment.PayoutResponse]
+	updatePayment        *connect.Client[payment.UpdatePaymentRequest, payment.UpdatePaymentResponse]
+	updateLimit          *connect.Client[payment.UpdateLimitRequest, payment.UpdateLimitResponse]
+	appendLedgerEntries  *connect.Client[payment.AppendLedgerEntriesRequest, payment.AppendLedgerEntriesResponse]
+	approvePaymentQuotes *connect.Client[payment.ApprovePaymentQuoteRequest, payment.ApprovePaymentQuoteResponse]
 }
 
 // PayOut calls tzero.v1.payment.ProviderService.PayOut.
@@ -135,6 +152,11 @@ func (c *providerServiceClient) AppendLedgerEntries(ctx context.Context, req *co
 	return c.appendLedgerEntries.CallUnary(ctx, req)
 }
 
+// ApprovePaymentQuotes calls tzero.v1.payment.ProviderService.ApprovePaymentQuotes.
+func (c *providerServiceClient) ApprovePaymentQuotes(ctx context.Context, req *connect.Request[payment.ApprovePaymentQuoteRequest]) (*connect.Response[payment.ApprovePaymentQuoteResponse], error) {
+	return c.approvePaymentQuotes.CallUnary(ctx, req)
+}
+
 // ProviderServiceHandler is an implementation of the tzero.v1.payment.ProviderService service.
 type ProviderServiceHandler interface {
 	// *
@@ -152,6 +174,12 @@ type ProviderServiceHandler interface {
 	// Network can send all the updates about ledger entries of the provider's accounts. It can be used to
 	// keep track of the provider's exposure to other participants and other important financial events. (see the list in the message below)
 	AppendLedgerEntries(context.Context, *connect.Request[payment.AppendLedgerEntriesRequest]) (*connect.Response[payment.AppendLedgerEntriesResponse], error)
+	// *
+	// Pay-in provider approves the final pay-out quotes.
+	// This is the "Last Look" endpoint - it must be called after manual AML check completes
+	// (if one was required). It allows pay-in provider to verify and approve final rates
+	// before payment is executed.
+	ApprovePaymentQuotes(context.Context, *connect.Request[payment.ApprovePaymentQuoteRequest]) (*connect.Response[payment.ApprovePaymentQuoteResponse], error)
 }
 
 // NewProviderServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -189,6 +217,13 @@ func NewProviderServiceHandler(svc ProviderServiceHandler, opts ...connect.Handl
 		connect.WithIdempotency(connect.IdempotencyIdempotent),
 		connect.WithHandlerOptions(opts...),
 	)
+	providerServiceApprovePaymentQuotesHandler := connect.NewUnaryHandler(
+		ProviderServiceApprovePaymentQuotesProcedure,
+		svc.ApprovePaymentQuotes,
+		connect.WithSchema(providerServiceMethods.ByName("ApprovePaymentQuotes")),
+		connect.WithIdempotency(connect.IdempotencyIdempotent),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tzero.v1.payment.ProviderService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ProviderServicePayOutProcedure:
@@ -199,6 +234,8 @@ func NewProviderServiceHandler(svc ProviderServiceHandler, opts ...connect.Handl
 			providerServiceUpdateLimitHandler.ServeHTTP(w, r)
 		case ProviderServiceAppendLedgerEntriesProcedure:
 			providerServiceAppendLedgerEntriesHandler.ServeHTTP(w, r)
+		case ProviderServiceApprovePaymentQuotesProcedure:
+			providerServiceApprovePaymentQuotesHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -222,4 +259,8 @@ func (UnimplementedProviderServiceHandler) UpdateLimit(context.Context, *connect
 
 func (UnimplementedProviderServiceHandler) AppendLedgerEntries(context.Context, *connect.Request[payment.AppendLedgerEntriesRequest]) (*connect.Response[payment.AppendLedgerEntriesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment.ProviderService.AppendLedgerEntries is not implemented"))
+}
+
+func (UnimplementedProviderServiceHandler) ApprovePaymentQuotes(context.Context, *connect.Request[payment.ApprovePaymentQuoteRequest]) (*connect.Response[payment.ApprovePaymentQuoteResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment.ProviderService.ApprovePaymentQuotes is not implemented"))
 }
