@@ -46,6 +46,16 @@ service ProviderService {
   rpc AppendLedgerEntries(AppendLedgerEntriesRequest) returns (AppendLedgerEntriesResponse) {
     option idempotency_level = IDEMPOTENT;
   };
+
+  /**
+    * Pay-in provider approves the final pay-out quotes.
+    * This is the "Last Look" endpoint - it must be called after manual AML check completes
+    * (if one was required). It allows pay-in provider to verify and approve final rates
+    * before payment is executed.
+  */
+  rpc ApprovePaymentQuotes(ApprovePaymentQuoteRequest) returns (ApprovePaymentQuoteResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
 }
 
 message AppendLedgerEntriesRequest {
@@ -110,7 +120,7 @@ message AppendLedgerEntriesRequest {
      */
     tzero.v1.common.Decimal credit = 50;
   }
-  
+
   enum AccountType {
     ACCOUNT_TYPE_UNSPECIFIED = 0;
     ACCOUNT_TYPE_BALANCE = 20;
@@ -160,7 +170,6 @@ message PayoutRequest {
    */
   uint32 pay_in_provider_id = 80;
 
-
   optional TravelRuleData travel_rule_data = 200;
 
   message TravelRuleData {
@@ -178,18 +187,26 @@ message PayoutRequest {
 message PayoutResponse {
   oneof result {
     /**
-     * Success response - means the payout was executed successfully and the payment is now complete. This happens when
-     * the payout is successfully processed by the payout provider, and the payment was made to the recipient.
+     * Accepted response - means the payout was accepted by the pay-out provider and pay-out provider is obligated to
+     * make a pay-out.
      */
     Accepted accepted = 20;
     /**
      * Failure response - means the payout was not executed successfully, e.g. the payout provider could not process the payout.
      */
     Failed failed = 30;
+
+    /**
+     * Manual AML check required - means the payout provider requires additional Anti-Money Laundering (AML)
+     * verification before the payment can proceed. The pay-out provider will need to perform the manual AML check
+     * and then call CompleteManualAmlCheck rpc with the result of the check.
+     */
+    ManualAmlCheck manual_aml_check = 40;
   }
 
-  message Accepted {
-  }
+  message Accepted {}
+
+  message ManualAmlCheck {}
 
   message Failed {
     Reason reason = 10;
@@ -221,11 +238,18 @@ message UpdatePaymentRequest {
     * Payment failed and would not be retried.
      */
     Failed failed = 30;
+
     /**
      * Confirmed response - final state meaning the payout was executed successfully and the payment is now complete.
      * This happens when the payout is successfully processed by the payout provider, and the payment was made to the recipient.
      */
     Confirmed confirmed = 40;
+
+    /*
+     * In case of manual AML check, pay-out provider needs to perform additional checks and then call CompleteManualAmlCheck
+     * rpc with the result of the check.
+     */
+    ManualAmlCheck manual_aml_check = 50;
   }
 
   message Accepted {
@@ -255,6 +279,9 @@ message UpdatePaymentRequest {
     tzero.v1.common.PaymentReceipt receipt = 20;
   }
 
+  message ManualAmlCheck {
+
+  }
 }
 message UpdatePaymentResponse {}
 
@@ -297,3 +324,21 @@ message UpdateLimitRequest {
  * Empty message - means no response is needed.
  */
 message UpdateLimitResponse {}
+
+message ApprovePaymentQuoteRequest {
+  uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0];
+
+  int64 pay_out_quote_id = 20;
+  tzero.v1.common.Decimal pay_out_rate = 30;
+  tzero.v1.common.Decimal pay_out_amount = 40;
+  tzero.v1.common.Decimal settlement_amount = 50;
+}
+
+message ApprovePaymentQuoteResponse {
+  oneof result {
+    Accepted accepted = 10;
+    Rejected rejected = 20;
+  }
+  message Accepted {}
+  message Rejected {}
+}
