@@ -108,6 +108,10 @@ func newProviderClient(privateKey string) (paymentconnect.ProviderServiceClient,
 
 type ProviderServiceImplementation struct{}
 
+func (s *ProviderServiceImplementation) ApprovePaymentQuotes(ctx context.Context, c *connect.Request[payment.ApprovePaymentQuoteRequest]) (*connect.Response[payment.ApprovePaymentQuoteResponse], error) {
+	return connect.NewResponse(&payment.ApprovePaymentQuoteResponse{}), nil
+}
+
 var _ paymentconnect.ProviderServiceHandler = (*ProviderServiceImplementation)(nil)
 
 func (s *ProviderServiceImplementation) AppendLedgerEntries(
