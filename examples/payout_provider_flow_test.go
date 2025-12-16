@@ -107,6 +107,12 @@ func payOutQuotesRequestExample() *connect.Request[payment.UpdateQuoteRequest] {
 
 type PayOutProviderImplementation struct{}
 
+func (p *PayOutProviderImplementation) ApprovePaymentQuotes(ctx context.Context, c *connect.Request[payment.ApprovePaymentQuoteRequest]) (*connect.Response[payment.ApprovePaymentQuoteResponse], error) {
+	return connect.NewResponse(&payment.ApprovePaymentQuoteResponse{}), nil
+}
+
+var _ paymentconnect.ProviderServiceHandler = (*PayOutProviderImplementation)(nil)
+
 func (p *PayOutProviderImplementation) PayOut(ctx context.Context, c *connect.Request[payment.PayoutRequest]) (*connect.Response[payment.PayoutResponse], error) {
 	// This function is called by the network to request a pay-out for a specific payment.
 	// The provider should implement the logic to process the pay-out and initiate the transfer to the recipient
