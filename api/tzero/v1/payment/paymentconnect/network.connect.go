@@ -58,15 +58,10 @@ type NetworkServiceClient interface {
 	// *
 	// Request the best available quote for a payout in a specific currency, for a given amount.
 	// If the payout quote exists, but the credit limit is exceeded, this quote will not be considered.
-	// Before calling this endpoint UpdateQuote should be periodically triggered in order to put pay-in quotes into the network.
 	GetQuote(context.Context, *connect.Request[payment.GetQuoteRequest]) (*connect.Response[payment.GetQuoteResponse], error)
 	// *
-	// Submit a request to create a new payment. PayIn currency and QuoteId are the optional parameters.
-	// If the payIn currency is not specified, the network will use USD as the default payIn currency, and considering
-	// the amount in USD.
-	// If specified, it must be a valid currency code - in this case the network will try to find the payIn quote for the
-	// specified currency and considering the band from the provider initiated this request. So this is only possible, if
-	// this provider already submitted the payIn quote for the specified currency using UpdateQuote rpc.
+	// Submit a request to create a new payment for the specified pay-out currency.
+	// QuoteId is the optional parameter.
 	// If the quoteID is specified, it must be a valid quoteId that was previously returned by the GetPayoutQuote method.
 	// If the quoteId is not specified, the network will try to find a suitable quote for the payout currency and amount,
 	// same way as GetPayoutQuote rpc.
@@ -174,15 +169,10 @@ type NetworkServiceHandler interface {
 	// *
 	// Request the best available quote for a payout in a specific currency, for a given amount.
 	// If the payout quote exists, but the credit limit is exceeded, this quote will not be considered.
-	// Before calling this endpoint UpdateQuote should be periodically triggered in order to put pay-in quotes into the network.
 	GetQuote(context.Context, *connect.Request[payment.GetQuoteRequest]) (*connect.Response[payment.GetQuoteResponse], error)
 	// *
-	// Submit a request to create a new payment. PayIn currency and QuoteId are the optional parameters.
-	// If the payIn currency is not specified, the network will use USD as the default payIn currency, and considering
-	// the amount in USD.
-	// If specified, it must be a valid currency code - in this case the network will try to find the payIn quote for the
-	// specified currency and considering the band from the provider initiated this request. So this is only possible, if
-	// this provider already submitted the payIn quote for the specified currency using UpdateQuote rpc.
+	// Submit a request to create a new payment for the specified pay-out currency.
+	// QuoteId is the optional parameter.
 	// If the quoteID is specified, it must be a valid quoteId that was previously returned by the GetPayoutQuote method.
 	// If the quoteId is not specified, the network will try to find a suitable quote for the payout currency and amount,
 	// same way as GetPayoutQuote rpc.

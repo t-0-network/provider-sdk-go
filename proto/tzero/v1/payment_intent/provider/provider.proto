@@ -91,13 +91,6 @@ message ConfirmPaymentRequest {
 message ConfirmPaymentResponse {
   tzero.v1.common.Decimal settlement_amount = 10; // settlement  amount denominated in settlement currency
   uint32 payout_provider_id = 20;
-  repeated SettlementAddress settlement_addresses = 30; //payout provider could support multiple chains for settlement. Any of these could be used for settlement.
-
-  message SettlementAddress {
-    tzero.v1.common.Blockchain chain = 10;
-    tzero.v1.common.Stablecoin stablecoin = 20;
-    string address = 30;
-  }
 }
 
 message RejectPaymentIntentRequest {

@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 
 	"connectrpc.com/connect"
+	"github.com/google/uuid"
+	"github.com/t-0-network/provider-sdk-go/api/ivms101/v1/ivms"
 	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/common"
 	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment"
 	"github.com/t-0-network/provider-sdk-go/api/tzero/v1/payment/paymentconnect"
 	"github.com/t-0-network/provider-sdk-go/network"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ExampleNewServiceClient demonstrates how to create a new network service client
@@ -23,107 +23,85 @@ func ExampleNewServiceClient() {
 	networkClient, err := network.NewServiceClient(
 		yourPrivateKey,
 		paymentconnect.NewNetworkServiceClient,
-		// Optional configuration for the network service client.
-		network.WithBaseURL("http://0.0.0.0:8080"), // No need to set, defaults to t-zero network
 	)
 	if err != nil {
 		log.Fatalf("Failed to create network service client: %v", err)
 	}
 
-	// Example request
-	req := payment.UpdateQuoteRequest{
-		PayOut: []*payment.UpdateQuoteRequest_Quote{
-			{
-				Currency:  "BRL",
-				QuoteType: payment.QuoteType_QUOTE_TYPE_REALTIME,
-				Bands: []*payment.UpdateQuoteRequest_Quote_Band{
-					{
-						ClientQuoteId: "quote-id-1",
-						MaxAmount: &common.Decimal{
-							Unscaled: 100000, // 1,000.00 BRL
-							Exponent: -2,
-						},
-						Rate: &common.Decimal{
-							Unscaled: 551, // 5.51 USD/BRL
-							Exponent: -2,
-						},
-					},
-					{
-						ClientQuoteId: "quote-id-2",
-						MaxAmount: &common.Decimal{
-							Unscaled: 500000, // 5,000.00 BRL
-							Exponent: -2,
-						},
-						Rate: &common.Decimal{
-							Unscaled: 550, // 5.50 USD/BRL (slightly better rate)
-							Exponent: -2,
-						},
-					},
-					{
-						ClientQuoteId: "quote-id-3",
-						MaxAmount: &common.Decimal{
-							Unscaled: 1500000, // 15,000.00 BRL
-							Exponent: -2,
-						},
-						Rate: &common.Decimal{
-							Unscaled: 549, // 5.49 USD/BRL (best rate)
-							Exponent: -2,
-						},
-					},
+	resp, err := networkClient.CreatePayment(context.Background(), connect.NewRequest(&payment.CreatePaymentRequest{
+		PaymentClientId: uuid.NewString(),
+		Amount: &payment.PaymentAmount{
+			Amount: &payment.PaymentAmount_SettlementAmount{SettlementAmount: &common.Decimal{
+				Unscaled: 2,
+				Exponent: 0,
+			}},
+		},
+		Currency: "PHP",
+		PaymentDetails: &common.PaymentDetails{
+			Details: &common.PaymentDetails_Pesonet_{
+				Pesonet: &common.PaymentDetails_Pesonet{
+					RecipientFinancialInstitution: "TestInsitution",
+					RecipientIdentifier:           "123456",
+					RecipientAccountName:          "TestAccount",
 				},
-				Expiration: timestamppb.New(time.Now().Add(15 * time.Minute)),
-				Timestamp:  timestamppb.Now(),
 			},
 		},
-		PayIn: []*payment.UpdateQuoteRequest_Quote{
-			{
-				Currency:  "EUR",
-				QuoteType: payment.QuoteType_QUOTE_TYPE_REALTIME,
-				Bands: []*payment.UpdateQuoteRequest_Quote_Band{
-					{
-						ClientQuoteId: "eur-quote-id-1",
-						MaxAmount: &common.Decimal{
-							Unscaled: 100000, // 1000.00 EUR
-							Exponent: -2,
+		TravelRuleData: &payment.CreatePaymentRequest_TravelRuleData{
+			Originator: []*ivms.Person{
+				{Person: &ivms.Person_NaturalPerson{
+					NaturalPerson: &ivms.NaturalPerson{
+						Name: &ivms.NaturalPersonName{
+							LocalNameIdentifiers: []*ivms.LocalNaturalPersonNameId{
+								{
+									PrimaryIdentifier:   "Test",
+									SecondaryIdentifier: "Person",
+									NameIdentifierType:  ivms.NaturalPersonNameTypeCode_NATURAL_PERSON_NAME_TYPE_CODE_BIRT,
+								},
+							},
 						},
-						Rate: &common.Decimal{
-							Unscaled: 8069, // 0.8069 USD/EUR
-							Exponent: -4,
-						},
-					},
-					{
-						ClientQuoteId: "eur-quote-id-2",
-						MaxAmount: &common.Decimal{
-							Unscaled: 500000, // 5000.00 EUR
-							Exponent: -2,
-						},
-						Rate: &common.Decimal{
-							Unscaled: 8070, // 0.8070 USD/EUR (slightly better rate)
-							Exponent: -4,
-						},
-					},
-					{
-						ClientQuoteId: "eur-quote-id-3",
-						MaxAmount: &common.Decimal{
-							Unscaled: 1500000, // 15000.00 EUR
-							Exponent: -2,
-						},
-						Rate: &common.Decimal{
-							Unscaled: 8071, // 0.8071 USD/EUR (best rate)
-							Exponent: -4,
-						},
+						GeographicAddresses: []*ivms.Address{{
+							AddressType:    ivms.AddressTypeCode_ADDRESS_TYPE_CODE_HOME,
+							StreetName:     "TestStreet",
+							BuildingNumber: "54",
+							PostCode:       "54642",
+							TownName:       "TestTown",
+							Country:        "TestCountry",
+						}},
 					},
 				},
-				Expiration: timestamppb.New(time.Now().Add(15 * time.Minute)),
-				Timestamp:  timestamppb.Now(),
+				},
+			},
+			Beneficiary: []*ivms.Person{
+				{Person: &ivms.Person_NaturalPerson{
+					NaturalPerson: &ivms.NaturalPerson{
+						Name: &ivms.NaturalPersonName{
+							LocalNameIdentifiers: []*ivms.LocalNaturalPersonNameId{
+								{
+									PrimaryIdentifier:   "Test",
+									SecondaryIdentifier: "Person",
+									NameIdentifierType:  ivms.NaturalPersonNameTypeCode_NATURAL_PERSON_NAME_TYPE_CODE_BIRT,
+								},
+							},
+						},
+						GeographicAddresses: []*ivms.Address{{
+							AddressType:    ivms.AddressTypeCode_ADDRESS_TYPE_CODE_HOME,
+							StreetName:     "TestStreet",
+							BuildingNumber: "54",
+							PostCode:       "54642",
+							TownName:       "TestTown",
+							Country:        "TestCountry",
+						}},
+					},
+				},
+				},
 			},
 		},
-	}
+	}))
 
-	_, err = networkClient.UpdateQuote(context.Background(), connect.NewRequest(&req))
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalf("Failed to create payment: %v", err)
 	}
+	fmt.Printf(" Response: %+v\n", resp.Msg.Result)
 
 	// Example will fail as it tries to connect to a fake address using an unknown key.
 	// Output:
