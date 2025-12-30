@@ -24,7 +24,7 @@ jobs:
           repositories: provider-sdk-go
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           show-progress: false
           token: ${{ steps.app-token.outputs.token }}
