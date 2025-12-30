@@ -31,7 +31,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Setup Golang
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: "stable"
           cache-dependency-path: ./tools/go.sum
