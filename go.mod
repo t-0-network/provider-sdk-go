@@ -11,7 +11,7 @@ require (
 	github.com/shopspring/decimal v1.4.0
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/crypto v0.46.0
-	golang.org/x/net v0.47.0
+	golang.org/x/net v0.48.0
 	google.golang.org/protobuf v1.36.10
 )
 
