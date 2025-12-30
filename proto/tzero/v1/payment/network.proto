@@ -27,19 +27,14 @@ service NetworkService {
   /**
    * Request the best available quote for a payout in a specific currency, for a given amount.
    * If the payout quote exists, but the credit limit is exceeded, this quote will not be considered.
-   * Before calling this endpoint UpdateQuote should be periodically triggered in order to put pay-in quotes into the network.
    */
   rpc GetQuote(GetQuoteRequest) returns (GetQuoteResponse) {
     option idempotency_level = NO_SIDE_EFFECTS;
   };
 
   /**
-    * Submit a request to create a new payment. PayIn currency and QuoteId are the optional parameters.
-    * If the payIn currency is not specified, the network will use USD as the default payIn currency, and considering
-    * the amount in USD.
-    * If specified, it must be a valid currency code - in this case the network will try to find the payIn quote for the
-    * specified currency and considering the band from the provider initiated this request. So this is only possible, if
-    * this provider already submitted the payIn quote for the specified currency using UpdateQuote rpc.
+    * Submit a request to create a new payment for the specified pay-out currency.
+    * QuoteId is the optional parameter.
     * If the quoteID is specified, it must be a valid quoteId that was previously returned by the GetPayoutQuote method.
     * If the quoteId is not specified, the network will try to find a suitable quote for the payout currency and amount,
     * same way as GetPayoutQuote rpc.
@@ -117,14 +112,13 @@ message UpdateQuoteRequest {
 message UpdateQuoteResponse {}
 
 message GetQuoteRequest {
-  string pay_in_currency = 10 [(buf.validate.field).string = {len: 3, pattern: "^[A-Z]{3}$"}]; // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
-  PaymentAmount amount = 20 [(buf.validate.field).required = true]; // amount
-  tzero.v1.common.PaymentMethodType pay_in_method = 30 [(buf.validate.field).required = true]; // payment method to use for the payout, e.g. bank transfer, card, etc.
+  PaymentAmount amount = 20 [(buf.validate.field).required = true]; // payment amount - must be either pay-out amount or settlement amount
 
   string pay_out_currency = 40 [(buf.validate.field).string = {len: 3, pattern: "^[A-Z]{3}$"}]; // ISO 4217 currency code, e.g. EUR, GBP, etc. in which the payout should be made
+
   tzero.v1.common.PaymentMethodType pay_out_method = 50 [(buf.validate.field).required = true]; // payment method to use for the payout, e.g. bank transfer, card, etc.
 
-  QuoteType quote_type = 60 [(buf.validate.field).required = true]; // type of the quote, e.g. real-time or guaranteed
+  QuoteType quote_type = 60 [(buf.validate.field).required = true]; // type of the quote, e.g. real-time
 }
 
 message GetQuoteResponse {
@@ -144,9 +138,12 @@ message GetQuoteResponse {
   };
 
   message Success {
-    tzero.v1.common.Decimal rate = 10 [(buf.validate.field).required = true]; // exchange rate as pay_out_currency_rate/pay_in_currency_rate, e.g. BRL/EUR
+    tzero.v1.common.Decimal rate = 10 [(buf.validate.field).required = true]; // pay-out quote rate in settlement_currency/pay_out_currency, i.e. USD/pay_out_currency
     google.protobuf.Timestamp expiration = 20 [(buf.validate.field).timestamp.gt_now = true]; // expiration time of the payout quote
     QuoteId quote_id = 30 [(buf.validate.field).required = true]; // id of the payout quote
+
+    tzero.v1.common.Decimal pay_out_amount = 40 [(buf.validate.field).required = true]; // pay-out amount in pay-out currency if the quote from response is used
+    tzero.v1.common.Decimal settlement_amount = 50 [(buf.validate.field).required = true]; // settlement amount in settlement currency if the quote from response is used
   }
 
   message Failure {
@@ -154,7 +151,7 @@ message GetQuoteResponse {
 
     enum Reason {
       REASON_UNSPECIFIED = 0;
-      REASON_QUOTE_NOT_FOUND = 10; // No matching quote par for the specified pay-in and payout currencies found or provider limits would exceed by processing this payment
+      REASON_QUOTE_NOT_FOUND = 10; // No matching quote par for the specified payout currency found or provider limits would exceed by processing this payment
     }
   }
 }
@@ -165,21 +162,11 @@ message CreatePaymentRequest{
     max_len: 64
   }]; // unique client generated id for this payment
 
-  PaymentAmount amount = 30 [(buf.validate.field).required = true]; // payment amount
-  PayIn pay_in = 40 [(buf.validate.field).required = true]; // pay-in details
-  PayOut pay_out = 45 [(buf.validate.field).required = true]; // payout details
+  PaymentAmount amount = 30 [(buf.validate.field).required = true]; // payment amount - should be either pay-out amount or settlement amount
 
-  // Provider must submit quotes to the network for the specified pay-in currency and payment method
-  message PayIn {
-    string currency = 10 [(buf.validate.field).string = {len: 3, pattern: "^[A-Z]{3}$"}]; // pay-in currency
-    tzero.v1.common.PaymentMethodType payment_method = 20 [(buf.validate.field).required = true]; // pay-in payment method
-  }
-
-  message PayOut {
-    string currency = 10 [(buf.validate.field).string = {len: 3, pattern: "^[A-Z]{3}$"}]; // pay-out currency
-    tzero.v1.common.PaymentDetails payment_details = 20 [(buf.validate.field).required = true]; // pay-in payment details
-    optional QuoteId quote_id = 100; // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method otherwise last available quote will be used
-  }
+  string currency = 40 [(buf.validate.field).string = {len: 3, pattern: "^[A-Z]{3}$"}]; // pay-out currency
+  tzero.v1.common.PaymentDetails payment_details = 50 [(buf.validate.field).required = true]; // pay-out payment details
+  optional QuoteId quote_id = 60; // if specified, must be a valid quoteId that was previously returned by the GetPayoutQuote method otherwise last available quote will be used
 
   optional TravelRuleData travel_rule_data = 100; // travel rule data
 
@@ -213,6 +200,12 @@ message CreatePaymentResponse {
      * a suitable quote for the payout currency and amount, and instructed the payout provider to process the payout.
      */
     Success success = 20;
+
+    /**
+     * Settlement required response - indicates that the payment requires settlement before payout completion.
+     */
+    SettlementRequired settlement_required = 35; //
+
     /**
      * Failure response - means the payment was not accepted, e.g. the network could not find a suitable quote for the
      * payout currency and amount, or the credit limit is exceeded for the available quotes.
@@ -222,8 +215,15 @@ message CreatePaymentResponse {
 
   message Success {
     uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0]; // payment ID assigned by the network
-    tzero.v1.common.Decimal pay_in_amount = 20 [(buf.validate.field).required = true];
     tzero.v1.common.Decimal settlement_amount = 30 [(buf.validate.field).required = true];
+    tzero.v1.common.Decimal payout_amount = 40 [(buf.validate.field).required = true];
+    uint32 payout_provider_id = 50 [(buf.validate.field).uint32.gt = 0]; // payout provider id with the best quote selected for this payment
+  }
+
+  message SettlementRequired {
+    uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0]; // payment ID assigned by the network
+    tzero.v1.common.Decimal settlement_amount = 20 [(buf.validate.field).required = true];
+    uint32 payout_provider_id = 30 [(buf.validate.field).uint32.gt = 0]; // payout provider id with the best quote selected for this payment
   }
 
   message Failure {
@@ -231,7 +231,7 @@ message CreatePaymentResponse {
 
     enum Reason {
       REASON_UNSPECIFIED = 0;
-      REASON_QUOTE_NOT_FOUND = 10; // No matching quote par for the specified pay-in and payout currencies found or provider limits would exceed by processing this payment
+      REASON_QUOTE_NOT_FOUND = 10; // No matching quote for the specified payout currency found or provider limits would exceed by processing this payment
       REASON_CREDIT_OR_PREDEPOSIT_REQUIRED = 20; // Payments with amount in pay out currency require available credit or pre-deposit
     }
   }
@@ -297,18 +297,17 @@ message CompleteManualAmlCheckResponse {
 }
 
 
-// Payment amount could be specified eiter as pay-in amount and then converted to corresponding amount of pay-out amount
-// or as pay-out amount, so that pay-in and settlement amounts are calculated accordingly
+// Payment amount could be specified either as settlement amount and then converted to corresponding amount of pay-out amount
+// or as pay-out amount, so that the settlement amount is calculated accordingly
 message PaymentAmount {
   oneof amount {
     option (buf.validate.oneof).required = true;
-    tzero.v1.common.Decimal pay_in_amount = 10; // Amount in the pay-in currency
     tzero.v1.common.Decimal pay_out_amount = 20; // Amount in the pay-out currency
+    tzero.v1.common.Decimal settlement_amount = 30; // Settlement amount in the settlement currency
   }
 }
 
 enum QuoteType {
   QUOTE_TYPE_UNSPECIFIED = 0;
   QUOTE_TYPE_REALTIME = 1; // real-time quote must be valid at least for 30 seconds (TBD)
-  //QUOTE_TYPE_GUARANTEED = 2; // real-time quote must be valid at least for N minutes (TBD)
 }
