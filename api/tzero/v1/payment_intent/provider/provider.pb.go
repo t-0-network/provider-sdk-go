@@ -188,12 +188,11 @@ func (x *ConfirmPaymentRequest) GetPaymentMethod() common.PaymentMethodType {
 }
 
 type ConfirmPaymentResponse struct {
-	state               protoimpl.MessageState                      `protogen:"open.v1"`
-	SettlementAmount    *common.Decimal                             `protobuf:"bytes,10,opt,name=settlement_amount,json=settlementAmount,proto3" json:"settlement_amount,omitempty"` // settlement  amount denominated in settlement currency
-	PayoutProviderId    uint32                                      `protobuf:"varint,20,opt,name=payout_provider_id,json=payoutProviderId,proto3" json:"payout_provider_id,omitempty"`
-	SettlementAddresses []*ConfirmPaymentResponse_SettlementAddress `protobuf:"bytes,30,rep,name=settlement_addresses,json=settlementAddresses,proto3" json:"settlement_addresses,omitempty"` //payout provider could support multiple chains for settlement. Any of these could be used for settlement.
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	SettlementAmount *common.Decimal        `protobuf:"bytes,10,opt,name=settlement_amount,json=settlementAmount,proto3" json:"settlement_amount,omitempty"` // settlement  amount denominated in settlement currency
+	PayoutProviderId uint32                 `protobuf:"varint,20,opt,name=payout_provider_id,json=payoutProviderId,proto3" json:"payout_provider_id,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *ConfirmPaymentResponse) Reset() {
@@ -238,13 +237,6 @@ func (x *ConfirmPaymentResponse) GetPayoutProviderId() uint32 {
 		return x.PayoutProviderId
 	}
 	return 0
-}
-
-func (x *ConfirmPaymentResponse) GetSettlementAddresses() []*ConfirmPaymentResponse_SettlementAddress {
-	if x != nil {
-		return x.SettlementAddresses
-	}
-	return nil
 }
 
 type RejectPaymentIntentRequest struct {
@@ -571,66 +563,6 @@ func (x *CreatePaymentIntentResponse_PaymentMethod) GetPaymentMethod() common.Pa
 	return common.PaymentMethodType(0)
 }
 
-type ConfirmPaymentResponse_SettlementAddress struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Chain         common.Blockchain      `protobuf:"varint,10,opt,name=chain,proto3,enum=tzero.v1.common.Blockchain" json:"chain,omitempty"`
-	Stablecoin    common.Stablecoin      `protobuf:"varint,20,opt,name=stablecoin,proto3,enum=tzero.v1.common.Stablecoin" json:"stablecoin,omitempty"`
-	Address       string                 `protobuf:"bytes,30,opt,name=address,proto3" json:"address,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ConfirmPaymentResponse_SettlementAddress) Reset() {
-	*x = ConfirmPaymentResponse_SettlementAddress{}
-	mi := &file_tzero_v1_payment_intent_provider_provider_proto_msgTypes[11]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ConfirmPaymentResponse_SettlementAddress) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ConfirmPaymentResponse_SettlementAddress) ProtoMessage() {}
-
-func (x *ConfirmPaymentResponse_SettlementAddress) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_payment_intent_provider_provider_proto_msgTypes[11]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ConfirmPaymentResponse_SettlementAddress.ProtoReflect.Descriptor instead.
-func (*ConfirmPaymentResponse_SettlementAddress) Descriptor() ([]byte, []int) {
-	return file_tzero_v1_payment_intent_provider_provider_proto_rawDescGZIP(), []int{3, 0}
-}
-
-func (x *ConfirmPaymentResponse_SettlementAddress) GetChain() common.Blockchain {
-	if x != nil {
-		return x.Chain
-	}
-	return common.Blockchain(0)
-}
-
-func (x *ConfirmPaymentResponse_SettlementAddress) GetStablecoin() common.Stablecoin {
-	if x != nil {
-		return x.Stablecoin
-	}
-	return common.Stablecoin(0)
-}
-
-func (x *ConfirmPaymentResponse_SettlementAddress) GetAddress() string {
-	if x != nil {
-		return x.Address
-	}
-	return ""
-}
-
 var File_tzero_v1_payment_intent_provider_provider_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_payment_intent_provider_provider_proto_rawDesc = "" +
@@ -654,19 +586,11 @@ const file_tzero_v1_payment_intent_provider_provider_proto_rawDesc = "" +
 	"\x15ConfirmPaymentRequest\x123\n" +
 	"\x11payment_intent_id\x18\n" +
 	" \x01(\x04B\a\xbaH\x042\x02 \x00R\x0fpaymentIntentId\x12S\n" +
-	"\x0epayment_method\x18\x14 \x01(\x0e2\".tzero.v1.common.PaymentMethodTypeB\b\xbaH\x05\x82\x01\x02 \x00R\rpaymentMethod\"\xac\x03\n" +
+	"\x0epayment_method\x18\x14 \x01(\x0e2\".tzero.v1.common.PaymentMethodTypeB\b\xbaH\x05\x82\x01\x02 \x00R\rpaymentMethod\"\x8d\x01\n" +
 	"\x16ConfirmPaymentResponse\x12E\n" +
 	"\x11settlement_amount\x18\n" +
 	" \x01(\v2\x18.tzero.v1.common.DecimalR\x10settlementAmount\x12,\n" +
-	"\x12payout_provider_id\x18\x14 \x01(\rR\x10payoutProviderId\x12}\n" +
-	"\x14settlement_addresses\x18\x1e \x03(\v2J.tzero.v1.payment_intent.provider.ConfirmPaymentResponse.SettlementAddressR\x13settlementAddresses\x1a\x9d\x01\n" +
-	"\x11SettlementAddress\x121\n" +
-	"\x05chain\x18\n" +
-	" \x01(\x0e2\x1b.tzero.v1.common.BlockchainR\x05chain\x12;\n" +
-	"\n" +
-	"stablecoin\x18\x14 \x01(\x0e2\x1b.tzero.v1.common.StablecoinR\n" +
-	"stablecoin\x12\x18\n" +
-	"\aaddress\x18\x1e \x01(\tR\aaddress\"`\n" +
+	"\x12payout_provider_id\x18\x14 \x01(\rR\x10payoutProviderId\"`\n" +
 	"\x1aRejectPaymentIntentRequest\x12*\n" +
 	"\x11payment_intent_id\x18\n" +
 	" \x01(\x04R\x0fpaymentIntentId\x12\x16\n" +
@@ -707,7 +631,7 @@ func file_tzero_v1_payment_intent_provider_provider_proto_rawDescGZIP() []byte {
 	return file_tzero_v1_payment_intent_provider_provider_proto_rawDescData
 }
 
-var file_tzero_v1_payment_intent_provider_provider_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_tzero_v1_payment_intent_provider_provider_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_tzero_v1_payment_intent_provider_provider_proto_goTypes = []any{
 	(*CreatePaymentIntentRequest)(nil),                // 0: tzero.v1.payment_intent.provider.CreatePaymentIntentRequest
 	(*CreatePaymentIntentResponse)(nil),               // 1: tzero.v1.payment_intent.provider.CreatePaymentIntentResponse
@@ -720,37 +644,32 @@ var file_tzero_v1_payment_intent_provider_provider_proto_goTypes = []any{
 	(*ConfirmSettlementRequest)(nil),                  // 8: tzero.v1.payment_intent.provider.ConfirmSettlementRequest
 	(*ConfirmSettlementResponse)(nil),                 // 9: tzero.v1.payment_intent.provider.ConfirmSettlementResponse
 	(*CreatePaymentIntentResponse_PaymentMethod)(nil), // 10: tzero.v1.payment_intent.provider.CreatePaymentIntentResponse.PaymentMethod
-	(*ConfirmPaymentResponse_SettlementAddress)(nil),  // 11: tzero.v1.payment_intent.provider.ConfirmPaymentResponse.SettlementAddress
-	(*common.Decimal)(nil),                            // 12: tzero.v1.common.Decimal
-	(common.PaymentMethodType)(0),                     // 13: tzero.v1.common.PaymentMethodType
-	(common.Blockchain)(0),                            // 14: tzero.v1.common.Blockchain
-	(common.Stablecoin)(0),                            // 15: tzero.v1.common.Stablecoin
+	(*common.Decimal)(nil),                            // 11: tzero.v1.common.Decimal
+	(common.PaymentMethodType)(0),                     // 12: tzero.v1.common.PaymentMethodType
+	(common.Blockchain)(0),                            // 13: tzero.v1.common.Blockchain
 }
 var file_tzero_v1_payment_intent_provider_provider_proto_depIdxs = []int32{
-	12, // 0: tzero.v1.payment_intent.provider.CreatePaymentIntentRequest.amount:type_name -> tzero.v1.common.Decimal
+	11, // 0: tzero.v1.payment_intent.provider.CreatePaymentIntentRequest.amount:type_name -> tzero.v1.common.Decimal
 	10, // 1: tzero.v1.payment_intent.provider.CreatePaymentIntentResponse.payment_methods:type_name -> tzero.v1.payment_intent.provider.CreatePaymentIntentResponse.PaymentMethod
-	13, // 2: tzero.v1.payment_intent.provider.ConfirmPaymentRequest.payment_method:type_name -> tzero.v1.common.PaymentMethodType
-	12, // 3: tzero.v1.payment_intent.provider.ConfirmPaymentResponse.settlement_amount:type_name -> tzero.v1.common.Decimal
-	11, // 4: tzero.v1.payment_intent.provider.ConfirmPaymentResponse.settlement_addresses:type_name -> tzero.v1.payment_intent.provider.ConfirmPaymentResponse.SettlementAddress
-	14, // 5: tzero.v1.payment_intent.provider.ConfirmSettlementRequest.blockchain:type_name -> tzero.v1.common.Blockchain
-	13, // 6: tzero.v1.payment_intent.provider.CreatePaymentIntentResponse.PaymentMethod.payment_method:type_name -> tzero.v1.common.PaymentMethodType
-	14, // 7: tzero.v1.payment_intent.provider.ConfirmPaymentResponse.SettlementAddress.chain:type_name -> tzero.v1.common.Blockchain
-	15, // 8: tzero.v1.payment_intent.provider.ConfirmPaymentResponse.SettlementAddress.stablecoin:type_name -> tzero.v1.common.Stablecoin
-	2,  // 9: tzero.v1.payment_intent.provider.NetworkService.ConfirmPayment:input_type -> tzero.v1.payment_intent.provider.ConfirmPaymentRequest
-	4,  // 10: tzero.v1.payment_intent.provider.NetworkService.RejectPaymentIntent:input_type -> tzero.v1.payment_intent.provider.RejectPaymentIntentRequest
-	8,  // 11: tzero.v1.payment_intent.provider.NetworkService.ConfirmSettlement:input_type -> tzero.v1.payment_intent.provider.ConfirmSettlementRequest
-	0,  // 12: tzero.v1.payment_intent.provider.ProviderService.CreatePaymentIntent:input_type -> tzero.v1.payment_intent.provider.CreatePaymentIntentRequest
-	6,  // 13: tzero.v1.payment_intent.provider.ProviderService.ConfirmPayout:input_type -> tzero.v1.payment_intent.provider.ConfirmPayoutRequest
-	3,  // 14: tzero.v1.payment_intent.provider.NetworkService.ConfirmPayment:output_type -> tzero.v1.payment_intent.provider.ConfirmPaymentResponse
-	5,  // 15: tzero.v1.payment_intent.provider.NetworkService.RejectPaymentIntent:output_type -> tzero.v1.payment_intent.provider.RejectPaymentIntentResponse
-	9,  // 16: tzero.v1.payment_intent.provider.NetworkService.ConfirmSettlement:output_type -> tzero.v1.payment_intent.provider.ConfirmSettlementResponse
-	1,  // 17: tzero.v1.payment_intent.provider.ProviderService.CreatePaymentIntent:output_type -> tzero.v1.payment_intent.provider.CreatePaymentIntentResponse
-	7,  // 18: tzero.v1.payment_intent.provider.ProviderService.ConfirmPayout:output_type -> tzero.v1.payment_intent.provider.ConfirmPayoutResponse
-	14, // [14:19] is the sub-list for method output_type
-	9,  // [9:14] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	12, // 2: tzero.v1.payment_intent.provider.ConfirmPaymentRequest.payment_method:type_name -> tzero.v1.common.PaymentMethodType
+	11, // 3: tzero.v1.payment_intent.provider.ConfirmPaymentResponse.settlement_amount:type_name -> tzero.v1.common.Decimal
+	13, // 4: tzero.v1.payment_intent.provider.ConfirmSettlementRequest.blockchain:type_name -> tzero.v1.common.Blockchain
+	12, // 5: tzero.v1.payment_intent.provider.CreatePaymentIntentResponse.PaymentMethod.payment_method:type_name -> tzero.v1.common.PaymentMethodType
+	2,  // 6: tzero.v1.payment_intent.provider.NetworkService.ConfirmPayment:input_type -> tzero.v1.payment_intent.provider.ConfirmPaymentRequest
+	4,  // 7: tzero.v1.payment_intent.provider.NetworkService.RejectPaymentIntent:input_type -> tzero.v1.payment_intent.provider.RejectPaymentIntentRequest
+	8,  // 8: tzero.v1.payment_intent.provider.NetworkService.ConfirmSettlement:input_type -> tzero.v1.payment_intent.provider.ConfirmSettlementRequest
+	0,  // 9: tzero.v1.payment_intent.provider.ProviderService.CreatePaymentIntent:input_type -> tzero.v1.payment_intent.provider.CreatePaymentIntentRequest
+	6,  // 10: tzero.v1.payment_intent.provider.ProviderService.ConfirmPayout:input_type -> tzero.v1.payment_intent.provider.ConfirmPayoutRequest
+	3,  // 11: tzero.v1.payment_intent.provider.NetworkService.ConfirmPayment:output_type -> tzero.v1.payment_intent.provider.ConfirmPaymentResponse
+	5,  // 12: tzero.v1.payment_intent.provider.NetworkService.RejectPaymentIntent:output_type -> tzero.v1.payment_intent.provider.RejectPaymentIntentResponse
+	9,  // 13: tzero.v1.payment_intent.provider.NetworkService.ConfirmSettlement:output_type -> tzero.v1.payment_intent.provider.ConfirmSettlementResponse
+	1,  // 14: tzero.v1.payment_intent.provider.ProviderService.CreatePaymentIntent:output_type -> tzero.v1.payment_intent.provider.CreatePaymentIntentResponse
+	7,  // 15: tzero.v1.payment_intent.provider.ProviderService.ConfirmPayout:output_type -> tzero.v1.payment_intent.provider.ConfirmPayoutResponse
+	11, // [11:16] is the sub-list for method output_type
+	6,  // [6:11] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_tzero_v1_payment_intent_provider_provider_proto_init() }
@@ -764,7 +683,7 @@ func file_tzero_v1_payment_intent_provider_provider_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tzero_v1_payment_intent_provider_provider_proto_rawDesc), len(file_tzero_v1_payment_intent_provider_provider_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   2,
 		},
