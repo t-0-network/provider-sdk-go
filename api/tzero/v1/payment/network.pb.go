@@ -558,7 +558,7 @@ type CreatePaymentResponse struct {
 	PaymentClientId string                 `protobuf:"bytes,10,opt,name=payment_client_id,json=paymentClientId,proto3" json:"payment_client_id,omitempty"` // client generated id supplied in the request
 	// Types that are valid to be assigned to Result:
 	//
-	//	*CreatePaymentResponse_Success_
+	//	*CreatePaymentResponse_Accepted_
 	//	*CreatePaymentResponse_SettlementRequired_
 	//	*CreatePaymentResponse_Failure_
 	Result        isCreatePaymentResponse_Result `protobuf_oneof:"result"`
@@ -610,10 +610,10 @@ func (x *CreatePaymentResponse) GetResult() isCreatePaymentResponse_Result {
 	return nil
 }
 
-func (x *CreatePaymentResponse) GetSuccess() *CreatePaymentResponse_Success {
+func (x *CreatePaymentResponse) GetAccepted() *CreatePaymentResponse_Accepted {
 	if x != nil {
-		if x, ok := x.Result.(*CreatePaymentResponse_Success_); ok {
-			return x.Success
+		if x, ok := x.Result.(*CreatePaymentResponse_Accepted_); ok {
+			return x.Accepted
 		}
 	}
 	return nil
@@ -641,11 +641,11 @@ type isCreatePaymentResponse_Result interface {
 	isCreatePaymentResponse_Result()
 }
 
-type CreatePaymentResponse_Success_ struct {
+type CreatePaymentResponse_Accepted_ struct {
 	// *
-	// Success response - means the payment was accepted, but the payout is not yet completed. This means, the network found
+	// Accepted response - means the payment was accepted, but the payout is not yet completed. This means, the network found
 	// a suitable quote for the payout currency and amount, and instructed the payout provider to process the payout.
-	Success *CreatePaymentResponse_Success `protobuf:"bytes,20,opt,name=success,proto3,oneof"`
+	Accepted *CreatePaymentResponse_Accepted `protobuf:"bytes,20,opt,name=accepted,proto3,oneof"`
 }
 
 type CreatePaymentResponse_SettlementRequired_ struct {
@@ -661,7 +661,7 @@ type CreatePaymentResponse_Failure_ struct {
 	Failure *CreatePaymentResponse_Failure `protobuf:"bytes,30,opt,name=failure,proto3,oneof"`
 }
 
-func (*CreatePaymentResponse_Success_) isCreatePaymentResponse_Result() {}
+func (*CreatePaymentResponse_Accepted_) isCreatePaymentResponse_Result() {}
 
 func (*CreatePaymentResponse_SettlementRequired_) isCreatePaymentResponse_Result() {}
 
@@ -1343,7 +1343,7 @@ func (x *CreatePaymentRequest_TravelRuleData) GetBeneficiary() []*ivms.Person {
 	return nil
 }
 
-type CreatePaymentResponse_Success struct {
+type CreatePaymentResponse_Accepted struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	PaymentId        uint64                 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"` // payment ID assigned by the network
 	SettlementAmount *common.Decimal        `protobuf:"bytes,30,opt,name=settlement_amount,json=settlementAmount,proto3" json:"settlement_amount,omitempty"`
@@ -1353,20 +1353,20 @@ type CreatePaymentResponse_Success struct {
 	sizeCache        protoimpl.SizeCache
 }
 
-func (x *CreatePaymentResponse_Success) Reset() {
-	*x = CreatePaymentResponse_Success{}
+func (x *CreatePaymentResponse_Accepted) Reset() {
+	*x = CreatePaymentResponse_Accepted{}
 	mi := &file_tzero_v1_payment_network_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreatePaymentResponse_Success) String() string {
+func (x *CreatePaymentResponse_Accepted) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreatePaymentResponse_Success) ProtoMessage() {}
+func (*CreatePaymentResponse_Accepted) ProtoMessage() {}
 
-func (x *CreatePaymentResponse_Success) ProtoReflect() protoreflect.Message {
+func (x *CreatePaymentResponse_Accepted) ProtoReflect() protoreflect.Message {
 	mi := &file_tzero_v1_payment_network_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1378,33 +1378,33 @@ func (x *CreatePaymentResponse_Success) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreatePaymentResponse_Success.ProtoReflect.Descriptor instead.
-func (*CreatePaymentResponse_Success) Descriptor() ([]byte, []int) {
+// Deprecated: Use CreatePaymentResponse_Accepted.ProtoReflect.Descriptor instead.
+func (*CreatePaymentResponse_Accepted) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_payment_network_proto_rawDescGZIP(), []int{6, 0}
 }
 
-func (x *CreatePaymentResponse_Success) GetPaymentId() uint64 {
+func (x *CreatePaymentResponse_Accepted) GetPaymentId() uint64 {
 	if x != nil {
 		return x.PaymentId
 	}
 	return 0
 }
 
-func (x *CreatePaymentResponse_Success) GetSettlementAmount() *common.Decimal {
+func (x *CreatePaymentResponse_Accepted) GetSettlementAmount() *common.Decimal {
 	if x != nil {
 		return x.SettlementAmount
 	}
 	return nil
 }
 
-func (x *CreatePaymentResponse_Success) GetPayoutAmount() *common.Decimal {
+func (x *CreatePaymentResponse_Accepted) GetPayoutAmount() *common.Decimal {
 	if x != nil {
 		return x.PayoutAmount
 	}
 	return nil
 }
 
-func (x *CreatePaymentResponse_Success) GetPayoutProviderId() uint32 {
+func (x *CreatePaymentResponse_Accepted) GetPayoutProviderId() uint32 {
 	if x != nil {
 		return x.PayoutProviderId
 	}
@@ -1772,14 +1772,14 @@ const file_tzero_v1_payment_network_proto_rawDesc = "" +
 	"\aQuoteId\x12\"\n" +
 	"\bquote_id\x18\x1e \x01(\x03B\a\xbaH\x04\"\x02 \x00R\aquoteId\x12(\n" +
 	"\vprovider_id\x18( \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\n" +
-	"providerId\"\xf0\a\n" +
+	"providerId\"\xf4\a\n" +
 	"\x15CreatePaymentResponse\x123\n" +
 	"\x11payment_client_id\x18\n" +
-	" \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x0fpaymentClientId\x12K\n" +
-	"\asuccess\x18\x14 \x01(\v2/.tzero.v1.payment.CreatePaymentResponse.SuccessH\x00R\asuccess\x12m\n" +
+	" \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x0fpaymentClientId\x12N\n" +
+	"\baccepted\x18\x14 \x01(\v20.tzero.v1.payment.CreatePaymentResponse.AcceptedH\x00R\baccepted\x12m\n" +
 	"\x13settlement_required\x18# \x01(\v2:.tzero.v1.payment.CreatePaymentResponse.SettlementRequiredH\x00R\x12settlementRequired\x12K\n" +
-	"\afailure\x18\x1e \x01(\v2/.tzero.v1.payment.CreatePaymentResponse.FailureH\x00R\afailure\x1a\xfe\x01\n" +
-	"\aSuccess\x12&\n" +
+	"\afailure\x18\x1e \x01(\v2/.tzero.v1.payment.CreatePaymentResponse.FailureH\x00R\afailure\x1a\xff\x01\n" +
+	"\bAccepted\x12&\n" +
 	"\n" +
 	"payment_id\x18\n" +
 	" \x01(\x04B\a\xbaH\x042\x02 \x00R\tpaymentId\x12M\n" +
@@ -1883,7 +1883,7 @@ var file_tzero_v1_payment_network_proto_goTypes = []any{
 	(*GetQuoteResponse_Success)(nil),                 // 17: tzero.v1.payment.GetQuoteResponse.Success
 	(*GetQuoteResponse_Failure)(nil),                 // 18: tzero.v1.payment.GetQuoteResponse.Failure
 	(*CreatePaymentRequest_TravelRuleData)(nil),      // 19: tzero.v1.payment.CreatePaymentRequest.TravelRuleData
-	(*CreatePaymentResponse_Success)(nil),            // 20: tzero.v1.payment.CreatePaymentResponse.Success
+	(*CreatePaymentResponse_Accepted)(nil),           // 20: tzero.v1.payment.CreatePaymentResponse.Accepted
 	(*CreatePaymentResponse_SettlementRequired)(nil), // 21: tzero.v1.payment.CreatePaymentResponse.SettlementRequired
 	(*CreatePaymentResponse_Failure)(nil),            // 22: tzero.v1.payment.CreatePaymentResponse.Failure
 	(*CompleteManualAmlCheckRequest_Approved)(nil),   // 23: tzero.v1.payment.CompleteManualAmlCheckRequest.Approved
@@ -1909,7 +1909,7 @@ var file_tzero_v1_payment_network_proto_depIdxs = []int32{
 	28, // 8: tzero.v1.payment.CreatePaymentRequest.payment_details:type_name -> tzero.v1.common.PaymentDetails
 	8,  // 9: tzero.v1.payment.CreatePaymentRequest.quote_id:type_name -> tzero.v1.payment.QuoteId
 	19, // 10: tzero.v1.payment.CreatePaymentRequest.travel_rule_data:type_name -> tzero.v1.payment.CreatePaymentRequest.TravelRuleData
-	20, // 11: tzero.v1.payment.CreatePaymentResponse.success:type_name -> tzero.v1.payment.CreatePaymentResponse.Success
+	20, // 11: tzero.v1.payment.CreatePaymentResponse.accepted:type_name -> tzero.v1.payment.CreatePaymentResponse.Accepted
 	21, // 12: tzero.v1.payment.CreatePaymentResponse.settlement_required:type_name -> tzero.v1.payment.CreatePaymentResponse.SettlementRequired
 	22, // 13: tzero.v1.payment.CreatePaymentResponse.failure:type_name -> tzero.v1.payment.CreatePaymentResponse.Failure
 	29, // 14: tzero.v1.payment.ConfirmPayoutRequest.receipt:type_name -> tzero.v1.common.PaymentReceipt
@@ -1934,8 +1934,8 @@ var file_tzero_v1_payment_network_proto_depIdxs = []int32{
 	1,  // 33: tzero.v1.payment.GetQuoteResponse.Failure.reason:type_name -> tzero.v1.payment.GetQuoteResponse.Failure.Reason
 	32, // 34: tzero.v1.payment.CreatePaymentRequest.TravelRuleData.originator:type_name -> ivms101.Person
 	32, // 35: tzero.v1.payment.CreatePaymentRequest.TravelRuleData.beneficiary:type_name -> ivms101.Person
-	30, // 36: tzero.v1.payment.CreatePaymentResponse.Success.settlement_amount:type_name -> tzero.v1.common.Decimal
-	30, // 37: tzero.v1.payment.CreatePaymentResponse.Success.payout_amount:type_name -> tzero.v1.common.Decimal
+	30, // 36: tzero.v1.payment.CreatePaymentResponse.Accepted.settlement_amount:type_name -> tzero.v1.common.Decimal
+	30, // 37: tzero.v1.payment.CreatePaymentResponse.Accepted.payout_amount:type_name -> tzero.v1.common.Decimal
 	30, // 38: tzero.v1.payment.CreatePaymentResponse.SettlementRequired.settlement_amount:type_name -> tzero.v1.common.Decimal
 	2,  // 39: tzero.v1.payment.CreatePaymentResponse.Failure.reason:type_name -> tzero.v1.payment.CreatePaymentResponse.Failure.Reason
 	30, // 40: tzero.v1.payment.CompleteManualAmlCheckResponse.Approved.pay_out_amount:type_name -> tzero.v1.common.Decimal
@@ -1968,7 +1968,7 @@ func file_tzero_v1_payment_network_proto_init() {
 	}
 	file_tzero_v1_payment_network_proto_msgTypes[4].OneofWrappers = []any{}
 	file_tzero_v1_payment_network_proto_msgTypes[6].OneofWrappers = []any{
-		(*CreatePaymentResponse_Success_)(nil),
+		(*CreatePaymentResponse_Accepted_)(nil),
 		(*CreatePaymentResponse_SettlementRequired_)(nil),
 		(*CreatePaymentResponse_Failure_)(nil),
 	}
