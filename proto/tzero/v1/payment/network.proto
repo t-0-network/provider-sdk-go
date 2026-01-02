@@ -196,10 +196,10 @@ message CreatePaymentResponse {
   oneof result {
     option (buf.validate.oneof).required = true;
     /**
-     * Success response - means the payment was accepted, but the payout is not yet completed. This means, the network found
+     * Accepted response - means the payment was accepted, but the payout is not yet completed. This means, the network found
      * a suitable quote for the payout currency and amount, and instructed the payout provider to process the payout.
      */
-    Success success = 20;
+    Accepted accepted = 20;
 
     /**
      * Settlement required response - indicates that the payment requires settlement before payout completion.
@@ -213,7 +213,7 @@ message CreatePaymentResponse {
     Failure failure = 30;
   };
 
-  message Success {
+  message Accepted {
     uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0]; // payment ID assigned by the network
     tzero.v1.common.Decimal settlement_amount = 30 [(buf.validate.field).required = true];
     tzero.v1.common.Decimal payout_amount = 40 [(buf.validate.field).required = true];
