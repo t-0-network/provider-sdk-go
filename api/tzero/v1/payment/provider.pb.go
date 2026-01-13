@@ -261,7 +261,9 @@ type PayoutRequest struct {
 	// payment id assigned by the network (provider should store this id to provide details in UpdatePayout later)
 	PaymentId uint64 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
 	// *
-	// payout id assigned by the network (provider should store this id to provide details in UpdatePayout later)
+	// payout_id is deprecated now, since it's 1->1 mapping between payout_id and payment_id
+	//
+	// Deprecated: Marked as deprecated in tzero/v1/payment/provider.proto.
 	PayoutId uint64 `protobuf:"varint,20,opt,name=payout_id,json=payoutId,proto3" json:"payout_id,omitempty"`
 	// *
 	// currency of the payout (participant could support multiple currencies)
@@ -324,6 +326,7 @@ func (x *PayoutRequest) GetPaymentId() uint64 {
 	return 0
 }
 
+// Deprecated: Marked as deprecated in tzero/v1/payment/provider.proto.
 func (x *PayoutRequest) GetPayoutId() uint64 {
 	if x != nil {
 		return x.PayoutId
@@ -1659,7 +1662,7 @@ type UpdateLimitRequest_Limit struct {
 	// It's usually the payOut provider, which provides the credit line to the payIn provider.
 	CounterpartId int32 `protobuf:"varint,15,opt,name=counterpart_id,json=counterpartId,proto3" json:"counterpart_id,omitempty"`
 	// *
-	// payout_limit = credit_limit - credit_usage, negative value means credit limit is exceeded,
+	// payout_limit = credit_limit - credit_usage - reserve, negative value means credit limit is exceeded,
 	// e.g. if counterparty decreased credit limit
 	PayoutLimit *common.Decimal `protobuf:"bytes,20,opt,name=payout_limit,json=payoutLimit,proto3" json:"payout_limit,omitempty"`
 	// *
@@ -1669,7 +1672,10 @@ type UpdateLimitRequest_Limit struct {
 	// This is the credit usage that the provider has used so far. It is the sum of all payouts made by the provider
 	// minus the settlement net (settlement balance). It could be negative if the provider has received more
 	// in settlements than made payouts (pre-settlement).
-	CreditUsage   *common.Decimal `protobuf:"bytes,40,opt,name=credit_usage,json=creditUsage,proto3" json:"credit_usage,omitempty"`
+	CreditUsage *common.Decimal `protobuf:"bytes,40,opt,name=credit_usage,json=creditUsage,proto3" json:"credit_usage,omitempty"`
+	// *
+	// This indicates how much is reserved for the pending payments (not yet finalized)
+	Reserve       *common.Decimal `protobuf:"bytes,50,opt,name=reserve,proto3" json:"reserve,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1735,6 +1741,13 @@ func (x *UpdateLimitRequest_Limit) GetCreditLimit() *common.Decimal {
 func (x *UpdateLimitRequest_Limit) GetCreditUsage() *common.Decimal {
 	if x != nil {
 		return x.CreditUsage
+	}
+	return nil
+}
+
+func (x *UpdateLimitRequest_Limit) GetReserve() *common.Decimal {
+	if x != nil {
+		return x.Reserve
 	}
 	return nil
 }
@@ -1851,12 +1864,12 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\x18ACCOUNT_TYPE_FEE_EXPENSE\x10<\x12\x1e\n" +
 	"\x1aACCOUNT_TYPE_SETTLEMENT_IN\x10P\x12\x1f\n" +
 	"\x1bACCOUNT_TYPE_SETTLEMENT_OUT\x10Z\"\x1d\n" +
-	"\x1bAppendLedgerEntriesResponse\"\xad\x05\n" +
+	"\x1bAppendLedgerEntriesResponse\"\xb1\x05\n" +
 	"\rPayoutRequest\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\n" +
-	" \x01(\x04R\tpaymentId\x12\x1b\n" +
-	"\tpayout_id\x18\x14 \x01(\x04R\bpayoutId\x12\x1a\n" +
+	" \x01(\x04R\tpaymentId\x12\x1f\n" +
+	"\tpayout_id\x18\x14 \x01(\x04B\x02\x18\x01R\bpayoutId\x12\x1a\n" +
 	"\bcurrency\x18\x1e \x01(\tR\bcurrency\x12&\n" +
 	"\x0fclient_quote_id\x18( \x01(\tR\rclientQuoteId\x120\n" +
 	"\x06amount\x182 \x01(\v2\x18.tzero.v1.common.DecimalR\x06amount\x12K\n" +
@@ -1915,17 +1928,18 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\areceipt\x18\x14 \x01(\v2\x1f.tzero.v1.common.PaymentReceiptR\areceipt\x1a\x10\n" +
 	"\x0eManualAmlCheckB\b\n" +
 	"\x06result\"\x17\n" +
-	"\x15UpdatePaymentResponse\"\xda\x02\n" +
+	"\x15UpdatePaymentResponse\"\x8e\x03\n" +
 	"\x12UpdateLimitRequest\x12B\n" +
 	"\x06limits\x18\n" +
-	" \x03(\v2*.tzero.v1.payment.UpdateLimitRequest.LimitR\x06limits\x1a\xff\x01\n" +
+	" \x03(\v2*.tzero.v1.payment.UpdateLimitRequest.LimitR\x06limits\x1a\xb3\x02\n" +
 	"\x05Limit\x12\x18\n" +
 	"\aversion\x18\n" +
 	" \x01(\x03R\aversion\x12%\n" +
 	"\x0ecounterpart_id\x18\x0f \x01(\x05R\rcounterpartId\x12;\n" +
 	"\fpayout_limit\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalR\vpayoutLimit\x12;\n" +
 	"\fcredit_limit\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalR\vcreditLimit\x12;\n" +
-	"\fcredit_usage\x18( \x01(\v2\x18.tzero.v1.common.DecimalR\vcreditUsage\"\x15\n" +
+	"\fcredit_usage\x18( \x01(\v2\x18.tzero.v1.common.DecimalR\vcreditUsage\x122\n" +
+	"\areserve\x182 \x01(\v2\x18.tzero.v1.common.DecimalR\areserve\"\x15\n" +
 	"\x13UpdateLimitResponse\"\xb0\x02\n" +
 	"\x1aApprovePaymentQuoteRequest\x12&\n" +
 	"\n" +
@@ -2042,21 +2056,22 @@ var file_tzero_v1_payment_provider_proto_depIdxs = []int32{
 	30, // 34: tzero.v1.payment.UpdateLimitRequest.Limit.payout_limit:type_name -> tzero.v1.common.Decimal
 	30, // 35: tzero.v1.payment.UpdateLimitRequest.Limit.credit_limit:type_name -> tzero.v1.common.Decimal
 	30, // 36: tzero.v1.payment.UpdateLimitRequest.Limit.credit_usage:type_name -> tzero.v1.common.Decimal
-	5,  // 37: tzero.v1.payment.ProviderService.PayOut:input_type -> tzero.v1.payment.PayoutRequest
-	7,  // 38: tzero.v1.payment.ProviderService.UpdatePayment:input_type -> tzero.v1.payment.UpdatePaymentRequest
-	9,  // 39: tzero.v1.payment.ProviderService.UpdateLimit:input_type -> tzero.v1.payment.UpdateLimitRequest
-	3,  // 40: tzero.v1.payment.ProviderService.AppendLedgerEntries:input_type -> tzero.v1.payment.AppendLedgerEntriesRequest
-	11, // 41: tzero.v1.payment.ProviderService.ApprovePaymentQuotes:input_type -> tzero.v1.payment.ApprovePaymentQuoteRequest
-	6,  // 42: tzero.v1.payment.ProviderService.PayOut:output_type -> tzero.v1.payment.PayoutResponse
-	8,  // 43: tzero.v1.payment.ProviderService.UpdatePayment:output_type -> tzero.v1.payment.UpdatePaymentResponse
-	10, // 44: tzero.v1.payment.ProviderService.UpdateLimit:output_type -> tzero.v1.payment.UpdateLimitResponse
-	4,  // 45: tzero.v1.payment.ProviderService.AppendLedgerEntries:output_type -> tzero.v1.payment.AppendLedgerEntriesResponse
-	12, // 46: tzero.v1.payment.ProviderService.ApprovePaymentQuotes:output_type -> tzero.v1.payment.ApprovePaymentQuoteResponse
-	42, // [42:47] is the sub-list for method output_type
-	37, // [37:42] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	30, // 37: tzero.v1.payment.UpdateLimitRequest.Limit.reserve:type_name -> tzero.v1.common.Decimal
+	5,  // 38: tzero.v1.payment.ProviderService.PayOut:input_type -> tzero.v1.payment.PayoutRequest
+	7,  // 39: tzero.v1.payment.ProviderService.UpdatePayment:input_type -> tzero.v1.payment.UpdatePaymentRequest
+	9,  // 40: tzero.v1.payment.ProviderService.UpdateLimit:input_type -> tzero.v1.payment.UpdateLimitRequest
+	3,  // 41: tzero.v1.payment.ProviderService.AppendLedgerEntries:input_type -> tzero.v1.payment.AppendLedgerEntriesRequest
+	11, // 42: tzero.v1.payment.ProviderService.ApprovePaymentQuotes:input_type -> tzero.v1.payment.ApprovePaymentQuoteRequest
+	6,  // 43: tzero.v1.payment.ProviderService.PayOut:output_type -> tzero.v1.payment.PayoutResponse
+	8,  // 44: tzero.v1.payment.ProviderService.UpdatePayment:output_type -> tzero.v1.payment.UpdatePaymentResponse
+	10, // 45: tzero.v1.payment.ProviderService.UpdateLimit:output_type -> tzero.v1.payment.UpdateLimitResponse
+	4,  // 46: tzero.v1.payment.ProviderService.AppendLedgerEntries:output_type -> tzero.v1.payment.AppendLedgerEntriesResponse
+	12, // 47: tzero.v1.payment.ProviderService.ApprovePaymentQuotes:output_type -> tzero.v1.payment.ApprovePaymentQuoteResponse
+	43, // [43:48] is the sub-list for method output_type
+	38, // [38:43] is the sub-list for method input_type
+	38, // [38:38] is the sub-list for extension type_name
+	38, // [38:38] is the sub-list for extension extendee
+	0,  // [0:38] is the sub-list for field type_name
 }
 
 func init() { file_tzero_v1_payment_provider_proto_init() }

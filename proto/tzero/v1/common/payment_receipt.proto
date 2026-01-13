@@ -13,6 +13,10 @@ message PaymentReceipt {
   };
 
   message Sepa {
+    optional string banking_transaction_reference_id = 10 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 35,
+    }];
   }
 
   message Swift {

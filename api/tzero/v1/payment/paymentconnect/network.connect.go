@@ -44,6 +44,9 @@ const (
 	// NetworkServiceConfirmPayoutProcedure is the fully-qualified name of the NetworkService's
 	// ConfirmPayout RPC.
 	NetworkServiceConfirmPayoutProcedure = "/tzero.v1.payment.NetworkService/ConfirmPayout"
+	// NetworkServiceFinalizePayoutProcedure is the fully-qualified name of the NetworkService's
+	// FinalizePayout RPC.
+	NetworkServiceFinalizePayoutProcedure = "/tzero.v1.payment.NetworkService/FinalizePayout"
 	// NetworkServiceCompleteManualAmlCheckProcedure is the fully-qualified name of the NetworkService's
 	// CompleteManualAmlCheck RPC.
 	NetworkServiceCompleteManualAmlCheckProcedure = "/tzero.v1.payment.NetworkService/CompleteManualAmlCheck"
@@ -69,7 +72,10 @@ type NetworkServiceClient interface {
 	// *
 	// Inform the network that a payout has been completed. This endpoint is called by the payout
 	// provider, specifying the payment ID and payout ID, which was provided when the payout request was made to this provider.
+	//
+	// Deprecated: do not use.
 	ConfirmPayout(context.Context, *connect.Request[payment.ConfirmPayoutRequest]) (*connect.Response[payment.ConfirmPayoutResponse], error)
+	FinalizePayout(context.Context, *connect.Request[payment.FinalizePayoutRequest]) (*connect.Response[payment.FinalizePayoutResponse], error)
 	// *
 	// Pay-out provider reports the result of manual AML check.
 	// This endpoint is called after the manual AML check is completed. The network will find the new best quotes for the
@@ -116,6 +122,13 @@ func NewNetworkServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithIdempotency(connect.IdempotencyIdempotent),
 			connect.WithClientOptions(opts...),
 		),
+		finalizePayout: connect.NewClient[payment.FinalizePayoutRequest, payment.FinalizePayoutResponse](
+			httpClient,
+			baseURL+NetworkServiceFinalizePayoutProcedure,
+			connect.WithSchema(networkServiceMethods.ByName("FinalizePayout")),
+			connect.WithIdempotency(connect.IdempotencyIdempotent),
+			connect.WithClientOptions(opts...),
+		),
 		completeManualAmlCheck: connect.NewClient[payment.CompleteManualAmlCheckRequest, payment.CompleteManualAmlCheckResponse](
 			httpClient,
 			baseURL+NetworkServiceCompleteManualAmlCheckProcedure,
@@ -132,6 +145,7 @@ type networkServiceClient struct {
 	getQuote               *connect.Client[payment.GetQuoteRequest, payment.GetQuoteResponse]
 	createPayment          *connect.Client[payment.CreatePaymentRequest, payment.CreatePaymentResponse]
 	confirmPayout          *connect.Client[payment.ConfirmPayoutRequest, payment.ConfirmPayoutResponse]
+	finalizePayout         *connect.Client[payment.FinalizePayoutRequest, payment.FinalizePayoutResponse]
 	completeManualAmlCheck *connect.Client[payment.CompleteManualAmlCheckRequest, payment.CompleteManualAmlCheckResponse]
 }
 
@@ -151,8 +165,15 @@ func (c *networkServiceClient) CreatePayment(ctx context.Context, req *connect.R
 }
 
 // ConfirmPayout calls tzero.v1.payment.NetworkService.ConfirmPayout.
+//
+// Deprecated: do not use.
 func (c *networkServiceClient) ConfirmPayout(ctx context.Context, req *connect.Request[payment.ConfirmPayoutRequest]) (*connect.Response[payment.ConfirmPayoutResponse], error) {
 	return c.confirmPayout.CallUnary(ctx, req)
+}
+
+// FinalizePayout calls tzero.v1.payment.NetworkService.FinalizePayout.
+func (c *networkServiceClient) FinalizePayout(ctx context.Context, req *connect.Request[payment.FinalizePayoutRequest]) (*connect.Response[payment.FinalizePayoutResponse], error) {
+	return c.finalizePayout.CallUnary(ctx, req)
 }
 
 // CompleteManualAmlCheck calls tzero.v1.payment.NetworkService.CompleteManualAmlCheck.
@@ -180,7 +201,10 @@ type NetworkServiceHandler interface {
 	// *
 	// Inform the network that a payout has been completed. This endpoint is called by the payout
 	// provider, specifying the payment ID and payout ID, which was provided when the payout request was made to this provider.
+	//
+	// Deprecated: do not use.
 	ConfirmPayout(context.Context, *connect.Request[payment.ConfirmPayoutRequest]) (*connect.Response[payment.ConfirmPayoutResponse], error)
+	FinalizePayout(context.Context, *connect.Request[payment.FinalizePayoutRequest]) (*connect.Response[payment.FinalizePayoutResponse], error)
 	// *
 	// Pay-out provider reports the result of manual AML check.
 	// This endpoint is called after the manual AML check is completed. The network will find the new best quotes for the
@@ -223,6 +247,13 @@ func NewNetworkServiceHandler(svc NetworkServiceHandler, opts ...connect.Handler
 		connect.WithIdempotency(connect.IdempotencyIdempotent),
 		connect.WithHandlerOptions(opts...),
 	)
+	networkServiceFinalizePayoutHandler := connect.NewUnaryHandler(
+		NetworkServiceFinalizePayoutProcedure,
+		svc.FinalizePayout,
+		connect.WithSchema(networkServiceMethods.ByName("FinalizePayout")),
+		connect.WithIdempotency(connect.IdempotencyIdempotent),
+		connect.WithHandlerOptions(opts...),
+	)
 	networkServiceCompleteManualAmlCheckHandler := connect.NewUnaryHandler(
 		NetworkServiceCompleteManualAmlCheckProcedure,
 		svc.CompleteManualAmlCheck,
@@ -240,6 +271,8 @@ func NewNetworkServiceHandler(svc NetworkServiceHandler, opts ...connect.Handler
 			networkServiceCreatePaymentHandler.ServeHTTP(w, r)
 		case NetworkServiceConfirmPayoutProcedure:
 			networkServiceConfirmPayoutHandler.ServeHTTP(w, r)
+		case NetworkServiceFinalizePayoutProcedure:
+			networkServiceFinalizePayoutHandler.ServeHTTP(w, r)
 		case NetworkServiceCompleteManualAmlCheckProcedure:
 			networkServiceCompleteManualAmlCheckHandler.ServeHTTP(w, r)
 		default:
@@ -265,6 +298,10 @@ func (UnimplementedNetworkServiceHandler) CreatePayment(context.Context, *connec
 
 func (UnimplementedNetworkServiceHandler) ConfirmPayout(context.Context, *connect.Request[payment.ConfirmPayoutRequest]) (*connect.Response[payment.ConfirmPayoutResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment.NetworkService.ConfirmPayout is not implemented"))
+}
+
+func (UnimplementedNetworkServiceHandler) FinalizePayout(context.Context, *connect.Request[payment.FinalizePayoutRequest]) (*connect.Response[payment.FinalizePayoutResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.payment.NetworkService.FinalizePayout is not implemented"))
 }
 
 func (UnimplementedNetworkServiceHandler) CompleteManualAmlCheck(context.Context, *connect.Request[payment.CompleteManualAmlCheckRequest]) (*connect.Response[payment.CompleteManualAmlCheckResponse], error) {

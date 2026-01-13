@@ -49,8 +49,13 @@ service NetworkService {
    */
   rpc ConfirmPayout(ConfirmPayoutRequest) returns (ConfirmPayoutResponse)  {
     option idempotency_level = IDEMPOTENT;
+    option deprecated = true;
   };
 
+
+  rpc FinalizePayout(FinalizePayoutRequest) returns (FinalizePayoutResponse){
+    option idempotency_level = IDEMPOTENT;
+  };
 
   /**
    * Pay-out provider reports the result of manual AML check.
@@ -237,10 +242,11 @@ message CreatePaymentResponse {
   }
 }
 
-message ConfirmPayoutRequest{
+message ConfirmPayoutRequest {
+  option deprecated = true;
   uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0]; // payment id assigned by the network, this is the same payment id that was provided in the PayoutRequest
 
-  uint64 payout_id = 20 [(buf.validate.field).uint64.gt = 0]; // payout id assigned by the payout provider, this is the same payout id that was provided in the PayoutRequest
+  uint64 payout_id = 20 [(buf.validate.field).uint64.gt = 0, deprecated = true]; // deprecated, this is 1->1 mapping between payment and payout ids
 
   /**
   * Payment receipt might contain metadata about payment recognizable by pay-in provider.
@@ -248,7 +254,9 @@ message ConfirmPayoutRequest{
   optional tzero.v1.common.PaymentReceipt receipt = 30;
 }
 
-message ConfirmPayoutResponse{}
+message ConfirmPayoutResponse{
+  option deprecated = true;
+}
 
 message CompleteManualAmlCheckRequest {
   uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0];
@@ -275,20 +283,18 @@ message CompleteManualAmlCheckResponse {
 
   message Approved {
     /**
-     * amount in currency of the payout
-     * This is the updated amount that should be paid out to the recipient.
+    * updated amount based on updated quote approved by the  pay-in provider
      */
     tzero.v1.common.Decimal pay_out_amount = 10 [(buf.validate.field).required = true];
 
-    /*
-
-     */
+    /* updated settlement amount based on updated quote approved by the  pay-in provider */
     tzero.v1.common.Decimal settlement_amount = 20 [(buf.validate.field).required = true];
 
-    /*
-     unique identifier of the pay-out quote
-     */
+    /* unique identifier of the updated pay-out quote */
     int64 pay_out_quote_id = 30 [(buf.validate.field).int64.gt = 0];
+
+    /* client_quote_id of the updated pay-out quote assigned by pay-out provider */
+    string pay_out_client_quote_id = 40 [(buf.validate.field).string.max_len = 64];
   }
 
   // Rejected means that the updated quotes were rejected by pay-in provider, and the payout provider should not proceed
@@ -310,4 +316,28 @@ message PaymentAmount {
 enum QuoteType {
   QUOTE_TYPE_UNSPECIFIED = 0;
   QUOTE_TYPE_REALTIME = 1; // real-time quote must be valid at least for 30 seconds (TBD)
+}
+
+message FinalizePayoutRequest {
+  uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0]; // payment id assigned by the network, this is the same payment id that was provided in the PayoutRequest
+
+  oneof result {
+    option (buf.validate.oneof).required = true;
+    Success success = 30;
+    Failure failure = 40;
+  }
+
+  message Success {
+    /**
+    * Payment receipt might contain metadata about payment recognizable by pay-in provider.
+    */
+    optional tzero.v1.common.PaymentReceipt receipt = 30;
+  }
+  message Failure {
+    string reason = 10;
+  }
+}
+
+message FinalizePayoutResponse {
+
 }

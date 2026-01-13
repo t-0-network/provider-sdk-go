@@ -121,9 +121,10 @@ func (*PaymentReceipt_Swift_) isPaymentReceipt_Details() {}
 func (*PaymentReceipt_Stablecoin_) isPaymentReceipt_Details() {}
 
 type PaymentReceipt_Sepa struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                         protoimpl.MessageState `protogen:"open.v1"`
+	BankingTransactionReferenceId *string                `protobuf:"bytes,10,opt,name=banking_transaction_reference_id,json=bankingTransactionReferenceId,proto3,oneof" json:"banking_transaction_reference_id,omitempty"`
+	unknownFields                 protoimpl.UnknownFields
+	sizeCache                     protoimpl.SizeCache
 }
 
 func (x *PaymentReceipt_Sepa) Reset() {
@@ -154,6 +155,13 @@ func (x *PaymentReceipt_Sepa) ProtoReflect() protoreflect.Message {
 // Deprecated: Use PaymentReceipt_Sepa.ProtoReflect.Descriptor instead.
 func (*PaymentReceipt_Sepa) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_common_payment_receipt_proto_rawDescGZIP(), []int{0, 0}
+}
+
+func (x *PaymentReceipt_Sepa) GetBankingTransactionReferenceId() string {
+	if x != nil && x.BankingTransactionReferenceId != nil {
+		return *x.BankingTransactionReferenceId
+	}
+	return ""
 }
 
 type PaymentReceipt_Swift struct {
@@ -240,15 +248,18 @@ var File_tzero_v1_common_payment_receipt_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_common_payment_receipt_proto_rawDesc = "" +
 	"\n" +
-	"%tzero/v1/common/payment_receipt.proto\x12\x0ftzero.v1.common\x1a\x1bbuf/validate/validate.proto\"\xd8\x02\n" +
+	"%tzero/v1/common/payment_receipt.proto\x12\x0ftzero.v1.common\x1a\x1bbuf/validate/validate.proto\"\xd7\x03\n" +
 	"\x0ePaymentReceipt\x12:\n" +
 	"\x04sepa\x18\n" +
 	" \x01(\v2$.tzero.v1.common.PaymentReceipt.SepaH\x00R\x04sepa\x12=\n" +
 	"\x05swift\x18\x1e \x01(\v2%.tzero.v1.common.PaymentReceipt.SwiftH\x00R\x05swift\x12L\n" +
 	"\n" +
 	"stablecoin\x18( \x01(\v2*.tzero.v1.common.PaymentReceipt.StablecoinH\x00R\n" +
-	"stablecoin\x1a\x06\n" +
-	"\x04Sepa\x1a\a\n" +
+	"stablecoin\x1a\x84\x01\n" +
+	"\x04Sepa\x12W\n" +
+	" banking_transaction_reference_id\x18\n" +
+	" \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18#H\x00R\x1dbankingTransactionReferenceId\x88\x01\x01B#\n" +
+	"!_banking_transaction_reference_id\x1a\a\n" +
 	"\x05Swift\x1aZ\n" +
 	"\n" +
 	"Stablecoin\x12L\n" +
@@ -297,6 +308,7 @@ func file_tzero_v1_common_payment_receipt_proto_init() {
 		(*PaymentReceipt_Swift_)(nil),
 		(*PaymentReceipt_Stablecoin_)(nil),
 	}
+	file_tzero_v1_common_payment_receipt_proto_msgTypes[1].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
