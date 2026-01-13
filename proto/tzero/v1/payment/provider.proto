@@ -140,9 +140,9 @@ message PayoutRequest {
    */
   uint64 payment_id = 10;
   /**
-   * payout id assigned by the network (provider should store this id to provide details in UpdatePayout later)
+   * payout_id is deprecated now, since it's 1->1 mapping between payout_id and payment_id
    */
-  uint64 payout_id = 20;
+  uint64 payout_id = 20 [deprecated = true];
   /**
    * currency of the payout (participant could support multiple currencies)
    * This is the currency in which the payout should be made.
@@ -303,7 +303,7 @@ message UpdateLimitRequest {
      */
     int32 counterpart_id = 15;
     /**
-     * payout_limit = credit_limit - credit_usage, negative value means credit limit is exceeded,
+     * payout_limit = credit_limit - credit_usage - reserve, negative value means credit limit is exceeded,
      * e.g. if counterparty decreased credit limit
      */
     tzero.v1.common.Decimal payout_limit = 20;
@@ -317,6 +317,11 @@ message UpdateLimitRequest {
      * in settlements than made payouts (pre-settlement).
      */
     tzero.v1.common.Decimal credit_usage = 40;
+
+    /**
+     * This indicates how much is reserved for the pending payments (not yet finalized)
+     */
+    tzero.v1.common.Decimal reserve = 50;
   }
 }
 
