@@ -24,80 +24,85 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type GetPaymentsResponse_Payment_Type int32
+type ProviderRole int32
 
 const (
-	GetPaymentsResponse_Payment_TYPE_UNSPECIFIED GetPaymentsResponse_Payment_Type = 0
-	GetPaymentsResponse_Payment_TYPE_INITIATED   GetPaymentsResponse_Payment_Type = 10
-	GetPaymentsResponse_Payment_TYPE_PAID_OUT    GetPaymentsResponse_Payment_Type = 20
+	ProviderRole_PROVIDER_ROLE_UNSPECIFIED ProviderRole = 0
+	// The party that initiates and sends the payment/settlement
+	ProviderRole_PROVIDER_ROLE_ORIGINATOR ProviderRole = 10
+	// The party that receives the payment/settlement
+	ProviderRole_PROVIDER_ROLE_BENEFICIARY ProviderRole = 20
 )
 
-// Enum value maps for GetPaymentsResponse_Payment_Type.
+// Enum value maps for ProviderRole.
 var (
-	GetPaymentsResponse_Payment_Type_name = map[int32]string{
-		0:  "TYPE_UNSPECIFIED",
-		10: "TYPE_INITIATED",
-		20: "TYPE_PAID_OUT",
+	ProviderRole_name = map[int32]string{
+		0:  "PROVIDER_ROLE_UNSPECIFIED",
+		10: "PROVIDER_ROLE_ORIGINATOR",
+		20: "PROVIDER_ROLE_BENEFICIARY",
 	}
-	GetPaymentsResponse_Payment_Type_value = map[string]int32{
-		"TYPE_UNSPECIFIED": 0,
-		"TYPE_INITIATED":   10,
-		"TYPE_PAID_OUT":    20,
+	ProviderRole_value = map[string]int32{
+		"PROVIDER_ROLE_UNSPECIFIED": 0,
+		"PROVIDER_ROLE_ORIGINATOR":  10,
+		"PROVIDER_ROLE_BENEFICIARY": 20,
 	}
 )
 
-func (x GetPaymentsResponse_Payment_Type) Enum() *GetPaymentsResponse_Payment_Type {
-	p := new(GetPaymentsResponse_Payment_Type)
+func (x ProviderRole) Enum() *ProviderRole {
+	p := new(ProviderRole)
 	*p = x
 	return p
 }
 
-func (x GetPaymentsResponse_Payment_Type) String() string {
+func (x ProviderRole) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (GetPaymentsResponse_Payment_Type) Descriptor() protoreflect.EnumDescriptor {
+func (ProviderRole) Descriptor() protoreflect.EnumDescriptor {
 	return file_tzero_v1_manage_dashboard_proto_enumTypes[0].Descriptor()
 }
 
-func (GetPaymentsResponse_Payment_Type) Type() protoreflect.EnumType {
+func (ProviderRole) Type() protoreflect.EnumType {
 	return &file_tzero_v1_manage_dashboard_proto_enumTypes[0]
 }
 
-func (x GetPaymentsResponse_Payment_Type) Number() protoreflect.EnumNumber {
+func (x ProviderRole) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use GetPaymentsResponse_Payment_Type.Descriptor instead.
-func (GetPaymentsResponse_Payment_Type) EnumDescriptor() ([]byte, []int) {
-	return file_tzero_v1_manage_dashboard_proto_rawDescGZIP(), []int{5, 0, 0}
+// Deprecated: Use ProviderRole.Descriptor instead.
+func (ProviderRole) EnumDescriptor() ([]byte, []int) {
+	return file_tzero_v1_manage_dashboard_proto_rawDescGZIP(), []int{0}
 }
 
 type GetPaymentsResponse_Payment_Status int32
 
 const (
 	GetPaymentsResponse_Payment_STATUS_UNSPECIFIED            GetPaymentsResponse_Payment_Status = 0
-	GetPaymentsResponse_Payment_STATUS_ACCEPTED               GetPaymentsResponse_Payment_Status = 10
-	GetPaymentsResponse_Payment_STATUS_SUCCESS                GetPaymentsResponse_Payment_Status = 20
-	GetPaymentsResponse_Payment_STATUS_FAILED                 GetPaymentsResponse_Payment_Status = 30
-	GetPaymentsResponse_Payment_STATUS_PENDING_PRE_SETTLEMENT GetPaymentsResponse_Payment_Status = 40
+	GetPaymentsResponse_Payment_STATUS_PENDING_PRE_SETTLEMENT GetPaymentsResponse_Payment_Status = 10
+	GetPaymentsResponse_Payment_STATUS_ACCEPTED               GetPaymentsResponse_Payment_Status = 20
+	GetPaymentsResponse_Payment_STATUS_AML_CHECK              GetPaymentsResponse_Payment_Status = 30
+	GetPaymentsResponse_Payment_STATUS_SUCCESS                GetPaymentsResponse_Payment_Status = 40
+	GetPaymentsResponse_Payment_STATUS_FAILED                 GetPaymentsResponse_Payment_Status = 50
 )
 
 // Enum value maps for GetPaymentsResponse_Payment_Status.
 var (
 	GetPaymentsResponse_Payment_Status_name = map[int32]string{
 		0:  "STATUS_UNSPECIFIED",
-		10: "STATUS_ACCEPTED",
-		20: "STATUS_SUCCESS",
-		30: "STATUS_FAILED",
-		40: "STATUS_PENDING_PRE_SETTLEMENT",
+		10: "STATUS_PENDING_PRE_SETTLEMENT",
+		20: "STATUS_ACCEPTED",
+		30: "STATUS_AML_CHECK",
+		40: "STATUS_SUCCESS",
+		50: "STATUS_FAILED",
 	}
 	GetPaymentsResponse_Payment_Status_value = map[string]int32{
 		"STATUS_UNSPECIFIED":            0,
-		"STATUS_ACCEPTED":               10,
-		"STATUS_SUCCESS":                20,
-		"STATUS_FAILED":                 30,
-		"STATUS_PENDING_PRE_SETTLEMENT": 40,
+		"STATUS_PENDING_PRE_SETTLEMENT": 10,
+		"STATUS_ACCEPTED":               20,
+		"STATUS_AML_CHECK":              30,
+		"STATUS_SUCCESS":                40,
+		"STATUS_FAILED":                 50,
 	}
 )
 
@@ -125,60 +130,12 @@ func (x GetPaymentsResponse_Payment_Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GetPaymentsResponse_Payment_Status.Descriptor instead.
 func (GetPaymentsResponse_Payment_Status) EnumDescriptor() ([]byte, []int) {
-	return file_tzero_v1_manage_dashboard_proto_rawDescGZIP(), []int{5, 0, 1}
-}
-
-type GetSettlementsResponse_Settlement_Type int32
-
-const (
-	GetSettlementsResponse_Settlement_TYPE_UNSPECIFIED GetSettlementsResponse_Settlement_Type = 0
-	GetSettlementsResponse_Settlement_TYPE_SENT        GetSettlementsResponse_Settlement_Type = 10
-	GetSettlementsResponse_Settlement_TYPE_RECEIVED    GetSettlementsResponse_Settlement_Type = 20
-)
-
-// Enum value maps for GetSettlementsResponse_Settlement_Type.
-var (
-	GetSettlementsResponse_Settlement_Type_name = map[int32]string{
-		0:  "TYPE_UNSPECIFIED",
-		10: "TYPE_SENT",
-		20: "TYPE_RECEIVED",
-	}
-	GetSettlementsResponse_Settlement_Type_value = map[string]int32{
-		"TYPE_UNSPECIFIED": 0,
-		"TYPE_SENT":        10,
-		"TYPE_RECEIVED":    20,
-	}
-)
-
-func (x GetSettlementsResponse_Settlement_Type) Enum() *GetSettlementsResponse_Settlement_Type {
-	p := new(GetSettlementsResponse_Settlement_Type)
-	*p = x
-	return p
-}
-
-func (x GetSettlementsResponse_Settlement_Type) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (GetSettlementsResponse_Settlement_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_tzero_v1_manage_dashboard_proto_enumTypes[2].Descriptor()
-}
-
-func (GetSettlementsResponse_Settlement_Type) Type() protoreflect.EnumType {
-	return &file_tzero_v1_manage_dashboard_proto_enumTypes[2]
-}
-
-func (x GetSettlementsResponse_Settlement_Type) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use GetSettlementsResponse_Settlement_Type.Descriptor instead.
-func (GetSettlementsResponse_Settlement_Type) EnumDescriptor() ([]byte, []int) {
-	return file_tzero_v1_manage_dashboard_proto_rawDescGZIP(), []int{7, 0, 0}
+	return file_tzero_v1_manage_dashboard_proto_rawDescGZIP(), []int{5, 0, 0}
 }
 
 type GetVolumeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Page          *Page                  `protobuf:"bytes,10,opt,name=page,proto3,oneof" json:"page,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -213,10 +170,18 @@ func (*GetVolumeRequest) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_manage_dashboard_proto_rawDescGZIP(), []int{0}
 }
 
+func (x *GetVolumeRequest) GetPage() *Page {
+	if x != nil {
+		return x.Page
+	}
+	return nil
+}
+
 type GetVolumeResponse struct {
 	state         protoimpl.MessageState      `protogen:"open.v1"`
 	Volumes       []*GetVolumeResponse_Volume `protobuf:"bytes,10,rep,name=volumes,proto3" json:"volumes,omitempty"`
 	Total         *common.Decimal             `protobuf:"bytes,20,opt,name=total,proto3" json:"total,omitempty"`
+	PageInfo      *PageInfo                   `protobuf:"bytes,30,opt,name=page_info,json=pageInfo,proto3" json:"page_info,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -265,26 +230,34 @@ func (x *GetVolumeResponse) GetTotal() *common.Decimal {
 	return nil
 }
 
-type GetLimitsRequest struct {
+func (x *GetVolumeResponse) GetPageInfo() *PageInfo {
+	if x != nil {
+		return x.PageInfo
+	}
+	return nil
+}
+
+type GetCounterpartiesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Page          *Page                  `protobuf:"bytes,10,opt,name=page,proto3,oneof" json:"page,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetLimitsRequest) Reset() {
-	*x = GetLimitsRequest{}
+func (x *GetCounterpartiesRequest) Reset() {
+	*x = GetCounterpartiesRequest{}
 	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetLimitsRequest) String() string {
+func (x *GetCounterpartiesRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetLimitsRequest) ProtoMessage() {}
+func (*GetCounterpartiesRequest) ProtoMessage() {}
 
-func (x *GetLimitsRequest) ProtoReflect() protoreflect.Message {
+func (x *GetCounterpartiesRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -296,32 +269,40 @@ func (x *GetLimitsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetLimitsRequest.ProtoReflect.Descriptor instead.
-func (*GetLimitsRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetCounterpartiesRequest.ProtoReflect.Descriptor instead.
+func (*GetCounterpartiesRequest) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_manage_dashboard_proto_rawDescGZIP(), []int{2}
 }
 
-type GetLimitsResponse struct {
-	state         protoimpl.MessageState     `protogen:"open.v1"`
-	Limits        []*GetLimitsResponse_Limit `protobuf:"bytes,10,rep,name=limits,proto3" json:"limits,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+func (x *GetCounterpartiesRequest) GetPage() *Page {
+	if x != nil {
+		return x.Page
+	}
+	return nil
 }
 
-func (x *GetLimitsResponse) Reset() {
-	*x = GetLimitsResponse{}
+type GetCounterpartiesResponse struct {
+	state          protoimpl.MessageState                    `protogen:"open.v1"`
+	Counterparties []*GetCounterpartiesResponse_Counterparty `protobuf:"bytes,10,rep,name=counterparties,proto3" json:"counterparties,omitempty"`
+	PageInfo       *PageInfo                                 `protobuf:"bytes,20,opt,name=page_info,json=pageInfo,proto3" json:"page_info,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *GetCounterpartiesResponse) Reset() {
+	*x = GetCounterpartiesResponse{}
 	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetLimitsResponse) String() string {
+func (x *GetCounterpartiesResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetLimitsResponse) ProtoMessage() {}
+func (*GetCounterpartiesResponse) ProtoMessage() {}
 
-func (x *GetLimitsResponse) ProtoReflect() protoreflect.Message {
+func (x *GetCounterpartiesResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -333,14 +314,21 @@ func (x *GetLimitsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetLimitsResponse.ProtoReflect.Descriptor instead.
-func (*GetLimitsResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetCounterpartiesResponse.ProtoReflect.Descriptor instead.
+func (*GetCounterpartiesResponse) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_manage_dashboard_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetLimitsResponse) GetLimits() []*GetLimitsResponse_Limit {
+func (x *GetCounterpartiesResponse) GetCounterparties() []*GetCounterpartiesResponse_Counterparty {
 	if x != nil {
-		return x.Limits
+		return x.Counterparties
+	}
+	return nil
+}
+
+func (x *GetCounterpartiesResponse) GetPageInfo() *PageInfo {
+	if x != nil {
+		return x.PageInfo
 	}
 	return nil
 }
@@ -392,6 +380,7 @@ func (x *GetPaymentsRequest) GetPage() *Page {
 type GetPaymentsResponse struct {
 	state         protoimpl.MessageState         `protogen:"open.v1"`
 	Payments      []*GetPaymentsResponse_Payment `protobuf:"bytes,10,rep,name=payments,proto3" json:"payments,omitempty"`
+	PageInfo      *PageInfo                      `protobuf:"bytes,20,opt,name=page_info,json=pageInfo,proto3" json:"page_info,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -429,6 +418,13 @@ func (*GetPaymentsResponse) Descriptor() ([]byte, []int) {
 func (x *GetPaymentsResponse) GetPayments() []*GetPaymentsResponse_Payment {
 	if x != nil {
 		return x.Payments
+	}
+	return nil
+}
+
+func (x *GetPaymentsResponse) GetPageInfo() *PageInfo {
+	if x != nil {
+		return x.PageInfo
 	}
 	return nil
 }
@@ -478,7 +474,9 @@ func (x *GetSettlementsRequest) GetPage() *Page {
 }
 
 type GetSettlementsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpl.MessageState               `protogen:"open.v1"`
+	Settlements   []*GetSettlementsResponse_Settlement `protobuf:"bytes,10,rep,name=settlements,proto3" json:"settlements,omitempty"`
+	PageInfo      *PageInfo                            `protobuf:"bytes,20,opt,name=page_info,json=pageInfo,proto3" json:"page_info,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -511,6 +509,20 @@ func (x *GetSettlementsResponse) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetSettlementsResponse.ProtoReflect.Descriptor instead.
 func (*GetSettlementsResponse) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_manage_dashboard_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *GetSettlementsResponse) GetSettlements() []*GetSettlementsResponse_Settlement {
+	if x != nil {
+		return x.Settlements
+	}
+	return nil
+}
+
+func (x *GetSettlementsResponse) GetPageInfo() *PageInfo {
+	if x != nil {
+		return x.PageInfo
+	}
+	return nil
 }
 
 type Provider struct {
@@ -617,6 +629,66 @@ func (x *Page) GetSize() uint32 {
 	return 0
 }
 
+type PageInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CurrentPage   uint32                 `protobuf:"varint,10,opt,name=current_page,json=currentPage,proto3" json:"current_page,omitempty"`
+	PageSize      uint32                 `protobuf:"varint,20,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	HasNext       bool                   `protobuf:"varint,30,opt,name=has_next,json=hasNext,proto3" json:"has_next,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PageInfo) Reset() {
+	*x = PageInfo{}
+	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PageInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PageInfo) ProtoMessage() {}
+
+func (x *PageInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PageInfo.ProtoReflect.Descriptor instead.
+func (*PageInfo) Descriptor() ([]byte, []int) {
+	return file_tzero_v1_manage_dashboard_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *PageInfo) GetCurrentPage() uint32 {
+	if x != nil {
+		return x.CurrentPage
+	}
+	return 0
+}
+
+func (x *PageInfo) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *PageInfo) GetHasNext() bool {
+	if x != nil {
+		return x.HasNext
+	}
+	return false
+}
+
 type GetVolumeResponse_Volume struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Provider      *Provider              `protobuf:"bytes,10,opt,name=provider,proto3" json:"provider,omitempty"`
@@ -629,7 +701,7 @@ type GetVolumeResponse_Volume struct {
 
 func (x *GetVolumeResponse_Volume) Reset() {
 	*x = GetVolumeResponse_Volume{}
-	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[10]
+	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -641,7 +713,7 @@ func (x *GetVolumeResponse_Volume) String() string {
 func (*GetVolumeResponse_Volume) ProtoMessage() {}
 
 func (x *GetVolumeResponse_Volume) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[10]
+	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -685,31 +757,40 @@ func (x *GetVolumeResponse_Volume) GetTotal() *common.Decimal {
 	return nil
 }
 
-type GetLimitsResponse_Limit struct {
-	state                protoimpl.MessageState `protogen:"open.v1"`
-	Provider             *Provider              `protobuf:"bytes,10,opt,name=provider,proto3" json:"provider,omitempty"`
-	CreditLeft           *common.Decimal        `protobuf:"bytes,20,opt,name=credit_left,json=creditLeft,proto3" json:"credit_left,omitempty"`
-	CreditUsage          *common.Decimal        `protobuf:"bytes,30,opt,name=credit_usage,json=creditUsage,proto3" json:"credit_usage,omitempty"`
-	PresettlementBalance *common.Decimal        `protobuf:"bytes,40,opt,name=presettlement_balance,json=presettlementBalance,proto3" json:"presettlement_balance,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+type GetCounterpartiesResponse_Counterparty struct {
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Provider *Provider              `protobuf:"bytes,10,opt,name=provider,proto3" json:"provider,omitempty"`
+	// When they are our creditor
+	// their credit limit
+	CreditLineIn *common.Decimal `protobuf:"bytes,20,opt,name=credit_line_in,json=creditLineIn,proto3" json:"credit_line_in,omitempty"`
+	// our debt
+	NetPayable      *common.Decimal `protobuf:"bytes,30,opt,name=net_payable,json=netPayable,proto3" json:"net_payable,omitempty"`
+	PresettlementIn bool            `protobuf:"varint,40,opt,name=presettlement_in,json=presettlementIn,proto3" json:"presettlement_in,omitempty"`
+	// When we are their creditor
+	// our credit limit
+	CreditLineOut *common.Decimal `protobuf:"bytes,50,opt,name=credit_line_out,json=creditLineOut,proto3" json:"credit_line_out,omitempty"`
+	// their debt
+	NetReceivable    *common.Decimal `protobuf:"bytes,60,opt,name=net_receivable,json=netReceivable,proto3" json:"net_receivable,omitempty"`
+	PresettlementOut bool            `protobuf:"varint,70,opt,name=presettlement_out,json=presettlementOut,proto3" json:"presettlement_out,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
-func (x *GetLimitsResponse_Limit) Reset() {
-	*x = GetLimitsResponse_Limit{}
-	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[11]
+func (x *GetCounterpartiesResponse_Counterparty) Reset() {
+	*x = GetCounterpartiesResponse_Counterparty{}
+	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetLimitsResponse_Limit) String() string {
+func (x *GetCounterpartiesResponse_Counterparty) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetLimitsResponse_Limit) ProtoMessage() {}
+func (*GetCounterpartiesResponse_Counterparty) ProtoMessage() {}
 
-func (x *GetLimitsResponse_Limit) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[11]
+func (x *GetCounterpartiesResponse_Counterparty) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -720,56 +801,79 @@ func (x *GetLimitsResponse_Limit) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetLimitsResponse_Limit.ProtoReflect.Descriptor instead.
-func (*GetLimitsResponse_Limit) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetCounterpartiesResponse_Counterparty.ProtoReflect.Descriptor instead.
+func (*GetCounterpartiesResponse_Counterparty) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_manage_dashboard_proto_rawDescGZIP(), []int{3, 0}
 }
 
-func (x *GetLimitsResponse_Limit) GetProvider() *Provider {
+func (x *GetCounterpartiesResponse_Counterparty) GetProvider() *Provider {
 	if x != nil {
 		return x.Provider
 	}
 	return nil
 }
 
-func (x *GetLimitsResponse_Limit) GetCreditLeft() *common.Decimal {
+func (x *GetCounterpartiesResponse_Counterparty) GetCreditLineIn() *common.Decimal {
 	if x != nil {
-		return x.CreditLeft
+		return x.CreditLineIn
 	}
 	return nil
 }
 
-func (x *GetLimitsResponse_Limit) GetCreditUsage() *common.Decimal {
+func (x *GetCounterpartiesResponse_Counterparty) GetNetPayable() *common.Decimal {
 	if x != nil {
-		return x.CreditUsage
+		return x.NetPayable
 	}
 	return nil
 }
 
-func (x *GetLimitsResponse_Limit) GetPresettlementBalance() *common.Decimal {
+func (x *GetCounterpartiesResponse_Counterparty) GetPresettlementIn() bool {
 	if x != nil {
-		return x.PresettlementBalance
+		return x.PresettlementIn
+	}
+	return false
+}
+
+func (x *GetCounterpartiesResponse_Counterparty) GetCreditLineOut() *common.Decimal {
+	if x != nil {
+		return x.CreditLineOut
 	}
 	return nil
+}
+
+func (x *GetCounterpartiesResponse_Counterparty) GetNetReceivable() *common.Decimal {
+	if x != nil {
+		return x.NetReceivable
+	}
+	return nil
+}
+
+func (x *GetCounterpartiesResponse_Counterparty) GetPresettlementOut() bool {
+	if x != nil {
+		return x.PresettlementOut
+	}
+	return false
 }
 
 type GetPaymentsResponse_Payment struct {
 	state         protoimpl.MessageState             `protogen:"open.v1"`
 	Id            uint64                             `protobuf:"varint,10,opt,name=id,proto3" json:"id,omitempty"`
-	Type          GetPaymentsResponse_Payment_Type   `protobuf:"varint,20,opt,name=type,proto3,enum=tzero.v1.manage.GetPaymentsResponse_Payment_Type" json:"type,omitempty"`
+	ProviderRole  ProviderRole                       `protobuf:"varint,20,opt,name=provider_role,json=providerRole,proto3,enum=tzero.v1.manage.ProviderRole" json:"provider_role,omitempty"`
 	Counterpart   *Provider                          `protobuf:"bytes,30,opt,name=counterpart,proto3" json:"counterpart,omitempty"`
 	Status        GetPaymentsResponse_Payment_Status `protobuf:"varint,40,opt,name=status,proto3,enum=tzero.v1.manage.GetPaymentsResponse_Payment_Status" json:"status,omitempty"`
 	CreatedAt     *timestamppb.Timestamp             `protobuf:"bytes,50,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	AcceptedAt    *timestamppb.Timestamp             `protobuf:"bytes,60,opt,name=accepted_at,json=acceptedAt,proto3,oneof" json:"accepted_at,omitempty"`
 	CompletedAt   *timestamppb.Timestamp             `protobuf:"bytes,70,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
-	UsdVolume     *common.Decimal                    `protobuf:"bytes,80,opt,name=usd_volume,json=usdVolume,proto3" json:"usd_volume,omitempty"` // TODO:
+	UsdVolume     *common.Decimal                    `protobuf:"bytes,80,opt,name=usd_volume,json=usdVolume,proto3" json:"usd_volume,omitempty"`
+	PayoutAmount  *common.Decimal                    `protobuf:"bytes,90,opt,name=payout_amount,json=payoutAmount,proto3,oneof" json:"payout_amount,omitempty"`
+	Currency      string                             `protobuf:"bytes,100,opt,name=currency,proto3" json:"currency,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetPaymentsResponse_Payment) Reset() {
 	*x = GetPaymentsResponse_Payment{}
-	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[12]
+	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -781,7 +885,7 @@ func (x *GetPaymentsResponse_Payment) String() string {
 func (*GetPaymentsResponse_Payment) ProtoMessage() {}
 
 func (x *GetPaymentsResponse_Payment) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[12]
+	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -804,11 +908,11 @@ func (x *GetPaymentsResponse_Payment) GetId() uint64 {
 	return 0
 }
 
-func (x *GetPaymentsResponse_Payment) GetType() GetPaymentsResponse_Payment_Type {
+func (x *GetPaymentsResponse_Payment) GetProviderRole() ProviderRole {
 	if x != nil {
-		return x.Type
+		return x.ProviderRole
 	}
-	return GetPaymentsResponse_Payment_TYPE_UNSPECIFIED
+	return ProviderRole_PROVIDER_ROLE_UNSPECIFIED
 }
 
 func (x *GetPaymentsResponse_Payment) GetCounterpart() *Provider {
@@ -853,20 +957,34 @@ func (x *GetPaymentsResponse_Payment) GetUsdVolume() *common.Decimal {
 	return nil
 }
 
+func (x *GetPaymentsResponse_Payment) GetPayoutAmount() *common.Decimal {
+	if x != nil {
+		return x.PayoutAmount
+	}
+	return nil
+}
+
+func (x *GetPaymentsResponse_Payment) GetCurrency() string {
+	if x != nil {
+		return x.Currency
+	}
+	return ""
+}
+
 type GetSettlementsResponse_Settlement struct {
-	state         protoimpl.MessageState                 `protogen:"open.v1"`
-	Id            uint64                                 `protobuf:"varint,10,opt,name=id,proto3" json:"id,omitempty"`
-	Type          GetSettlementsResponse_Settlement_Type `protobuf:"varint,20,opt,name=type,proto3,enum=tzero.v1.manage.GetSettlementsResponse_Settlement_Type" json:"type,omitempty"`
-	CounterpartId uint32                                 `protobuf:"varint,30,opt,name=counterpart_id,json=counterpartId,proto3" json:"counterpart_id,omitempty"`
-	UsdVolume     *common.Decimal                        `protobuf:"bytes,40,opt,name=usd_volume,json=usdVolume,proto3" json:"usd_volume,omitempty"`
-	CreatedAt     *timestamppb.Timestamp                 `protobuf:"bytes,50,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint64                 `protobuf:"varint,10,opt,name=id,proto3" json:"id,omitempty"`
+	ProviderRole  ProviderRole           `protobuf:"varint,20,opt,name=provider_role,json=providerRole,proto3,enum=tzero.v1.manage.ProviderRole" json:"provider_role,omitempty"`
+	Counterpart   *Provider              `protobuf:"bytes,30,opt,name=counterpart,proto3" json:"counterpart,omitempty"`
+	UsdVolume     *common.Decimal        `protobuf:"bytes,40,opt,name=usd_volume,json=usdVolume,proto3" json:"usd_volume,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,50,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetSettlementsResponse_Settlement) Reset() {
 	*x = GetSettlementsResponse_Settlement{}
-	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[13]
+	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -878,7 +996,7 @@ func (x *GetSettlementsResponse_Settlement) String() string {
 func (*GetSettlementsResponse_Settlement) ProtoMessage() {}
 
 func (x *GetSettlementsResponse_Settlement) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[13]
+	mi := &file_tzero_v1_manage_dashboard_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -901,18 +1019,18 @@ func (x *GetSettlementsResponse_Settlement) GetId() uint64 {
 	return 0
 }
 
-func (x *GetSettlementsResponse_Settlement) GetType() GetSettlementsResponse_Settlement_Type {
+func (x *GetSettlementsResponse_Settlement) GetProviderRole() ProviderRole {
 	if x != nil {
-		return x.Type
+		return x.ProviderRole
 	}
-	return GetSettlementsResponse_Settlement_TYPE_UNSPECIFIED
+	return ProviderRole_PROVIDER_ROLE_UNSPECIFIED
 }
 
-func (x *GetSettlementsResponse_Settlement) GetCounterpartId() uint32 {
+func (x *GetSettlementsResponse_Settlement) GetCounterpart() *Provider {
 	if x != nil {
-		return x.CounterpartId
+		return x.Counterpart
 	}
-	return 0
+	return nil
 }
 
 func (x *GetSettlementsResponse_Settlement) GetUsdVolume() *common.Decimal {
@@ -933,40 +1051,52 @@ var File_tzero_v1_manage_dashboard_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_manage_dashboard_proto_rawDesc = "" +
 	"\n" +
-	"\x1ftzero/v1/manage/dashboard.proto\x12\x0ftzero.v1.manage\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1ctzero/v1/common/common.proto\"\x12\n" +
-	"\x10GetVolumeRequest\"\xde\x02\n" +
+	"\x1ftzero/v1/manage/dashboard.proto\x12\x0ftzero.v1.manage\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1ctzero/v1/common/common.proto\"K\n" +
+	"\x10GetVolumeRequest\x12.\n" +
+	"\x04page\x18\n" +
+	" \x01(\v2\x15.tzero.v1.manage.PageH\x00R\x04page\x88\x01\x01B\a\n" +
+	"\x05_page\"\x96\x03\n" +
 	"\x11GetVolumeResponse\x12C\n" +
 	"\avolumes\x18\n" +
 	" \x03(\v2).tzero.v1.manage.GetVolumeResponse.VolumeR\avolumes\x12.\n" +
-	"\x05total\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalR\x05total\x1a\xd3\x01\n" +
+	"\x05total\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalR\x05total\x126\n" +
+	"\tpage_info\x18\x1e \x01(\v2\x19.tzero.v1.manage.PageInfoR\bpageInfo\x1a\xd3\x01\n" +
 	"\x06Volume\x125\n" +
 	"\bprovider\x18\n" +
 	" \x01(\v2\x19.tzero.v1.manage.ProviderR\bprovider\x12/\n" +
 	"\x06pay_in\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalR\x05payIn\x121\n" +
 	"\apay_out\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalR\x06payOut\x12.\n" +
-	"\x05total\x18( \x01(\v2\x18.tzero.v1.common.DecimalR\x05total\"\x12\n" +
-	"\x10GetLimitsRequest\"\xdd\x02\n" +
-	"\x11GetLimitsResponse\x12@\n" +
-	"\x06limits\x18\n" +
-	" \x03(\v2(.tzero.v1.manage.GetLimitsResponse.LimitR\x06limits\x1a\x85\x02\n" +
-	"\x05Limit\x125\n" +
+	"\x05total\x18( \x01(\v2\x18.tzero.v1.common.DecimalR\x05total\"S\n" +
+	"\x18GetCounterpartiesRequest\x12.\n" +
+	"\x04page\x18\n" +
+	" \x01(\v2\x15.tzero.v1.manage.PageH\x00R\x04page\x88\x01\x01B\a\n" +
+	"\x05_page\"\xd2\x04\n" +
+	"\x19GetCounterpartiesResponse\x12_\n" +
+	"\x0ecounterparties\x18\n" +
+	" \x03(\v27.tzero.v1.manage.GetCounterpartiesResponse.CounterpartyR\x0ecounterparties\x126\n" +
+	"\tpage_info\x18\x14 \x01(\v2\x19.tzero.v1.manage.PageInfoR\bpageInfo\x1a\x9b\x03\n" +
+	"\fCounterparty\x125\n" +
 	"\bprovider\x18\n" +
-	" \x01(\v2\x19.tzero.v1.manage.ProviderR\bprovider\x129\n" +
-	"\vcredit_left\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalR\n" +
-	"creditLeft\x12;\n" +
-	"\fcredit_usage\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalR\vcreditUsage\x12M\n" +
-	"\x15presettlement_balance\x18( \x01(\v2\x18.tzero.v1.common.DecimalR\x14presettlementBalance\"M\n" +
+	" \x01(\v2\x19.tzero.v1.manage.ProviderR\bprovider\x12>\n" +
+	"\x0ecredit_line_in\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalR\fcreditLineIn\x129\n" +
+	"\vnet_payable\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalR\n" +
+	"netPayable\x12)\n" +
+	"\x10presettlement_in\x18( \x01(\bR\x0fpresettlementIn\x12@\n" +
+	"\x0fcredit_line_out\x182 \x01(\v2\x18.tzero.v1.common.DecimalR\rcreditLineOut\x12?\n" +
+	"\x0enet_receivable\x18< \x01(\v2\x18.tzero.v1.common.DecimalR\rnetReceivable\x12+\n" +
+	"\x11presettlement_out\x18F \x01(\bR\x10presettlementOut\"M\n" +
 	"\x12GetPaymentsRequest\x12.\n" +
 	"\x04page\x18\n" +
 	" \x01(\v2\x15.tzero.v1.manage.PageH\x00R\x04page\x88\x01\x01B\a\n" +
-	"\x05_page\"\xad\x06\n" +
+	"\x05_page\"\xa6\a\n" +
 	"\x13GetPaymentsResponse\x12H\n" +
 	"\bpayments\x18\n" +
-	" \x03(\v2,.tzero.v1.manage.GetPaymentsResponse.PaymentR\bpayments\x1a\xcb\x05\n" +
+	" \x03(\v2,.tzero.v1.manage.GetPaymentsResponse.PaymentR\bpayments\x126\n" +
+	"\tpage_info\x18\x14 \x01(\v2\x19.tzero.v1.manage.PageInfoR\bpageInfo\x1a\x8c\x06\n" +
 	"\aPayment\x12\x0e\n" +
 	"\x02id\x18\n" +
-	" \x01(\x04R\x02id\x12E\n" +
-	"\x04type\x18\x14 \x01(\x0e21.tzero.v1.manage.GetPaymentsResponse.Payment.TypeR\x04type\x12;\n" +
+	" \x01(\x04R\x02id\x12B\n" +
+	"\rprovider_role\x18\x14 \x01(\x0e2\x1d.tzero.v1.manage.ProviderRoleR\fproviderRole\x12;\n" +
 	"\vcounterpart\x18\x1e \x01(\v2\x19.tzero.v1.manage.ProviderR\vcounterpart\x12K\n" +
 	"\x06status\x18( \x01(\x0e23.tzero.v1.manage.GetPaymentsResponse.Payment.StatusR\x06status\x129\n" +
 	"\n" +
@@ -975,54 +1105,61 @@ const file_tzero_v1_manage_dashboard_proto_rawDesc = "" +
 	"acceptedAt\x88\x01\x01\x12B\n" +
 	"\fcompleted_at\x18F \x01(\v2\x1a.google.protobuf.TimestampH\x01R\vcompletedAt\x88\x01\x01\x127\n" +
 	"\n" +
-	"usd_volume\x18P \x01(\v2\x18.tzero.v1.common.DecimalR\tusdVolume\"C\n" +
-	"\x04Type\x12\x14\n" +
-	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
-	"\x0eTYPE_INITIATED\x10\n" +
-	"\x12\x11\n" +
-	"\rTYPE_PAID_OUT\x10\x14\"\x7f\n" +
+	"usd_volume\x18P \x01(\v2\x18.tzero.v1.common.DecimalR\tusdVolume\x12B\n" +
+	"\rpayout_amount\x18Z \x01(\v2\x18.tzero.v1.common.DecimalH\x02R\fpayoutAmount\x88\x01\x01\x12\x1a\n" +
+	"\bcurrency\x18d \x01(\tR\bcurrency\"\x95\x01\n" +
 	"\x06Status\x12\x16\n" +
-	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x13\n" +
-	"\x0fSTATUS_ACCEPTED\x10\n" +
-	"\x12\x12\n" +
-	"\x0eSTATUS_SUCCESS\x10\x14\x12\x11\n" +
-	"\rSTATUS_FAILED\x10\x1e\x12!\n" +
-	"\x1dSTATUS_PENDING_PRE_SETTLEMENT\x10(B\x0e\n" +
+	"\x12STATUS_UNSPECIFIED\x10\x00\x12!\n" +
+	"\x1dSTATUS_PENDING_PRE_SETTLEMENT\x10\n" +
+	"\x12\x13\n" +
+	"\x0fSTATUS_ACCEPTED\x10\x14\x12\x14\n" +
+	"\x10STATUS_AML_CHECK\x10\x1e\x12\x12\n" +
+	"\x0eSTATUS_SUCCESS\x10(\x12\x11\n" +
+	"\rSTATUS_FAILED\x102B\x0e\n" +
 	"\f_accepted_atB\x0f\n" +
-	"\r_completed_at\"P\n" +
+	"\r_completed_atB\x10\n" +
+	"\x0e_payout_amount\"P\n" +
 	"\x15GetSettlementsRequest\x12.\n" +
 	"\x04page\x18\n" +
 	" \x01(\v2\x15.tzero.v1.manage.PageH\x00R\x04page\x88\x01\x01B\a\n" +
-	"\x05_page\"\xdf\x02\n" +
-	"\x16GetSettlementsResponse\x1a\xc4\x02\n" +
+	"\x05_page\"\xba\x03\n" +
+	"\x16GetSettlementsResponse\x12T\n" +
+	"\vsettlements\x18\n" +
+	" \x03(\v22.tzero.v1.manage.GetSettlementsResponse.SettlementR\vsettlements\x126\n" +
+	"\tpage_info\x18\x14 \x01(\v2\x19.tzero.v1.manage.PageInfoR\bpageInfo\x1a\x91\x02\n" +
 	"\n" +
 	"Settlement\x12\x0e\n" +
 	"\x02id\x18\n" +
-	" \x01(\x04R\x02id\x12K\n" +
-	"\x04type\x18\x14 \x01(\x0e27.tzero.v1.manage.GetSettlementsResponse.Settlement.TypeR\x04type\x12%\n" +
-	"\x0ecounterpart_id\x18\x1e \x01(\rR\rcounterpartId\x127\n" +
+	" \x01(\x04R\x02id\x12B\n" +
+	"\rprovider_role\x18\x14 \x01(\x0e2\x1d.tzero.v1.manage.ProviderRoleR\fproviderRole\x12;\n" +
+	"\vcounterpart\x18\x1e \x01(\v2\x19.tzero.v1.manage.ProviderR\vcounterpart\x127\n" +
 	"\n" +
 	"usd_volume\x18( \x01(\v2\x18.tzero.v1.common.DecimalR\tusdVolume\x129\n" +
 	"\n" +
-	"created_at\x182 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\">\n" +
-	"\x04Type\x12\x14\n" +
-	"\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
-	"\tTYPE_SENT\x10\n" +
-	"\x12\x11\n" +
-	"\rTYPE_RECEIVED\x10\x14\".\n" +
+	"created_at\x182 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\".\n" +
 	"\bProvider\x12\x0e\n" +
 	"\x02id\x18\n" +
 	" \x01(\rR\x02id\x12\x12\n" +
-	"\x04name\x18\x14 \x01(\tR\x04name\"S\n" +
-	"\x04Page\x12\x17\n" +
+	"\x04name\x18\x14 \x01(\tR\x04name\"^\n" +
+	"\x04Page\x12 \n" +
 	"\x04page\x18\n" +
-	" \x01(\rH\x00R\x04page\x88\x01\x01\x12 \n" +
-	"\x04size\x18\x14 \x01(\rB\a\xbaH\x04\x1a\x02\x102H\x01R\x04size\x88\x01\x01B\a\n" +
+	" \x01(\rB\a\xbaH\x04*\x02(\x01H\x00R\x04page\x88\x01\x01\x12\"\n" +
+	"\x04size\x18\x14 \x01(\rB\t\xbaH\x06*\x04\x182(\x01H\x01R\x04size\x88\x01\x01B\a\n" +
 	"\x05_pageB\a\n" +
-	"\x05_size2\xf7\x02\n" +
+	"\x05_size\"e\n" +
+	"\bPageInfo\x12!\n" +
+	"\fcurrent_page\x18\n" +
+	" \x01(\rR\vcurrentPage\x12\x1b\n" +
+	"\tpage_size\x18\x14 \x01(\rR\bpageSize\x12\x19\n" +
+	"\bhas_next\x18\x1e \x01(\bR\ahasNext*j\n" +
+	"\fProviderRole\x12\x1d\n" +
+	"\x19PROVIDER_ROLE_UNSPECIFIED\x10\x00\x12\x1c\n" +
+	"\x18PROVIDER_ROLE_ORIGINATOR\x10\n" +
+	"\x12\x1d\n" +
+	"\x19PROVIDER_ROLE_BENEFICIARY\x10\x142\x8f\x03\n" +
 	"\x10DashboardService\x12R\n" +
-	"\tGetVolume\x12!.tzero.v1.manage.GetVolumeRequest\x1a\".tzero.v1.manage.GetVolumeResponse\x12R\n" +
-	"\tGetLimits\x12!.tzero.v1.manage.GetLimitsRequest\x1a\".tzero.v1.manage.GetLimitsResponse\x12X\n" +
+	"\tGetVolume\x12!.tzero.v1.manage.GetVolumeRequest\x1a\".tzero.v1.manage.GetVolumeResponse\x12j\n" +
+	"\x11GetCounterparties\x12).tzero.v1.manage.GetCounterpartiesRequest\x1a*.tzero.v1.manage.GetCounterpartiesResponse\x12X\n" +
 	"\vGetPayments\x12#.tzero.v1.manage.GetPaymentsRequest\x1a$.tzero.v1.manage.GetPaymentsResponse\x12a\n" +
 	"\x0eGetSettlements\x12&.tzero.v1.manage.GetSettlementsRequest\x1a'.tzero.v1.manage.GetSettlementsResponseB\xbf\x01\n" +
 	"\x13com.tzero.v1.manageB\x0eDashboardProtoP\x01Z:github.com/t-0-network/provider-sdk-go/api/tzero/v1/manage\xa2\x02\x03TVM\xaa\x02\x0fTzero.V1.Manage\xca\x02\x0fTzero\\V1\\Manage\xe2\x02\x1bTzero\\V1\\Manage\\GPBMetadata\xea\x02\x11Tzero::V1::Manageb\x06proto3"
@@ -1039,67 +1176,77 @@ func file_tzero_v1_manage_dashboard_proto_rawDescGZIP() []byte {
 	return file_tzero_v1_manage_dashboard_proto_rawDescData
 }
 
-var file_tzero_v1_manage_dashboard_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_tzero_v1_manage_dashboard_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_tzero_v1_manage_dashboard_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_tzero_v1_manage_dashboard_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_tzero_v1_manage_dashboard_proto_goTypes = []any{
-	(GetPaymentsResponse_Payment_Type)(0),       // 0: tzero.v1.manage.GetPaymentsResponse.Payment.Type
-	(GetPaymentsResponse_Payment_Status)(0),     // 1: tzero.v1.manage.GetPaymentsResponse.Payment.Status
-	(GetSettlementsResponse_Settlement_Type)(0), // 2: tzero.v1.manage.GetSettlementsResponse.Settlement.Type
-	(*GetVolumeRequest)(nil),                    // 3: tzero.v1.manage.GetVolumeRequest
-	(*GetVolumeResponse)(nil),                   // 4: tzero.v1.manage.GetVolumeResponse
-	(*GetLimitsRequest)(nil),                    // 5: tzero.v1.manage.GetLimitsRequest
-	(*GetLimitsResponse)(nil),                   // 6: tzero.v1.manage.GetLimitsResponse
-	(*GetPaymentsRequest)(nil),                  // 7: tzero.v1.manage.GetPaymentsRequest
-	(*GetPaymentsResponse)(nil),                 // 8: tzero.v1.manage.GetPaymentsResponse
-	(*GetSettlementsRequest)(nil),               // 9: tzero.v1.manage.GetSettlementsRequest
-	(*GetSettlementsResponse)(nil),              // 10: tzero.v1.manage.GetSettlementsResponse
-	(*Provider)(nil),                            // 11: tzero.v1.manage.Provider
-	(*Page)(nil),                                // 12: tzero.v1.manage.Page
-	(*GetVolumeResponse_Volume)(nil),            // 13: tzero.v1.manage.GetVolumeResponse.Volume
-	(*GetLimitsResponse_Limit)(nil),             // 14: tzero.v1.manage.GetLimitsResponse.Limit
-	(*GetPaymentsResponse_Payment)(nil),         // 15: tzero.v1.manage.GetPaymentsResponse.Payment
-	(*GetSettlementsResponse_Settlement)(nil),   // 16: tzero.v1.manage.GetSettlementsResponse.Settlement
-	(*common.Decimal)(nil),                      // 17: tzero.v1.common.Decimal
-	(*timestamppb.Timestamp)(nil),               // 18: google.protobuf.Timestamp
+	(ProviderRole)(0),                              // 0: tzero.v1.manage.ProviderRole
+	(GetPaymentsResponse_Payment_Status)(0),        // 1: tzero.v1.manage.GetPaymentsResponse.Payment.Status
+	(*GetVolumeRequest)(nil),                       // 2: tzero.v1.manage.GetVolumeRequest
+	(*GetVolumeResponse)(nil),                      // 3: tzero.v1.manage.GetVolumeResponse
+	(*GetCounterpartiesRequest)(nil),               // 4: tzero.v1.manage.GetCounterpartiesRequest
+	(*GetCounterpartiesResponse)(nil),              // 5: tzero.v1.manage.GetCounterpartiesResponse
+	(*GetPaymentsRequest)(nil),                     // 6: tzero.v1.manage.GetPaymentsRequest
+	(*GetPaymentsResponse)(nil),                    // 7: tzero.v1.manage.GetPaymentsResponse
+	(*GetSettlementsRequest)(nil),                  // 8: tzero.v1.manage.GetSettlementsRequest
+	(*GetSettlementsResponse)(nil),                 // 9: tzero.v1.manage.GetSettlementsResponse
+	(*Provider)(nil),                               // 10: tzero.v1.manage.Provider
+	(*Page)(nil),                                   // 11: tzero.v1.manage.Page
+	(*PageInfo)(nil),                               // 12: tzero.v1.manage.PageInfo
+	(*GetVolumeResponse_Volume)(nil),               // 13: tzero.v1.manage.GetVolumeResponse.Volume
+	(*GetCounterpartiesResponse_Counterparty)(nil), // 14: tzero.v1.manage.GetCounterpartiesResponse.Counterparty
+	(*GetPaymentsResponse_Payment)(nil),            // 15: tzero.v1.manage.GetPaymentsResponse.Payment
+	(*GetSettlementsResponse_Settlement)(nil),      // 16: tzero.v1.manage.GetSettlementsResponse.Settlement
+	(*common.Decimal)(nil),                         // 17: tzero.v1.common.Decimal
+	(*timestamppb.Timestamp)(nil),                  // 18: google.protobuf.Timestamp
 }
 var file_tzero_v1_manage_dashboard_proto_depIdxs = []int32{
-	13, // 0: tzero.v1.manage.GetVolumeResponse.volumes:type_name -> tzero.v1.manage.GetVolumeResponse.Volume
-	17, // 1: tzero.v1.manage.GetVolumeResponse.total:type_name -> tzero.v1.common.Decimal
-	14, // 2: tzero.v1.manage.GetLimitsResponse.limits:type_name -> tzero.v1.manage.GetLimitsResponse.Limit
-	12, // 3: tzero.v1.manage.GetPaymentsRequest.page:type_name -> tzero.v1.manage.Page
-	15, // 4: tzero.v1.manage.GetPaymentsResponse.payments:type_name -> tzero.v1.manage.GetPaymentsResponse.Payment
-	12, // 5: tzero.v1.manage.GetSettlementsRequest.page:type_name -> tzero.v1.manage.Page
-	11, // 6: tzero.v1.manage.GetVolumeResponse.Volume.provider:type_name -> tzero.v1.manage.Provider
-	17, // 7: tzero.v1.manage.GetVolumeResponse.Volume.pay_in:type_name -> tzero.v1.common.Decimal
-	17, // 8: tzero.v1.manage.GetVolumeResponse.Volume.pay_out:type_name -> tzero.v1.common.Decimal
-	17, // 9: tzero.v1.manage.GetVolumeResponse.Volume.total:type_name -> tzero.v1.common.Decimal
-	11, // 10: tzero.v1.manage.GetLimitsResponse.Limit.provider:type_name -> tzero.v1.manage.Provider
-	17, // 11: tzero.v1.manage.GetLimitsResponse.Limit.credit_left:type_name -> tzero.v1.common.Decimal
-	17, // 12: tzero.v1.manage.GetLimitsResponse.Limit.credit_usage:type_name -> tzero.v1.common.Decimal
-	17, // 13: tzero.v1.manage.GetLimitsResponse.Limit.presettlement_balance:type_name -> tzero.v1.common.Decimal
-	0,  // 14: tzero.v1.manage.GetPaymentsResponse.Payment.type:type_name -> tzero.v1.manage.GetPaymentsResponse.Payment.Type
-	11, // 15: tzero.v1.manage.GetPaymentsResponse.Payment.counterpart:type_name -> tzero.v1.manage.Provider
-	1,  // 16: tzero.v1.manage.GetPaymentsResponse.Payment.status:type_name -> tzero.v1.manage.GetPaymentsResponse.Payment.Status
-	18, // 17: tzero.v1.manage.GetPaymentsResponse.Payment.created_at:type_name -> google.protobuf.Timestamp
-	18, // 18: tzero.v1.manage.GetPaymentsResponse.Payment.accepted_at:type_name -> google.protobuf.Timestamp
-	18, // 19: tzero.v1.manage.GetPaymentsResponse.Payment.completed_at:type_name -> google.protobuf.Timestamp
-	17, // 20: tzero.v1.manage.GetPaymentsResponse.Payment.usd_volume:type_name -> tzero.v1.common.Decimal
-	2,  // 21: tzero.v1.manage.GetSettlementsResponse.Settlement.type:type_name -> tzero.v1.manage.GetSettlementsResponse.Settlement.Type
-	17, // 22: tzero.v1.manage.GetSettlementsResponse.Settlement.usd_volume:type_name -> tzero.v1.common.Decimal
-	18, // 23: tzero.v1.manage.GetSettlementsResponse.Settlement.created_at:type_name -> google.protobuf.Timestamp
-	3,  // 24: tzero.v1.manage.DashboardService.GetVolume:input_type -> tzero.v1.manage.GetVolumeRequest
-	5,  // 25: tzero.v1.manage.DashboardService.GetLimits:input_type -> tzero.v1.manage.GetLimitsRequest
-	7,  // 26: tzero.v1.manage.DashboardService.GetPayments:input_type -> tzero.v1.manage.GetPaymentsRequest
-	9,  // 27: tzero.v1.manage.DashboardService.GetSettlements:input_type -> tzero.v1.manage.GetSettlementsRequest
-	4,  // 28: tzero.v1.manage.DashboardService.GetVolume:output_type -> tzero.v1.manage.GetVolumeResponse
-	6,  // 29: tzero.v1.manage.DashboardService.GetLimits:output_type -> tzero.v1.manage.GetLimitsResponse
-	8,  // 30: tzero.v1.manage.DashboardService.GetPayments:output_type -> tzero.v1.manage.GetPaymentsResponse
-	10, // 31: tzero.v1.manage.DashboardService.GetSettlements:output_type -> tzero.v1.manage.GetSettlementsResponse
-	28, // [28:32] is the sub-list for method output_type
-	24, // [24:28] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	11, // 0: tzero.v1.manage.GetVolumeRequest.page:type_name -> tzero.v1.manage.Page
+	13, // 1: tzero.v1.manage.GetVolumeResponse.volumes:type_name -> tzero.v1.manage.GetVolumeResponse.Volume
+	17, // 2: tzero.v1.manage.GetVolumeResponse.total:type_name -> tzero.v1.common.Decimal
+	12, // 3: tzero.v1.manage.GetVolumeResponse.page_info:type_name -> tzero.v1.manage.PageInfo
+	11, // 4: tzero.v1.manage.GetCounterpartiesRequest.page:type_name -> tzero.v1.manage.Page
+	14, // 5: tzero.v1.manage.GetCounterpartiesResponse.counterparties:type_name -> tzero.v1.manage.GetCounterpartiesResponse.Counterparty
+	12, // 6: tzero.v1.manage.GetCounterpartiesResponse.page_info:type_name -> tzero.v1.manage.PageInfo
+	11, // 7: tzero.v1.manage.GetPaymentsRequest.page:type_name -> tzero.v1.manage.Page
+	15, // 8: tzero.v1.manage.GetPaymentsResponse.payments:type_name -> tzero.v1.manage.GetPaymentsResponse.Payment
+	12, // 9: tzero.v1.manage.GetPaymentsResponse.page_info:type_name -> tzero.v1.manage.PageInfo
+	11, // 10: tzero.v1.manage.GetSettlementsRequest.page:type_name -> tzero.v1.manage.Page
+	16, // 11: tzero.v1.manage.GetSettlementsResponse.settlements:type_name -> tzero.v1.manage.GetSettlementsResponse.Settlement
+	12, // 12: tzero.v1.manage.GetSettlementsResponse.page_info:type_name -> tzero.v1.manage.PageInfo
+	10, // 13: tzero.v1.manage.GetVolumeResponse.Volume.provider:type_name -> tzero.v1.manage.Provider
+	17, // 14: tzero.v1.manage.GetVolumeResponse.Volume.pay_in:type_name -> tzero.v1.common.Decimal
+	17, // 15: tzero.v1.manage.GetVolumeResponse.Volume.pay_out:type_name -> tzero.v1.common.Decimal
+	17, // 16: tzero.v1.manage.GetVolumeResponse.Volume.total:type_name -> tzero.v1.common.Decimal
+	10, // 17: tzero.v1.manage.GetCounterpartiesResponse.Counterparty.provider:type_name -> tzero.v1.manage.Provider
+	17, // 18: tzero.v1.manage.GetCounterpartiesResponse.Counterparty.credit_line_in:type_name -> tzero.v1.common.Decimal
+	17, // 19: tzero.v1.manage.GetCounterpartiesResponse.Counterparty.net_payable:type_name -> tzero.v1.common.Decimal
+	17, // 20: tzero.v1.manage.GetCounterpartiesResponse.Counterparty.credit_line_out:type_name -> tzero.v1.common.Decimal
+	17, // 21: tzero.v1.manage.GetCounterpartiesResponse.Counterparty.net_receivable:type_name -> tzero.v1.common.Decimal
+	0,  // 22: tzero.v1.manage.GetPaymentsResponse.Payment.provider_role:type_name -> tzero.v1.manage.ProviderRole
+	10, // 23: tzero.v1.manage.GetPaymentsResponse.Payment.counterpart:type_name -> tzero.v1.manage.Provider
+	1,  // 24: tzero.v1.manage.GetPaymentsResponse.Payment.status:type_name -> tzero.v1.manage.GetPaymentsResponse.Payment.Status
+	18, // 25: tzero.v1.manage.GetPaymentsResponse.Payment.created_at:type_name -> google.protobuf.Timestamp
+	18, // 26: tzero.v1.manage.GetPaymentsResponse.Payment.accepted_at:type_name -> google.protobuf.Timestamp
+	18, // 27: tzero.v1.manage.GetPaymentsResponse.Payment.completed_at:type_name -> google.protobuf.Timestamp
+	17, // 28: tzero.v1.manage.GetPaymentsResponse.Payment.usd_volume:type_name -> tzero.v1.common.Decimal
+	17, // 29: tzero.v1.manage.GetPaymentsResponse.Payment.payout_amount:type_name -> tzero.v1.common.Decimal
+	0,  // 30: tzero.v1.manage.GetSettlementsResponse.Settlement.provider_role:type_name -> tzero.v1.manage.ProviderRole
+	10, // 31: tzero.v1.manage.GetSettlementsResponse.Settlement.counterpart:type_name -> tzero.v1.manage.Provider
+	17, // 32: tzero.v1.manage.GetSettlementsResponse.Settlement.usd_volume:type_name -> tzero.v1.common.Decimal
+	18, // 33: tzero.v1.manage.GetSettlementsResponse.Settlement.created_at:type_name -> google.protobuf.Timestamp
+	2,  // 34: tzero.v1.manage.DashboardService.GetVolume:input_type -> tzero.v1.manage.GetVolumeRequest
+	4,  // 35: tzero.v1.manage.DashboardService.GetCounterparties:input_type -> tzero.v1.manage.GetCounterpartiesRequest
+	6,  // 36: tzero.v1.manage.DashboardService.GetPayments:input_type -> tzero.v1.manage.GetPaymentsRequest
+	8,  // 37: tzero.v1.manage.DashboardService.GetSettlements:input_type -> tzero.v1.manage.GetSettlementsRequest
+	3,  // 38: tzero.v1.manage.DashboardService.GetVolume:output_type -> tzero.v1.manage.GetVolumeResponse
+	5,  // 39: tzero.v1.manage.DashboardService.GetCounterparties:output_type -> tzero.v1.manage.GetCounterpartiesResponse
+	7,  // 40: tzero.v1.manage.DashboardService.GetPayments:output_type -> tzero.v1.manage.GetPaymentsResponse
+	9,  // 41: tzero.v1.manage.DashboardService.GetSettlements:output_type -> tzero.v1.manage.GetSettlementsResponse
+	38, // [38:42] is the sub-list for method output_type
+	34, // [34:38] is the sub-list for method input_type
+	34, // [34:34] is the sub-list for extension type_name
+	34, // [34:34] is the sub-list for extension extendee
+	0,  // [0:34] is the sub-list for field type_name
 }
 
 func init() { file_tzero_v1_manage_dashboard_proto_init() }
@@ -1107,17 +1254,19 @@ func file_tzero_v1_manage_dashboard_proto_init() {
 	if File_tzero_v1_manage_dashboard_proto != nil {
 		return
 	}
+	file_tzero_v1_manage_dashboard_proto_msgTypes[0].OneofWrappers = []any{}
+	file_tzero_v1_manage_dashboard_proto_msgTypes[2].OneofWrappers = []any{}
 	file_tzero_v1_manage_dashboard_proto_msgTypes[4].OneofWrappers = []any{}
 	file_tzero_v1_manage_dashboard_proto_msgTypes[6].OneofWrappers = []any{}
 	file_tzero_v1_manage_dashboard_proto_msgTypes[9].OneofWrappers = []any{}
-	file_tzero_v1_manage_dashboard_proto_msgTypes[12].OneofWrappers = []any{}
+	file_tzero_v1_manage_dashboard_proto_msgTypes[13].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tzero_v1_manage_dashboard_proto_rawDesc), len(file_tzero_v1_manage_dashboard_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   14,
+			NumEnums:      2,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

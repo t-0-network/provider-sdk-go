@@ -36,9 +36,9 @@ const (
 	// DashboardServiceGetVolumeProcedure is the fully-qualified name of the DashboardService's
 	// GetVolume RPC.
 	DashboardServiceGetVolumeProcedure = "/tzero.v1.manage.DashboardService/GetVolume"
-	// DashboardServiceGetLimitsProcedure is the fully-qualified name of the DashboardService's
-	// GetLimits RPC.
-	DashboardServiceGetLimitsProcedure = "/tzero.v1.manage.DashboardService/GetLimits"
+	// DashboardServiceGetCounterpartiesProcedure is the fully-qualified name of the DashboardService's
+	// GetCounterparties RPC.
+	DashboardServiceGetCounterpartiesProcedure = "/tzero.v1.manage.DashboardService/GetCounterparties"
 	// DashboardServiceGetPaymentsProcedure is the fully-qualified name of the DashboardService's
 	// GetPayments RPC.
 	DashboardServiceGetPaymentsProcedure = "/tzero.v1.manage.DashboardService/GetPayments"
@@ -50,7 +50,7 @@ const (
 // DashboardServiceClient is a client for the tzero.v1.manage.DashboardService service.
 type DashboardServiceClient interface {
 	GetVolume(context.Context, *connect.Request[manage.GetVolumeRequest]) (*connect.Response[manage.GetVolumeResponse], error)
-	GetLimits(context.Context, *connect.Request[manage.GetLimitsRequest]) (*connect.Response[manage.GetLimitsResponse], error)
+	GetCounterparties(context.Context, *connect.Request[manage.GetCounterpartiesRequest]) (*connect.Response[manage.GetCounterpartiesResponse], error)
 	GetPayments(context.Context, *connect.Request[manage.GetPaymentsRequest]) (*connect.Response[manage.GetPaymentsResponse], error)
 	GetSettlements(context.Context, *connect.Request[manage.GetSettlementsRequest]) (*connect.Response[manage.GetSettlementsResponse], error)
 }
@@ -72,10 +72,10 @@ func NewDashboardServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(dashboardServiceMethods.ByName("GetVolume")),
 			connect.WithClientOptions(opts...),
 		),
-		getLimits: connect.NewClient[manage.GetLimitsRequest, manage.GetLimitsResponse](
+		getCounterparties: connect.NewClient[manage.GetCounterpartiesRequest, manage.GetCounterpartiesResponse](
 			httpClient,
-			baseURL+DashboardServiceGetLimitsProcedure,
-			connect.WithSchema(dashboardServiceMethods.ByName("GetLimits")),
+			baseURL+DashboardServiceGetCounterpartiesProcedure,
+			connect.WithSchema(dashboardServiceMethods.ByName("GetCounterparties")),
 			connect.WithClientOptions(opts...),
 		),
 		getPayments: connect.NewClient[manage.GetPaymentsRequest, manage.GetPaymentsResponse](
@@ -95,10 +95,10 @@ func NewDashboardServiceClient(httpClient connect.HTTPClient, baseURL string, op
 
 // dashboardServiceClient implements DashboardServiceClient.
 type dashboardServiceClient struct {
-	getVolume      *connect.Client[manage.GetVolumeRequest, manage.GetVolumeResponse]
-	getLimits      *connect.Client[manage.GetLimitsRequest, manage.GetLimitsResponse]
-	getPayments    *connect.Client[manage.GetPaymentsRequest, manage.GetPaymentsResponse]
-	getSettlements *connect.Client[manage.GetSettlementsRequest, manage.GetSettlementsResponse]
+	getVolume         *connect.Client[manage.GetVolumeRequest, manage.GetVolumeResponse]
+	getCounterparties *connect.Client[manage.GetCounterpartiesRequest, manage.GetCounterpartiesResponse]
+	getPayments       *connect.Client[manage.GetPaymentsRequest, manage.GetPaymentsResponse]
+	getSettlements    *connect.Client[manage.GetSettlementsRequest, manage.GetSettlementsResponse]
 }
 
 // GetVolume calls tzero.v1.manage.DashboardService.GetVolume.
@@ -106,9 +106,9 @@ func (c *dashboardServiceClient) GetVolume(ctx context.Context, req *connect.Req
 	return c.getVolume.CallUnary(ctx, req)
 }
 
-// GetLimits calls tzero.v1.manage.DashboardService.GetLimits.
-func (c *dashboardServiceClient) GetLimits(ctx context.Context, req *connect.Request[manage.GetLimitsRequest]) (*connect.Response[manage.GetLimitsResponse], error) {
-	return c.getLimits.CallUnary(ctx, req)
+// GetCounterparties calls tzero.v1.manage.DashboardService.GetCounterparties.
+func (c *dashboardServiceClient) GetCounterparties(ctx context.Context, req *connect.Request[manage.GetCounterpartiesRequest]) (*connect.Response[manage.GetCounterpartiesResponse], error) {
+	return c.getCounterparties.CallUnary(ctx, req)
 }
 
 // GetPayments calls tzero.v1.manage.DashboardService.GetPayments.
@@ -124,7 +124,7 @@ func (c *dashboardServiceClient) GetSettlements(ctx context.Context, req *connec
 // DashboardServiceHandler is an implementation of the tzero.v1.manage.DashboardService service.
 type DashboardServiceHandler interface {
 	GetVolume(context.Context, *connect.Request[manage.GetVolumeRequest]) (*connect.Response[manage.GetVolumeResponse], error)
-	GetLimits(context.Context, *connect.Request[manage.GetLimitsRequest]) (*connect.Response[manage.GetLimitsResponse], error)
+	GetCounterparties(context.Context, *connect.Request[manage.GetCounterpartiesRequest]) (*connect.Response[manage.GetCounterpartiesResponse], error)
 	GetPayments(context.Context, *connect.Request[manage.GetPaymentsRequest]) (*connect.Response[manage.GetPaymentsResponse], error)
 	GetSettlements(context.Context, *connect.Request[manage.GetSettlementsRequest]) (*connect.Response[manage.GetSettlementsResponse], error)
 }
@@ -142,10 +142,10 @@ func NewDashboardServiceHandler(svc DashboardServiceHandler, opts ...connect.Han
 		connect.WithSchema(dashboardServiceMethods.ByName("GetVolume")),
 		connect.WithHandlerOptions(opts...),
 	)
-	dashboardServiceGetLimitsHandler := connect.NewUnaryHandler(
-		DashboardServiceGetLimitsProcedure,
-		svc.GetLimits,
-		connect.WithSchema(dashboardServiceMethods.ByName("GetLimits")),
+	dashboardServiceGetCounterpartiesHandler := connect.NewUnaryHandler(
+		DashboardServiceGetCounterpartiesProcedure,
+		svc.GetCounterparties,
+		connect.WithSchema(dashboardServiceMethods.ByName("GetCounterparties")),
 		connect.WithHandlerOptions(opts...),
 	)
 	dashboardServiceGetPaymentsHandler := connect.NewUnaryHandler(
@@ -164,8 +164,8 @@ func NewDashboardServiceHandler(svc DashboardServiceHandler, opts ...connect.Han
 		switch r.URL.Path {
 		case DashboardServiceGetVolumeProcedure:
 			dashboardServiceGetVolumeHandler.ServeHTTP(w, r)
-		case DashboardServiceGetLimitsProcedure:
-			dashboardServiceGetLimitsHandler.ServeHTTP(w, r)
+		case DashboardServiceGetCounterpartiesProcedure:
+			dashboardServiceGetCounterpartiesHandler.ServeHTTP(w, r)
 		case DashboardServiceGetPaymentsProcedure:
 			dashboardServiceGetPaymentsHandler.ServeHTTP(w, r)
 		case DashboardServiceGetSettlementsProcedure:
@@ -183,8 +183,8 @@ func (UnimplementedDashboardServiceHandler) GetVolume(context.Context, *connect.
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.manage.DashboardService.GetVolume is not implemented"))
 }
 
-func (UnimplementedDashboardServiceHandler) GetLimits(context.Context, *connect.Request[manage.GetLimitsRequest]) (*connect.Response[manage.GetLimitsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.manage.DashboardService.GetLimits is not implemented"))
+func (UnimplementedDashboardServiceHandler) GetCounterparties(context.Context, *connect.Request[manage.GetCounterpartiesRequest]) (*connect.Response[manage.GetCounterpartiesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tzero.v1.manage.DashboardService.GetCounterparties is not implemented"))
 }
 
 func (UnimplementedDashboardServiceHandler) GetPayments(context.Context, *connect.Request[manage.GetPaymentsRequest]) (*connect.Response[manage.GetPaymentsResponse], error) {
