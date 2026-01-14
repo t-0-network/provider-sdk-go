@@ -10,6 +10,7 @@ message PaymentReceipt {
     Sepa sepa = 10;
     Swift swift = 30;
     Stablecoin stablecoin = 40;
+    Pix pix = 50;
   };
 
   message Sepa {
@@ -20,6 +21,13 @@ message PaymentReceipt {
   }
 
   message Swift {
+  }
+
+  message Pix {
+    optional string e2e_id = 10 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 35,
+    }];
   }
 
   message Stablecoin {
