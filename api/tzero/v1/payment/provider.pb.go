@@ -132,16 +132,25 @@ func (PayoutResponse_Failed_Reason) EnumDescriptor() ([]byte, []int) {
 type UpdatePaymentRequest_Failed_Reason int32
 
 const (
-	UpdatePaymentRequest_Failed_REASON_UNSPECIFIED UpdatePaymentRequest_Failed_Reason = 0
+	UpdatePaymentRequest_Failed_REASON_UNSPECIFIED                       UpdatePaymentRequest_Failed_Reason = 0
+	UpdatePaymentRequest_Failed_REASON_NO_QUOTE_AFTER_AML_APPROVAL       UpdatePaymentRequest_Failed_Reason = 1 // AML review completed, but the pay-out provider no longer has a valid quote available.
+	UpdatePaymentRequest_Failed_REASON_QUOTE_REJECTED_AFTER_AML_APPROVAL UpdatePaymentRequest_Failed_Reason = 2 // AML review completed and a new quote was required, but the pay-in provider rejected the updated quote (e.g. due to rate change after AML delay).
+	UpdatePaymentRequest_Failed_REASON_AML_RISK_CHECK_FAILED             UpdatePaymentRequest_Failed_Reason = 3 // Payment was rejected by the pay-out provider because the AML / risk checks failed.
 )
 
 // Enum value maps for UpdatePaymentRequest_Failed_Reason.
 var (
 	UpdatePaymentRequest_Failed_Reason_name = map[int32]string{
 		0: "REASON_UNSPECIFIED",
+		1: "REASON_NO_QUOTE_AFTER_AML_APPROVAL",
+		2: "REASON_QUOTE_REJECTED_AFTER_AML_APPROVAL",
+		3: "REASON_AML_RISK_CHECK_FAILED",
 	}
 	UpdatePaymentRequest_Failed_Reason_value = map[string]int32{
-		"REASON_UNSPECIFIED": 0,
+		"REASON_UNSPECIFIED":                       0,
+		"REASON_NO_QUOTE_AFTER_AML_APPROVAL":       1,
+		"REASON_QUOTE_REJECTED_AFTER_AML_APPROVAL": 2,
+		"REASON_AML_RISK_CHECK_FAILED":             3,
 	}
 )
 
@@ -1381,6 +1390,7 @@ func (*PayoutResponse_ManualAmlCheck) Descriptor() ([]byte, []int) {
 type PayoutResponse_Failed struct {
 	state         protoimpl.MessageState       `protogen:"open.v1"`
 	Reason        PayoutResponse_Failed_Reason `protobuf:"varint,10,opt,name=reason,proto3,enum=tzero.v1.payment.PayoutResponse_Failed_Reason" json:"reason,omitempty"`
+	Details       *string                      `protobuf:"bytes,20,opt,name=details,proto3,oneof" json:"details,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1420,6 +1430,13 @@ func (x *PayoutResponse_Failed) GetReason() PayoutResponse_Failed_Reason {
 		return x.Reason
 	}
 	return PayoutResponse_Failed_REASON_UNSPECIFIED
+}
+
+func (x *PayoutResponse_Failed) GetDetails() string {
+	if x != nil && x.Details != nil {
+		return *x.Details
+	}
+	return ""
 }
 
 type UpdatePaymentRequest_Accepted struct {
@@ -1477,6 +1494,7 @@ func (x *UpdatePaymentRequest_Accepted) GetTravelRuleData() *UpdatePaymentReques
 type UpdatePaymentRequest_Failed struct {
 	state         protoimpl.MessageState             `protogen:"open.v1"`
 	Reason        UpdatePaymentRequest_Failed_Reason `protobuf:"varint,10,opt,name=reason,proto3,enum=tzero.v1.payment.UpdatePaymentRequest_Failed_Reason" json:"reason,omitempty"`
+	Details       *string                            `protobuf:"bytes,20,opt,name=details,proto3,oneof" json:"details,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1516,6 +1534,13 @@ func (x *UpdatePaymentRequest_Failed) GetReason() UpdatePaymentRequest_Failed_Re
 		return x.Reason
 	}
 	return UpdatePaymentRequest_Failed_REASON_UNSPECIFIED
+}
+
+func (x *UpdatePaymentRequest_Failed) GetDetails() string {
+	if x != nil && x.Details != nil {
+		return *x.Details
+	}
+	return ""
 }
 
 type UpdatePaymentRequest_Confirmed struct {
@@ -1885,20 +1910,23 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\x13originator_provider\x18\x1e \x01(\v2\x0f.ivms101.PersonH\x00R\x12originatorProvider\x88\x01\x01B\x16\n" +
 	"\x14_originator_providerB\x11\n" +
 	"\x0f_payout_detailsB\x13\n" +
-	"\x11_travel_rule_data\"\x95\x03\n" +
+	"\x11_travel_rule_data\"\xc1\x03\n" +
 	"\x0ePayoutResponse\x12G\n" +
 	"\baccepted\x18\x14 \x01(\v2).tzero.v1.payment.PayoutResponse.AcceptedH\x00R\baccepted\x12A\n" +
 	"\x06failed\x18\x1e \x01(\v2'.tzero.v1.payment.PayoutResponse.FailedH\x00R\x06failed\x12[\n" +
 	"\x10manual_aml_check\x18( \x01(\v2/.tzero.v1.payment.PayoutResponse.ManualAmlCheckH\x00R\x0emanualAmlCheck\x1a\n" +
 	"\n" +
 	"\bAccepted\x1a\x10\n" +
-	"\x0eManualAmlCheck\x1ar\n" +
+	"\x0eManualAmlCheck\x1a\x9d\x01\n" +
 	"\x06Failed\x12F\n" +
 	"\x06reason\x18\n" +
-	" \x01(\x0e2..tzero.v1.payment.PayoutResponse.Failed.ReasonR\x06reason\" \n" +
+	" \x01(\x0e2..tzero.v1.payment.PayoutResponse.Failed.ReasonR\x06reason\x12\x1d\n" +
+	"\adetails\x18\x14 \x01(\tH\x00R\adetails\x88\x01\x01\" \n" +
 	"\x06Reason\x12\x16\n" +
-	"\x12REASON_UNSPECIFIED\x10\x00B\b\n" +
-	"\x06result\"\x8d\b\n" +
+	"\x12REASON_UNSPECIFIED\x10\x00B\n" +
+	"\n" +
+	"\b_detailsB\b\n" +
+	"\x06result\"\xb2\t\n" +
 	"\x14UpdatePaymentRequest\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\x05 \x01(\x04R\tpaymentId\x12*\n" +
@@ -1916,12 +1944,18 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\x14beneficiary_provider\x18\n" +
 	" \x01(\v2\x0f.ivms101.PersonH\x00R\x13beneficiaryProvider\x88\x01\x01B\x17\n" +
 	"\x15_beneficiary_providerB\x13\n" +
-	"\x11_travel_rule_data\x1ax\n" +
+	"\x11_travel_rule_data\x1a\x9c\x02\n" +
 	"\x06Failed\x12L\n" +
 	"\x06reason\x18\n" +
-	" \x01(\x0e24.tzero.v1.payment.UpdatePaymentRequest.Failed.ReasonR\x06reason\" \n" +
+	" \x01(\x0e24.tzero.v1.payment.UpdatePaymentRequest.Failed.ReasonR\x06reason\x12\x1d\n" +
+	"\adetails\x18\x14 \x01(\tH\x00R\adetails\x88\x01\x01\"\x98\x01\n" +
 	"\x06Reason\x12\x16\n" +
-	"\x12REASON_UNSPECIFIED\x10\x00\x1a\x82\x01\n" +
+	"\x12REASON_UNSPECIFIED\x10\x00\x12&\n" +
+	"\"REASON_NO_QUOTE_AFTER_AML_APPROVAL\x10\x01\x12,\n" +
+	"(REASON_QUOTE_REJECTED_AFTER_AML_APPROVAL\x10\x02\x12 \n" +
+	"\x1cREASON_AML_RISK_CHECK_FAILED\x10\x03B\n" +
+	"\n" +
+	"\b_details\x1a\x82\x01\n" +
 	"\tConfirmed\x12:\n" +
 	"\vpaid_out_at\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\tpaidOutAt\x129\n" +
@@ -2101,7 +2135,9 @@ func file_tzero_v1_payment_provider_proto_init() {
 		(*AppendLedgerEntriesRequest_Transaction_FeeSettlement_)(nil),
 	}
 	file_tzero_v1_payment_provider_proto_msgTypes[15].OneofWrappers = []any{}
+	file_tzero_v1_payment_provider_proto_msgTypes[18].OneofWrappers = []any{}
 	file_tzero_v1_payment_provider_proto_msgTypes[19].OneofWrappers = []any{}
+	file_tzero_v1_payment_provider_proto_msgTypes[20].OneofWrappers = []any{}
 	file_tzero_v1_payment_provider_proto_msgTypes[23].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

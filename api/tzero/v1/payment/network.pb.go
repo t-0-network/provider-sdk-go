@@ -643,8 +643,8 @@ type isCreatePaymentResponse_Result interface {
 
 type CreatePaymentResponse_Accepted_ struct {
 	// *
-	// Accepted response - means the payment was accepted, but the payout is not yet completed. This means, the network found
-	// a suitable quote for the payout currency and amount, and instructed the payout provider to process the payout.
+	// Accepted response - the payment was accepted by the network and it's going to be passed to payout provider.
+	// Means the network found a suitable quote for the payout currency and amount.
 	Accepted *CreatePaymentResponse_Accepted `protobuf:"bytes,20,opt,name=accepted,proto3,oneof"`
 }
 
