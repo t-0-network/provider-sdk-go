@@ -1548,7 +1548,7 @@ type UpdatePaymentRequest_Confirmed struct {
 	PaidOutAt *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=paid_out_at,json=paidOutAt,proto3" json:"paid_out_at,omitempty"` // time of the payout
 	// *
 	// Payment receipt might contain metadata about payment recognizable by pay-in provider.
-	Receipt       *common.PaymentReceipt `protobuf:"bytes,20,opt,name=receipt,proto3" json:"receipt,omitempty"`
+	Receipt       *common.PaymentReceipt `protobuf:"bytes,20,opt,name=receipt,proto3,oneof" json:"receipt,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1926,7 +1926,7 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\x12REASON_UNSPECIFIED\x10\x00B\n" +
 	"\n" +
 	"\b_detailsB\b\n" +
-	"\x06result\"\xb2\t\n" +
+	"\x06result\"\xc3\t\n" +
 	"\x14UpdatePaymentRequest\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\x05 \x01(\x04R\tpaymentId\x12*\n" +
@@ -1955,11 +1955,13 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"(REASON_QUOTE_REJECTED_AFTER_AML_APPROVAL\x10\x02\x12 \n" +
 	"\x1cREASON_AML_RISK_CHECK_FAILED\x10\x03B\n" +
 	"\n" +
-	"\b_details\x1a\x82\x01\n" +
+	"\b_details\x1a\x93\x01\n" +
 	"\tConfirmed\x12:\n" +
 	"\vpaid_out_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\tpaidOutAt\x129\n" +
-	"\areceipt\x18\x14 \x01(\v2\x1f.tzero.v1.common.PaymentReceiptR\areceipt\x1a\x10\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tpaidOutAt\x12>\n" +
+	"\areceipt\x18\x14 \x01(\v2\x1f.tzero.v1.common.PaymentReceiptH\x00R\areceipt\x88\x01\x01B\n" +
+	"\n" +
+	"\b_receipt\x1a\x10\n" +
 	"\x0eManualAmlCheckB\b\n" +
 	"\x06result\"\x17\n" +
 	"\x15UpdatePaymentResponse\"\x8e\x03\n" +
@@ -2138,6 +2140,7 @@ func file_tzero_v1_payment_provider_proto_init() {
 	file_tzero_v1_payment_provider_proto_msgTypes[18].OneofWrappers = []any{}
 	file_tzero_v1_payment_provider_proto_msgTypes[19].OneofWrappers = []any{}
 	file_tzero_v1_payment_provider_proto_msgTypes[20].OneofWrappers = []any{}
+	file_tzero_v1_payment_provider_proto_msgTypes[21].OneofWrappers = []any{}
 	file_tzero_v1_payment_provider_proto_msgTypes[23].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
