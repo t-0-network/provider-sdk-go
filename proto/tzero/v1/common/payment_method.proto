@@ -4,17 +4,17 @@ package tzero.v1.common;
 
 import "tzero/v1/common/common.proto";
 import "buf/validate/validate.proto";
+import "google/protobuf/descriptor.proto";
 
 enum PaymentMethodType {
   PAYMENT_METHOD_TYPE_UNSPECIFIED = 0;
   PAYMENT_METHOD_TYPE_SEPA = 10;
   PAYMENT_METHOD_TYPE_SWIFT = 20;
-  PAYMENT_METHOD_TYPE_CARD = 30; // only pay in
-  PAYMENT_METHOD_TYPE_STABLECOIN = 40; // only pay out
   PAYMENT_METHOD_TYPE_ACH = 50;
   PAYMENT_METHOD_TYPE_WIRE = 60;
   PAYMENT_METHOD_TYPE_FPS = 70;
-  PAYMENT_METHOD_TYPE_M_PESA = 80;
+
+  PAYMENT_METHOD_TYPE_M_PESA = 80 [deprecated = true]; // deprecated in favor of PAYMENT_METHOD_TYPE_AFRICAN_MOBILE_MONEY
   PAYMENT_METHOD_TYPE_G_CASH = 90;
   PAYMENT_METHOD_TYPE_INDIAN_BANK_TRANSFER = 100;
   PAYMENT_METHOD_TYPE_PESONET = 110;
@@ -25,6 +25,10 @@ enum PaymentMethodType {
   PAYMENT_METHOD_TYPE_PAKISTAN_MOBILE_WALLET = 140;
   // PIX - Brazilian instant payment system
   PAYMENT_METHOD_TYPE_PIX = 150;
+  // African Mobile Money  - Mobile money system across multiple countries: Kenya (Mpesa, Airtel), Tanzania, Mozambique, DRC, Lesotho, Ghana, Egypt, South Africa etc.
+  PAYMENT_METHOD_TYPE_AFRICAN_MOBILE_MONEY = 160;
+  // The China National Advanced Payment System
+  PAYMENT_METHOD_TYPE_CNAPS = 170;
 }
 
 message PaymentDetails {
@@ -37,9 +41,6 @@ message PaymentDetails {
     // Global (200+ countries)
     Swift swift = 30;
 
-    // Stablecoin - Cryptocurrency transfers pegged to fiat currencies
-    // Global
-    Stablecoin stablecoin = 40;
 
     // ACH (Automated Clearing House) - Electronic bank-to-bank transfers
     // United States
@@ -55,7 +56,7 @@ message PaymentDetails {
 
     // M-Pesa - Mobile money transfer and payment service
     // Kenya, Tanzania, Mozambique, DRC, Lesotho, Ghana, Egypt, South Africa
-    MPesa mpesa = 80;
+    MPesa mpesa = 80 [deprecated = true]; // deprecated in favor of AfricanMobileMoney
 
     // GCash - Mobile wallet and payment platform
     // Philippines
@@ -84,9 +85,17 @@ message PaymentDetails {
     // PIX - Brazilian instant payment system
     // Brazil
     Pix pix = 150;
+
+    // African Money - Kenya payment method
+    AfricanMobileMoney african_mobile_money = 160;
+
+    // The China National Advanced Payment System
+    Cnaps naps = 170;
   };
 
   message Sepa {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_SEPA;
+
     string iban = 20 [(buf.validate.field).string = {
       min_len: 15,
       max_len: 34,
@@ -102,6 +111,8 @@ message PaymentDetails {
   }
 
   message Fps {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_FPS;
+
     string sort_code = 10 [(buf.validate.field).string = {
       min_len: 6,
       max_len: 8,
@@ -122,6 +133,8 @@ message PaymentDetails {
   }
 
   message MPesa {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_M_PESA;
+
     // Phone number in international format without + sign
     // Examples: 254708374149 (Kenya), 255712345678 (Tanzania), 256712345678 (Uganda)
     // Required: Yes
@@ -138,9 +151,73 @@ message PaymentDetails {
       max_len: 12,
       pattern: "^[a-zA-Z0-9]+$"
     }];
+
+    // Beneficiary name
+    string beneficiary_name = 30 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 100
+    }];
+  }
+
+  message AfricanMobileMoney {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_AFRICAN_MOBILE_MONEY;
+
+    // The phone network
+    Network network = 5 [(buf.validate.field).required = true];
+
+    // Phone number in international format without + sign
+    // Required: Yes
+    string beneficiary_phone = 10 [(buf.validate.field).string = {
+      min_len: 10,
+      max_len: 15,
+      pattern: "^[0-9]{10,15}$"
+    }];
+
+    // Account reference (max 12 chars, alphanumeric)
+    // Required: Yes
+    string account_reference = 20 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 12,
+      pattern: "^[a-zA-Z0-9]+$"
+    }];
+
+    // Beneficiary name
+    string beneficiary_name = 30 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 100
+    }];
+
+    enum Network {
+      NETWORK_UNDEFINED = 0;
+      NETWORK_M_PESA = 10;
+      NETWORK_AIRTEL = 20;
+      NETWORK_MTN = 30;
+      NETWORK_VODACOM = 40;
+      NETWORK_ORANGE = 50;
+      NETWORK_VODAFONE = 60;
+      NETWORK_FREE = 70;
+      NETWORK_ZAMTEL = 80;
+    }
+    /*
+    Countries and Available Networks
+     • CD (DRC): VODACOM, AIRTEL, ORANGE
+     • CI (Côte d'Ivoire): ORANGE, MTN
+     • CM (Cameroon): MTN, ORANGE
+     • GH (Ghana): MTN, VODAFONE, AIRTEL
+     • KE (Kenya): MPESA, AIRTEL
+     • MW (Malawi): AIRTEL
+     • RW (Rwanda): MTN, AIRTEL
+     • SN (Senegal): ORANGE, FREE
+     • TZ (Tanzania): VODACOM, AIRTEL
+     • UG (Uganda): MTN, AIRTEL,ORANGE
+     • ZA (South Africa): VODACOM, MTN
+     • ZM (Zambia): MTN, AIRTEL, ZAMTEL
+     */
   }
 
   message GCash {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_G_CASH;
+
     string beneficiary_name = 10 [(buf.validate.field).string = {
       min_len: 1,
       max_len: 100
@@ -160,6 +237,7 @@ message PaymentDetails {
   }
 
   message IndianBankTransfer {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_INDIAN_BANK_TRANSFER;
 
     oneof method {
       option (buf.validate.oneof).required = true;
@@ -222,6 +300,8 @@ message PaymentDetails {
   }
 
   message Swift {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_SWIFT;
+
     // Beneficiary's bank SWIFT/BIC code (8 or 11 characters)
     string swift_code = 10 [(buf.validate.field).string = {
       min_len: 8,
@@ -251,21 +331,49 @@ message PaymentDetails {
     string payment_reference = 50 [(buf.validate.field).string = {
       max_len: 140
     }];
-  }
 
-  message Stablecoin {
-    tzero.v1.common.Blockchain blockchain = 10 [(buf.validate.field).required = true];
-
-    tzero.v1.common.Stablecoin stablecoin = 20 [(buf.validate.field).required = true];
-
-    string address = 30 [(buf.validate.field).string = {
-      min_len: 20,
-      max_len: 64,
-      pattern: "^(0x)?[a-fA-F0-9]+$"
+    // Beneficiary's bank name
+    string bank_name = 60 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 140
     }];
+
+    // Beneficiary's bank country (ISO 3166-1 alpha-2)
+    string bank_country = 70 [(buf.validate.field).string = {
+      len: 2,
+      pattern: "^[A-Z]{2}$"
+    }];
+
+    // Account currency (ISO 4217)
+    optional string account_currency = 80 [(buf.validate.field).string = {
+      len: 3,
+      pattern: "^[A-Z]{3}$"
+    }];
+
+    IntermediaryBank intermediary_bank = 90;
+
+    // Intermediary bank details (optional)
+    message IntermediaryBank {
+      string swift_code = 1 [(buf.validate.field).string = {
+        min_len: 8,
+        max_len: 11,
+        pattern: "^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$"
+      }];
+
+      string bank_name = 2 [(buf.validate.field).string = {
+        min_len: 1,
+        max_len: 140
+      }];
+
+      string account_number = 3 [(buf.validate.field).string = {
+        max_len: 34
+      }];
+    }
   }
 
   message Ach {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_ACH;
+
     string routing_number = 10 [(buf.validate.field).string = {
       min_len: 9,
       max_len: 9,
@@ -295,6 +403,8 @@ message PaymentDetails {
   }
 
   message Wire {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_WIRE;
+
     string bank_name = 10 [(buf.validate.field).string = {
       min_len: 1,
       max_len: 70
@@ -332,6 +442,8 @@ message PaymentDetails {
   }
 
   message Pesonet {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_PESONET;
+
     //Recipient institution: receiving bank or participating non‑bank chosen from a PESONet list.
     string recipient_financial_institution = 10 [(buf.validate.field).string = {
       min_len: 1,
@@ -362,6 +474,8 @@ message PaymentDetails {
   }
 
   message Instapay {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_INSTAPAY;
+
     //Recipient institution: receiving bank or e‑money issuer selected from an InstaPay list.
     string recipient_institution = 10 [(buf.validate.field).string = {
       min_len: 1,
@@ -386,6 +500,8 @@ message PaymentDetails {
   // Pakistan Bank Transfer - Domestic transfers using Pakistani IBAN
   // Pakistan uses 24-character IBAN: PK + 2 check digits + 4-char bank code + 16-char account number
   message PakistanBankTransfer {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_PAKISTAN_BANK_TRANSFER;
+
     // Pakistani IBAN (24 characters: PK + 2 check digits + 4-char bank identifier + 16-char account)
     // Example: PK36SCBL0000001123456702
     string iban = 10 [(buf.validate.field).string = {
@@ -416,6 +532,8 @@ message PaymentDetails {
   // Pakistan Mobile Wallet - JazzCash, Easypaisa, SadaPay, NayaPay and other wallets
   // Transfers are made using the mobile number linked to the wallet account; CNIC is required for verification
   message PakistanMobileWallet {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_PAKISTAN_MOBILE_WALLET;
+
     // Wallet provider
     PakistanWalletProvider wallet_provider = 10 [(buf.validate.field).enum = {not_in: [0]}];
 
@@ -458,6 +576,8 @@ message PaymentDetails {
   // PIX allows transfers using a Pix key (CPF, CNPJ, email, phone, or random EVP)
   // or traditional bank account details (bank code, branch, account number)
   message Pix {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_PIX;
+
     // Pix key type - determines the format of pix_key_value
     KeyType key_type = 10 [(buf.validate.field).enum = {not_in: [0]}];
 
@@ -504,4 +624,64 @@ message PaymentDetails {
       KEY_TYPE_EVP = 50;
     }
   }
+
+  // The China National Advanced Payment System
+  message Cnaps {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_CNAPS;
+
+    // 6-25 digits
+    string account_number = 10 [(buf.validate.field).string = {
+      min_len: 6,
+      max_len: 25,
+      pattern: "^[0-9]{6,25}$"
+    }];
+
+    // 12 digits (encodes the bank + branch)
+    string cnaps_code = 20 [(buf.validate.field).string = {
+      min_len: 12,
+      max_len: 12,
+      pattern: "^[0-9]{12}$"
+    }];
+
+    // Beneficiary name in Chinese characters
+    string beneficiary_name_local = 30 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 140
+    }];
+
+    // Beneficiary name in Latin characters
+    string beneficiary_name = 40 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 140
+    }];
+
+    oneof beneficiary {
+      option (buf.validate.oneof).required = true;
+
+      Business business = 50;
+      Person person = 60;
+    }
+
+    message Business {
+      // Business license number - 18 digits
+      string license_number = 10 [(buf.validate.field).string = {
+        min_len: 18,
+        max_len: 18,
+        pattern: "^[0-9]{18}$"
+      }];
+    }
+
+    message Person {
+      // ID number - 18 digits
+      string id_number = 10 [(buf.validate.field).string = {
+        min_len: 18,
+        max_len: 18,
+        pattern: "^[0-9]{18}$"
+      }];
+    }
+  }
+}
+
+extend google.protobuf.MessageOptions {
+  PaymentMethodType payment_method_type = 60001;
 }
