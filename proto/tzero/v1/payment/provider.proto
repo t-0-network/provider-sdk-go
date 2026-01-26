@@ -281,7 +281,7 @@ message UpdatePaymentRequest {
     /**
     * Payment receipt might contain metadata about payment recognizable by pay-in provider.
     */
-    tzero.v1.common.PaymentReceipt receipt = 20;
+    optional tzero.v1.common.PaymentReceipt receipt = 20;
   }
 
   message ManualAmlCheck {

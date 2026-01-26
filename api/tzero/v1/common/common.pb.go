@@ -27,6 +27,7 @@ type Blockchain int32
 const (
 	Blockchain_BLOCKCHAIN_UNSPECIFIED Blockchain = 0
 	Blockchain_BLOCKCHAIN_BSC         Blockchain = 10
+	Blockchain_BLOCKCHAIN_ETH         Blockchain = 20
 	Blockchain_BLOCKCHAIN_TRON        Blockchain = 100
 )
 
@@ -35,11 +36,13 @@ var (
 	Blockchain_name = map[int32]string{
 		0:   "BLOCKCHAIN_UNSPECIFIED",
 		10:  "BLOCKCHAIN_BSC",
+		20:  "BLOCKCHAIN_ETH",
 		100: "BLOCKCHAIN_TRON",
 	}
 	Blockchain_value = map[string]int32{
 		"BLOCKCHAIN_UNSPECIFIED": 0,
 		"BLOCKCHAIN_BSC":         10,
+		"BLOCKCHAIN_ETH":         20,
 		"BLOCKCHAIN_TRON":        100,
 	}
 )
@@ -178,12 +181,13 @@ const file_tzero_v1_common_common_proto_rawDesc = "" +
 	"\aDecimal\x12\x1a\n" +
 	"\bunscaled\x18\n" +
 	" \x01(\x03R\bunscaled\x12.\n" +
-	"\bexponent\x18\x14 \x01(\x05B\x12\xbaH\x0f\x1a\r\x18\b(\xf8\xff\xff\xff\xff\xff\xff\xff\xff\x01R\bexponent*Q\n" +
+	"\bexponent\x18\x14 \x01(\x05B\x12\xbaH\x0f\x1a\r\x18\b(\xf8\xff\xff\xff\xff\xff\xff\xff\xff\x01R\bexponent*e\n" +
 	"\n" +
 	"Blockchain\x12\x1a\n" +
 	"\x16BLOCKCHAIN_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eBLOCKCHAIN_BSC\x10\n" +
-	"\x12\x13\n" +
+	"\x12\x12\n" +
+	"\x0eBLOCKCHAIN_ETH\x10\x14\x12\x13\n" +
 	"\x0fBLOCKCHAIN_TRON\x10d*=\n" +
 	"\n" +
 	"Stablecoin\x12\x1a\n" +

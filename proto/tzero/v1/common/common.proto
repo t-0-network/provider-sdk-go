@@ -14,6 +14,7 @@ message Decimal {
 enum Blockchain {
   BLOCKCHAIN_UNSPECIFIED = 0;
   BLOCKCHAIN_BSC = 10;
+  BLOCKCHAIN_ETH = 20;
   BLOCKCHAIN_TRON = 100;
 }
 
