@@ -207,9 +207,10 @@ message CreatePaymentResponse {
     Accepted accepted = 20;
 
     /**
-     * Settlement required response - indicates that the payment requires settlement before payout completion.
+     * Deprecated: Settlement required response - presettlement flow is being removed.
+     * This response type will no longer be returned.
      */
-    SettlementRequired settlement_required = 35; //
+    SettlementRequired settlement_required = 35 [deprecated = true];
 
     /**
      * Failure response - means the payment was not accepted, e.g. the network could not find a suitable quote for the
@@ -225,7 +226,9 @@ message CreatePaymentResponse {
     uint32 payout_provider_id = 50 [(buf.validate.field).uint32.gt = 0]; // payout provider id with the best quote selected for this payment
   }
 
+  // Deprecated: presettlement flow is being removed. This message will no longer be used.
   message SettlementRequired {
+    option deprecated = true;
     uint64 payment_id = 10 [(buf.validate.field).uint64.gt = 0]; // payment ID assigned by the network
     tzero.v1.common.Decimal settlement_amount = 20 [(buf.validate.field).required = true];
     uint32 payout_provider_id = 30 [(buf.validate.field).uint32.gt = 0]; // payout provider id with the best quote selected for this payment
