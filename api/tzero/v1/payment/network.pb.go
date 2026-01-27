@@ -619,6 +619,7 @@ func (x *CreatePaymentResponse) GetAccepted() *CreatePaymentResponse_Accepted {
 	return nil
 }
 
+// Deprecated: Marked as deprecated in tzero/v1/payment/network.proto.
 func (x *CreatePaymentResponse) GetSettlementRequired() *CreatePaymentResponse_SettlementRequired {
 	if x != nil {
 		if x, ok := x.Result.(*CreatePaymentResponse_SettlementRequired_); ok {
@@ -650,8 +651,11 @@ type CreatePaymentResponse_Accepted_ struct {
 
 type CreatePaymentResponse_SettlementRequired_ struct {
 	// *
-	// Settlement required response - indicates that the payment requires settlement before payout completion.
-	SettlementRequired *CreatePaymentResponse_SettlementRequired `protobuf:"bytes,35,opt,name=settlement_required,json=settlementRequired,proto3,oneof"` //
+	// Deprecated: Settlement required response - presettlement flow is being removed.
+	// This response type will no longer be returned.
+	//
+	// Deprecated: Marked as deprecated in tzero/v1/payment/network.proto.
+	SettlementRequired *CreatePaymentResponse_SettlementRequired `protobuf:"bytes,35,opt,name=settlement_required,json=settlementRequired,proto3,oneof"`
 }
 
 type CreatePaymentResponse_Failure_ struct {
@@ -1541,6 +1545,9 @@ func (x *CreatePaymentResponse_Accepted) GetPayoutProviderId() uint32 {
 	return 0
 }
 
+// Deprecated: presettlement flow is being removed. This message will no longer be used.
+//
+// Deprecated: Marked as deprecated in tzero/v1/payment/network.proto.
 type CreatePaymentResponse_SettlementRequired struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	PaymentId        uint64                 `protobuf:"varint,10,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"` // payment ID assigned by the network
@@ -2001,12 +2008,12 @@ const file_tzero_v1_payment_network_proto_rawDesc = "" +
 	"\aQuoteId\x12\"\n" +
 	"\bquote_id\x18\x1e \x01(\x03B\a\xbaH\x04\"\x02 \x00R\aquoteId\x12(\n" +
 	"\vprovider_id\x18( \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\n" +
-	"providerId\"\xf4\a\n" +
+	"providerId\"\xfc\a\n" +
 	"\x15CreatePaymentResponse\x123\n" +
 	"\x11payment_client_id\x18\n" +
 	" \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x0fpaymentClientId\x12N\n" +
-	"\baccepted\x18\x14 \x01(\v20.tzero.v1.payment.CreatePaymentResponse.AcceptedH\x00R\baccepted\x12m\n" +
-	"\x13settlement_required\x18# \x01(\v2:.tzero.v1.payment.CreatePaymentResponse.SettlementRequiredH\x00R\x12settlementRequired\x12K\n" +
+	"\baccepted\x18\x14 \x01(\v20.tzero.v1.payment.CreatePaymentResponse.AcceptedH\x00R\baccepted\x12q\n" +
+	"\x13settlement_required\x18# \x01(\v2:.tzero.v1.payment.CreatePaymentResponse.SettlementRequiredB\x02\x18\x01H\x00R\x12settlementRequired\x12K\n" +
 	"\afailure\x18\x1e \x01(\v2/.tzero.v1.payment.CreatePaymentResponse.FailureH\x00R\afailure\x1a\xff\x01\n" +
 	"\bAccepted\x12&\n" +
 	"\n" +
@@ -2014,13 +2021,13 @@ const file_tzero_v1_payment_network_proto_rawDesc = "" +
 	" \x01(\x04B\a\xbaH\x042\x02 \x00R\tpaymentId\x12M\n" +
 	"\x11settlement_amount\x18\x1e \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\x10settlementAmount\x12E\n" +
 	"\rpayout_amount\x18( \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\fpayoutAmount\x125\n" +
-	"\x12payout_provider_id\x182 \x01(\rB\a\xbaH\x04*\x02 \x00R\x10payoutProviderId\x1a\xc2\x01\n" +
+	"\x12payout_provider_id\x182 \x01(\rB\a\xbaH\x04*\x02 \x00R\x10payoutProviderId\x1a\xc6\x01\n" +
 	"\x12SettlementRequired\x12&\n" +
 	"\n" +
 	"payment_id\x18\n" +
 	" \x01(\x04B\a\xbaH\x042\x02 \x00R\tpaymentId\x12M\n" +
 	"\x11settlement_amount\x18\x14 \x01(\v2\x18.tzero.v1.common.DecimalB\x06\xbaH\x03\xc8\x01\x01R\x10settlementAmount\x125\n" +
-	"\x12payout_provider_id\x18\x1e \x01(\rB\a\xbaH\x04*\x02 \x00R\x10payoutProviderId\x1a\xc1\x01\n" +
+	"\x12payout_provider_id\x18\x1e \x01(\rB\a\xbaH\x04*\x02 \x00R\x10payoutProviderId:\x02\x18\x01\x1a\xc1\x01\n" +
 	"\aFailure\x12N\n" +
 	"\x06reason\x18\n" +
 	" \x01(\x0e26.tzero.v1.payment.CreatePaymentResponse.Failure.ReasonR\x06reason\"f\n" +

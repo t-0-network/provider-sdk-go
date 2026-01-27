@@ -1696,7 +1696,7 @@ type UpdateLimitRequest_Limit struct {
 	// *
 	// This is the credit usage that the provider has used so far. It is the sum of all payouts made by the provider
 	// minus the settlement net (settlement balance). It could be negative if the provider has received more
-	// in settlements than made payouts (pre-settlement).
+	// in settlements than made payouts.
 	CreditUsage *common.Decimal `protobuf:"bytes,40,opt,name=credit_usage,json=creditUsage,proto3" json:"credit_usage,omitempty"`
 	// *
 	// This indicates how much is reserved for the pending payments (not yet finalized)
