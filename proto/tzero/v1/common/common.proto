@@ -1,4 +1,5 @@
 syntax = "proto3";
+// Common proto definitions shared across other definitions
 
 package tzero.v1.common;
 
