@@ -142,6 +142,14 @@ message GetQuoteResponse {
     Failure failure = 30;
   };
 
+  /**
+   * All best quotes from providers with credit lines.
+   * Each quote is the best rate for that provider for the requested amount.
+   * Includes has_sufficient_credit flag to indicate if quote can be executed immediately.
+   * Always returned alongside success/failure - providers can compare alternatives or see options when no executable quote exists.
+   */
+  repeated ProviderQuote all_quotes = 40;
+
   message Success {
     tzero.v1.common.Decimal rate = 10 [(buf.validate.field).required = true]; // pay-out quote rate in settlement_currency/pay_out_currency, i.e. USD/pay_out_currency
     google.protobuf.Timestamp expiration = 20 [(buf.validate.field).timestamp.gt_now = true]; // expiration time of the payout quote
@@ -157,6 +165,38 @@ message GetQuoteResponse {
     enum Reason {
       REASON_UNSPECIFIED = 0;
       REASON_QUOTE_NOT_FOUND = 10; // No matching quote par for the specified payout currency found or provider limits would exceed by processing this payment
+    }
+  }
+
+  /**
+   * Best quote from a provider with credit line configured.
+   * Contains settlement status and calculated amounts for the payment request.
+   */
+  message ProviderQuote {
+    QuoteId quote_id = 10 [(buf.validate.field).required = true]; // Quote identification - can be used to initiate payment
+
+    tzero.v1.common.Decimal rate = 20 [(buf.validate.field).required = true]; // Exchange rate: USD/pay_out_currency
+
+    google.protobuf.Timestamp expiration = 30; // Quote validity period
+
+    tzero.v1.common.Decimal pay_out_amount = 40 [(buf.validate.field).required = true]; // Payout amount in payout currency
+
+    Settlement settlement = 50 [(buf.validate.field).required = true]; // Settlement details for this quote
+
+    bool executable = 60; // Indicates payment can be initiated with this quote immediately and no pre-funding is required
+
+    /**
+     * Settlement details between pay-in and pay-out providers.
+     * All amounts are in USD (settlement currency).
+     */
+    message Settlement {
+      tzero.v1.common.Decimal amount = 10 [(buf.validate.field).required = true]; // Settlement amount required for this payment
+
+      tzero.v1.common.Decimal credit_limit = 20 [(buf.validate.field).required = true]; // Total credit limit from payout provider
+
+      tzero.v1.common.Decimal total_used = 30 [(buf.validate.field).required = true]; // Total amount used from credit line (completed + reserved)
+
+      tzero.v1.common.Decimal prefunding_amount = 50 [(buf.validate.field).required = true]; // Additional funding needed before payment can proceed (amount - max_executable)
     }
   }
 }
