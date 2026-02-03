@@ -30,6 +30,7 @@ type PaymentReceipt struct {
 	//	*PaymentReceipt_Swift_
 	//	*PaymentReceipt_Pix_
 	//	*PaymentReceipt_Fps_
+	//	*PaymentReceipt_Nip_
 	Details       isPaymentReceipt_Details `protobuf_oneof:"details"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -108,6 +109,15 @@ func (x *PaymentReceipt) GetFps() *PaymentReceipt_Fps {
 	return nil
 }
 
+func (x *PaymentReceipt) GetNip() *PaymentReceipt_Nip {
+	if x != nil {
+		if x, ok := x.Details.(*PaymentReceipt_Nip_); ok {
+			return x.Nip
+		}
+	}
+	return nil
+}
+
 type isPaymentReceipt_Details interface {
 	isPaymentReceipt_Details()
 }
@@ -128,6 +138,10 @@ type PaymentReceipt_Fps_ struct {
 	Fps *PaymentReceipt_Fps `protobuf:"bytes,60,opt,name=fps,proto3,oneof"`
 }
 
+type PaymentReceipt_Nip_ struct {
+	Nip *PaymentReceipt_Nip `protobuf:"bytes,70,opt,name=nip,proto3,oneof"`
+}
+
 func (*PaymentReceipt_Sepa_) isPaymentReceipt_Details() {}
 
 func (*PaymentReceipt_Swift_) isPaymentReceipt_Details() {}
@@ -135,6 +149,52 @@ func (*PaymentReceipt_Swift_) isPaymentReceipt_Details() {}
 func (*PaymentReceipt_Pix_) isPaymentReceipt_Details() {}
 
 func (*PaymentReceipt_Fps_) isPaymentReceipt_Details() {}
+
+func (*PaymentReceipt_Nip_) isPaymentReceipt_Details() {}
+
+type PaymentReceipt_Nip struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SessionId     string                 `protobuf:"bytes,10,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PaymentReceipt_Nip) Reset() {
+	*x = PaymentReceipt_Nip{}
+	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PaymentReceipt_Nip) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PaymentReceipt_Nip) ProtoMessage() {}
+
+func (x *PaymentReceipt_Nip) ProtoReflect() protoreflect.Message {
+	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PaymentReceipt_Nip.ProtoReflect.Descriptor instead.
+func (*PaymentReceipt_Nip) Descriptor() ([]byte, []int) {
+	return file_tzero_v1_common_payment_receipt_proto_rawDescGZIP(), []int{0, 0}
+}
+
+func (x *PaymentReceipt_Nip) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
 
 type PaymentReceipt_Sepa struct {
 	state                         protoimpl.MessageState `protogen:"open.v1"`
@@ -145,7 +205,7 @@ type PaymentReceipt_Sepa struct {
 
 func (x *PaymentReceipt_Sepa) Reset() {
 	*x = PaymentReceipt_Sepa{}
-	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[1]
+	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -157,7 +217,7 @@ func (x *PaymentReceipt_Sepa) String() string {
 func (*PaymentReceipt_Sepa) ProtoMessage() {}
 
 func (x *PaymentReceipt_Sepa) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[1]
+	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -170,7 +230,7 @@ func (x *PaymentReceipt_Sepa) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PaymentReceipt_Sepa.ProtoReflect.Descriptor instead.
 func (*PaymentReceipt_Sepa) Descriptor() ([]byte, []int) {
-	return file_tzero_v1_common_payment_receipt_proto_rawDescGZIP(), []int{0, 0}
+	return file_tzero_v1_common_payment_receipt_proto_rawDescGZIP(), []int{0, 1}
 }
 
 func (x *PaymentReceipt_Sepa) GetBankingTransactionReferenceId() string {
@@ -188,7 +248,7 @@ type PaymentReceipt_Swift struct {
 
 func (x *PaymentReceipt_Swift) Reset() {
 	*x = PaymentReceipt_Swift{}
-	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[2]
+	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -200,7 +260,7 @@ func (x *PaymentReceipt_Swift) String() string {
 func (*PaymentReceipt_Swift) ProtoMessage() {}
 
 func (x *PaymentReceipt_Swift) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[2]
+	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -213,7 +273,7 @@ func (x *PaymentReceipt_Swift) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PaymentReceipt_Swift.ProtoReflect.Descriptor instead.
 func (*PaymentReceipt_Swift) Descriptor() ([]byte, []int) {
-	return file_tzero_v1_common_payment_receipt_proto_rawDescGZIP(), []int{0, 1}
+	return file_tzero_v1_common_payment_receipt_proto_rawDescGZIP(), []int{0, 2}
 }
 
 type PaymentReceipt_Pix struct {
@@ -225,7 +285,7 @@ type PaymentReceipt_Pix struct {
 
 func (x *PaymentReceipt_Pix) Reset() {
 	*x = PaymentReceipt_Pix{}
-	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[3]
+	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -237,7 +297,7 @@ func (x *PaymentReceipt_Pix) String() string {
 func (*PaymentReceipt_Pix) ProtoMessage() {}
 
 func (x *PaymentReceipt_Pix) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[3]
+	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -250,7 +310,7 @@ func (x *PaymentReceipt_Pix) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PaymentReceipt_Pix.ProtoReflect.Descriptor instead.
 func (*PaymentReceipt_Pix) Descriptor() ([]byte, []int) {
-	return file_tzero_v1_common_payment_receipt_proto_rawDescGZIP(), []int{0, 2}
+	return file_tzero_v1_common_payment_receipt_proto_rawDescGZIP(), []int{0, 3}
 }
 
 func (x *PaymentReceipt_Pix) GetE2EId() string {
@@ -269,7 +329,7 @@ type PaymentReceipt_Fps struct {
 
 func (x *PaymentReceipt_Fps) Reset() {
 	*x = PaymentReceipt_Fps{}
-	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[4]
+	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -281,7 +341,7 @@ func (x *PaymentReceipt_Fps) String() string {
 func (*PaymentReceipt_Fps) ProtoMessage() {}
 
 func (x *PaymentReceipt_Fps) ProtoReflect() protoreflect.Message {
-	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[4]
+	mi := &file_tzero_v1_common_payment_receipt_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -294,7 +354,7 @@ func (x *PaymentReceipt_Fps) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PaymentReceipt_Fps.ProtoReflect.Descriptor instead.
 func (*PaymentReceipt_Fps) Descriptor() ([]byte, []int) {
-	return file_tzero_v1_common_payment_receipt_proto_rawDescGZIP(), []int{0, 3}
+	return file_tzero_v1_common_payment_receipt_proto_rawDescGZIP(), []int{0, 4}
 }
 
 func (x *PaymentReceipt_Fps) GetTransactionReferenceId() string {
@@ -308,13 +368,18 @@ var File_tzero_v1_common_payment_receipt_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_common_payment_receipt_proto_rawDesc = "" +
 	"\n" +
-	"%tzero/v1/common/payment_receipt.proto\x12\x0ftzero.v1.common\x1a\x1bbuf/validate/validate.proto\"\xc6\x04\n" +
+	"%tzero/v1/common/payment_receipt.proto\x12\x0ftzero.v1.common\x1a\x1bbuf/validate/validate.proto\"\xae\x05\n" +
 	"\x0ePaymentReceipt\x12:\n" +
 	"\x04sepa\x18\n" +
 	" \x01(\v2$.tzero.v1.common.PaymentReceipt.SepaH\x00R\x04sepa\x12=\n" +
 	"\x05swift\x18\x1e \x01(\v2%.tzero.v1.common.PaymentReceipt.SwiftH\x00R\x05swift\x127\n" +
 	"\x03pix\x182 \x01(\v2#.tzero.v1.common.PaymentReceipt.PixH\x00R\x03pix\x127\n" +
-	"\x03fps\x18< \x01(\v2#.tzero.v1.common.PaymentReceipt.FpsH\x00R\x03fps\x1a\x84\x01\n" +
+	"\x03fps\x18< \x01(\v2#.tzero.v1.common.PaymentReceipt.FpsH\x00R\x03fps\x127\n" +
+	"\x03nip\x18F \x01(\v2#.tzero.v1.common.PaymentReceipt.NipH\x00R\x03nip\x1a-\n" +
+	"\x03Nip\x12&\n" +
+	"\n" +
+	"session_id\x18\n" +
+	" \x01(\tB\a\xbaH\x04r\x02\x18@R\tsessionId\x1a\x84\x01\n" +
 	"\x04Sepa\x12W\n" +
 	" banking_transaction_reference_id\x18\n" +
 	" \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18#H\x00R\x1dbankingTransactionReferenceId\x88\x01\x01B#\n" +
@@ -343,24 +408,26 @@ func file_tzero_v1_common_payment_receipt_proto_rawDescGZIP() []byte {
 	return file_tzero_v1_common_payment_receipt_proto_rawDescData
 }
 
-var file_tzero_v1_common_payment_receipt_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_tzero_v1_common_payment_receipt_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_tzero_v1_common_payment_receipt_proto_goTypes = []any{
 	(*PaymentReceipt)(nil),       // 0: tzero.v1.common.PaymentReceipt
-	(*PaymentReceipt_Sepa)(nil),  // 1: tzero.v1.common.PaymentReceipt.Sepa
-	(*PaymentReceipt_Swift)(nil), // 2: tzero.v1.common.PaymentReceipt.Swift
-	(*PaymentReceipt_Pix)(nil),   // 3: tzero.v1.common.PaymentReceipt.Pix
-	(*PaymentReceipt_Fps)(nil),   // 4: tzero.v1.common.PaymentReceipt.Fps
+	(*PaymentReceipt_Nip)(nil),   // 1: tzero.v1.common.PaymentReceipt.Nip
+	(*PaymentReceipt_Sepa)(nil),  // 2: tzero.v1.common.PaymentReceipt.Sepa
+	(*PaymentReceipt_Swift)(nil), // 3: tzero.v1.common.PaymentReceipt.Swift
+	(*PaymentReceipt_Pix)(nil),   // 4: tzero.v1.common.PaymentReceipt.Pix
+	(*PaymentReceipt_Fps)(nil),   // 5: tzero.v1.common.PaymentReceipt.Fps
 }
 var file_tzero_v1_common_payment_receipt_proto_depIdxs = []int32{
-	1, // 0: tzero.v1.common.PaymentReceipt.sepa:type_name -> tzero.v1.common.PaymentReceipt.Sepa
-	2, // 1: tzero.v1.common.PaymentReceipt.swift:type_name -> tzero.v1.common.PaymentReceipt.Swift
-	3, // 2: tzero.v1.common.PaymentReceipt.pix:type_name -> tzero.v1.common.PaymentReceipt.Pix
-	4, // 3: tzero.v1.common.PaymentReceipt.fps:type_name -> tzero.v1.common.PaymentReceipt.Fps
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	2, // 0: tzero.v1.common.PaymentReceipt.sepa:type_name -> tzero.v1.common.PaymentReceipt.Sepa
+	3, // 1: tzero.v1.common.PaymentReceipt.swift:type_name -> tzero.v1.common.PaymentReceipt.Swift
+	4, // 2: tzero.v1.common.PaymentReceipt.pix:type_name -> tzero.v1.common.PaymentReceipt.Pix
+	5, // 3: tzero.v1.common.PaymentReceipt.fps:type_name -> tzero.v1.common.PaymentReceipt.Fps
+	1, // 4: tzero.v1.common.PaymentReceipt.nip:type_name -> tzero.v1.common.PaymentReceipt.Nip
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_tzero_v1_common_payment_receipt_proto_init() }
@@ -373,17 +440,18 @@ func file_tzero_v1_common_payment_receipt_proto_init() {
 		(*PaymentReceipt_Swift_)(nil),
 		(*PaymentReceipt_Pix_)(nil),
 		(*PaymentReceipt_Fps_)(nil),
+		(*PaymentReceipt_Nip_)(nil),
 	}
-	file_tzero_v1_common_payment_receipt_proto_msgTypes[1].OneofWrappers = []any{}
-	file_tzero_v1_common_payment_receipt_proto_msgTypes[3].OneofWrappers = []any{}
+	file_tzero_v1_common_payment_receipt_proto_msgTypes[2].OneofWrappers = []any{}
 	file_tzero_v1_common_payment_receipt_proto_msgTypes[4].OneofWrappers = []any{}
+	file_tzero_v1_common_payment_receipt_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tzero_v1_common_payment_receipt_proto_rawDesc), len(file_tzero_v1_common_payment_receipt_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

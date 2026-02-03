@@ -29,6 +29,8 @@ enum PaymentMethodType {
   PAYMENT_METHOD_TYPE_AFRICAN_MOBILE_MONEY = 160;
   // The China National Advanced Payment System
   PAYMENT_METHOD_TYPE_CNAPS = 170;
+  // NIP - Nigeria Instant Payment system
+  PAYMENT_METHOD_TYPE_NIP = 180;
 }
 
 message PaymentDetails {
@@ -91,6 +93,10 @@ message PaymentDetails {
 
     // The China National Advanced Payment System
     Cnaps naps = 170;
+
+    // NIP - Nigeria Instant Payment system
+    // Nigeria
+    Nip nip = 180;
   };
 
   message Sepa {
@@ -679,6 +685,36 @@ message PaymentDetails {
         pattern: "^[0-9]{18}$"
       }];
     }
+  }
+  // NIP - Nigeria Instant Payment system
+  // Transfers are made using bank code and account number (NUBAN)
+  message Nip {
+    option (payment_method_type) = PAYMENT_METHOD_TYPE_NIP;
+
+    // Bank code (e.g., "00001")
+    string bank_code = 10 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 10,
+      pattern: "^[a-zA-Z0-9]{1,10}$"
+    }];
+
+    // Account number (NUBAN format)
+    string account_number = 20 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 20,
+      pattern: "^[0-9]{1,20}$"
+    }];
+
+    // Beneficiary's full name
+    string beneficiary_name = 30 [(buf.validate.field).string = {
+      min_len: 1,
+      max_len: 140
+    }];
+
+    // Payment reference/description (optional)
+    string payment_reference = 40 [(buf.validate.field).string = {
+      max_len: 140
+    }];
   }
 }
 
