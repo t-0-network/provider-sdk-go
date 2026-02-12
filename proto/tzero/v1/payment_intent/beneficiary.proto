@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+package tzero.v1.payment_intent;
+
+import "tzero/v1/common/common.proto";
+import "buf/validate/validate.proto";
+
+/**
+ * BeneficiaryService must be implemented by beneficiary providers to receive
+ * notifications about payment intent status changes.
+ *
+ * Beneficiary providers are those who:
+ * - Create payment intents via CreatePaymentIntent
+ * - Receive settlement (in settlement currency via configured blockchain network)
+ * - Need to be notified of payment status changes
+ *
+ * The network calls this service to notify the beneficiary when:
+ * - Funds have been received from the payer by pay-in provider
+ */
+service BeneficiaryService {
+  /**
+   * PaymentIntentUpdate notifies the beneficiary provider of status changes.
+   *
+   * Currently supports:
+   * - FundsReceived: The pay-in provider confirmed receipt
+   *
+   * This notification is sent after ledger entries are created and the balance
+   * has been updated. The beneficiary provider can use this to:
+   * - Update their internal records
+   * - Notify their end-user of successful payment
+   * - Trigger downstream processing (e.g., release goods/services)
+   *
+   * Idempotency: This endpoint must be idempotent. The network may retry
+   * delivery in case of failures or timeouts.
+   */
+  rpc PaymentIntentUpdate(PaymentIntentUpdateRequest) returns (PaymentIntentUpdateResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+}
+
+/**
+ * Notification of a payment intent status change.
+ */
+message PaymentIntentUpdateRequest {
+  /**
+   * The payment intent ID this update relates to.
+   * Matches the ID returned in CreatePaymentIntentResponse.
+   */
+  uint64 payment_intent_id = 10 [(buf.validate.field).uint64.gt = 0];
+
+  /**
+   * The type of update. Currently only PayInReceived is supported.
+   */
+  oneof Update {
+    /**
+     * Funds were received from the payer by pay-in provider.
+     */
+    FundsReceived funds_received = 20;
+  }
+
+  /**
+   * Notification that funds were received from the payer by pay-in provider.
+   *
+   * After receiving this notification:
+   * - Your balance with the pay-in provider has been credited
+   * - Fees have been recorded (settled separately)
+   * - You can safely deliver goods/services to your end-user
+   */
+  message FundsReceived {
+    /**
+     * The settlement amount credited to your balance.
+     * This is calculated as: source_amount / rate
+     *
+     * Note: Fees are NOT deducted from this amount. Fees are tracked
+     * separately and settled in periodic fee settlements.
+     */
+    tzero.v1.common.Decimal settlement_amount = 10;
+
+    /**
+     * The exchange rate used for settlement.
+     */
+    tzero.v1.common.Decimal rate = 20;
+
+    /**
+     * The fiat amount received from the end-user.
+     * Matches the amount originally requested in CreatePaymentIntent.
+     */
+    tzero.v1.common.Decimal source_amount = 30;
+  }
+}
+
+/**
+ * Acknowledgment of receiving the payment intent update.
+ * Empty response indicates successful processing.
+ * Return an error status code if processing failed and retry is needed.
+ */
+message PaymentIntentUpdateResponse {}
