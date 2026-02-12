@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package tzero.v1.payment_intent;
+
+import "tzero/v1/common/common.proto";
+import "tzero/v1/common/payment_method.proto";
+import "buf/validate/validate.proto";
+import "ivms101/v1/ivms/ivms101.proto";
+
+/**
+ * PayInProviderService must be implemented by pay-in providers to participate
+ * in the Payment Intent flow.
+ *
+ * Pay-in providers are those who:
+ * - Receive fiat payments from end-users
+ * - Publish pay-in quotes to the network
+ * - Confirm when payments are received via ConfirmFundsReceived
+ *
+ * The network calls this service to obtain payment details that will be
+ * presented to end-users for making payments.
+ */
+service PayInProviderService {
+  /**
+   * GetPaymentDetails returns payment details for the end-user.
+   *
+   * Called by the network during CreatePaymentIntent processing.
+   * The provider should return payment details (bank accounts, mobile money info, etc.)
+   * that the end-user can use to send funds.
+   *
+   * The provider may return details for multiple payment methods if requested.
+   * Each returned PaymentDetails will be presented to the end-user as a payment option.
+   *
+   * Important considerations:
+   * - Payment details should be valid for the expected payment timeframe
+   * - Include any reference numbers needed to identify incoming payments
+   * - The provider is responsible for monitoring incoming payments and calling ConfirmFundsReceived
+   */
+  rpc GetPaymentDetails(GetPaymentDetailsRequest) returns (GetPaymentDetailsResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+}
+
+/**
+ * Request for payment details.
+ */
+message GetPaymentDetailsRequest {
+  /**
+   * The payment intent ID this request relates to.
+   * Can be used for logging, reference tracking, or payment reconciliation.
+   */
+  uint64 payment_intent_id = 10 [(buf.validate.field).uint64.gt = 0];
+
+  /**
+   * Payment methods being requested.
+   * The provider should return PaymentDetails for each method they support.
+   * Methods the provider doesn't support can be omitted from the response.
+   */
+  repeated tzero.v1.common.PaymentMethodType payment_methods = 20 [(buf.validate.field).repeated.min_items = 1];
+
+  /**
+   * The currency for the pay-in.
+   * ISO 4217 currency code (e.g., "EUR", "GBP", "KES").
+   */
+  string currency = 30 [(buf.validate.field).string = {
+    len: 3,
+    pattern: "^[A-Z]{3}$"
+  }];
+
+  /**
+   * The amount to be paid in the specified currency.
+   * Payment details should be suitable for receiving this amount.
+   */
+  tzero.v1.common.Decimal amount = 40 [(buf.validate.field).required = true];
+
+  /**
+   * Travel rule data for this payment
+   */
+  TravelRuleData travel_rule = 50  [(buf.validate.field).required = true];
+
+  message TravelRuleData {
+    /**
+     * The natural or legal person or legal arrangement who is identified
+     * by the beneficiary provider as the receiver of the requested payment.
+     */
+    repeated ivms101.Person beneficiary = 20 [(buf.validate.field).repeated.min_items = 1];
+
+    /**
+     * Beneficiary provider travel rule data.
+     */
+    ivms101.LegalPerson beneficiary_provider = 30 [(buf.validate.field).required = true];
+
+    /**
+     * Optional travel rule data of the payer
+     */
+    optional ivms101.Person payer = 40;
+  }
+}
+
+/**
+ * Response containing payment details for the requested methods.
+ */
+message GetPaymentDetailsResponse {
+  /**
+   * Payment details for each supported payment method.
+   * May contain fewer items than requested if the provider doesn't support
+   * some of the requested payment methods.
+   *
+   * Each PaymentDetails contains the information needed for an end-user
+   * to send a payment (e.g., bank account details, mobile money number).
+   */
+  repeated tzero.v1.common.PaymentDetails payment_details = 10;
+}
