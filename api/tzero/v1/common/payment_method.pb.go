@@ -26,12 +26,12 @@ const (
 type PaymentMethodType int32
 
 const (
-	PaymentMethodType_PAYMENT_METHOD_TYPE_UNSPECIFIED PaymentMethodType = 0
-	PaymentMethodType_PAYMENT_METHOD_TYPE_SEPA        PaymentMethodType = 10
-	PaymentMethodType_PAYMENT_METHOD_TYPE_SWIFT       PaymentMethodType = 20
-	PaymentMethodType_PAYMENT_METHOD_TYPE_ACH         PaymentMethodType = 50
-	PaymentMethodType_PAYMENT_METHOD_TYPE_WIRE        PaymentMethodType = 60
-	PaymentMethodType_PAYMENT_METHOD_TYPE_FPS         PaymentMethodType = 70
+	PaymentMethodType_PAYMENT_METHOD_TYPE_UNSPECIFIED   PaymentMethodType = 0
+	PaymentMethodType_PAYMENT_METHOD_TYPE_SEPA          PaymentMethodType = 10
+	PaymentMethodType_PAYMENT_METHOD_TYPE_SWIFT         PaymentMethodType = 20
+	PaymentMethodType_PAYMENT_METHOD_TYPE_ACH           PaymentMethodType = 50
+	PaymentMethodType_PAYMENT_METHOD_TYPE_DOMESTIC_WIRE PaymentMethodType = 60
+	PaymentMethodType_PAYMENT_METHOD_TYPE_FPS           PaymentMethodType = 70
 	// Deprecated: Marked as deprecated in tzero/v1/common/payment_method.proto.
 	PaymentMethodType_PAYMENT_METHOD_TYPE_M_PESA               PaymentMethodType = 80 // deprecated in favor of PAYMENT_METHOD_TYPE_AFRICAN_MOBILE_MONEY
 	PaymentMethodType_PAYMENT_METHOD_TYPE_G_CASH               PaymentMethodType = 90
@@ -59,7 +59,7 @@ var (
 		10:  "PAYMENT_METHOD_TYPE_SEPA",
 		20:  "PAYMENT_METHOD_TYPE_SWIFT",
 		50:  "PAYMENT_METHOD_TYPE_ACH",
-		60:  "PAYMENT_METHOD_TYPE_WIRE",
+		60:  "PAYMENT_METHOD_TYPE_DOMESTIC_WIRE",
 		70:  "PAYMENT_METHOD_TYPE_FPS",
 		80:  "PAYMENT_METHOD_TYPE_M_PESA",
 		90:  "PAYMENT_METHOD_TYPE_G_CASH",
@@ -78,7 +78,7 @@ var (
 		"PAYMENT_METHOD_TYPE_SEPA":                   10,
 		"PAYMENT_METHOD_TYPE_SWIFT":                  20,
 		"PAYMENT_METHOD_TYPE_ACH":                    50,
-		"PAYMENT_METHOD_TYPE_WIRE":                   60,
+		"PAYMENT_METHOD_TYPE_DOMESTIC_WIRE":          60,
 		"PAYMENT_METHOD_TYPE_FPS":                    70,
 		"PAYMENT_METHOD_TYPE_M_PESA":                 80,
 		"PAYMENT_METHOD_TYPE_G_CASH":                 90,
@@ -365,7 +365,7 @@ type PaymentDetails struct {
 	//	*PaymentDetails_Sepa_
 	//	*PaymentDetails_Swift_
 	//	*PaymentDetails_Ach_
-	//	*PaymentDetails_Wire_
+	//	*PaymentDetails_DomesticWire_
 	//	*PaymentDetails_Fps_
 	//	*PaymentDetails_Mpesa
 	//	*PaymentDetails_Gcash
@@ -447,10 +447,10 @@ func (x *PaymentDetails) GetAch() *PaymentDetails_Ach {
 	return nil
 }
 
-func (x *PaymentDetails) GetWire() *PaymentDetails_Wire {
+func (x *PaymentDetails) GetDomesticWire() *PaymentDetails_DomesticWire {
 	if x != nil {
-		if x, ok := x.Details.(*PaymentDetails_Wire_); ok {
-			return x.Wire
+		if x, ok := x.Details.(*PaymentDetails_DomesticWire_); ok {
+			return x.DomesticWire
 		}
 	}
 	return nil
@@ -586,10 +586,10 @@ type PaymentDetails_Ach_ struct {
 	Ach *PaymentDetails_Ach `protobuf:"bytes,50,opt,name=ach,proto3,oneof"`
 }
 
-type PaymentDetails_Wire_ struct {
-	// Wire - Domestic electronic funds transfer
+type PaymentDetails_DomesticWire_ struct {
+	// DomesticWire - US domestic wire transfer
 	// United States
-	Wire *PaymentDetails_Wire `protobuf:"bytes,60,opt,name=wire,proto3,oneof"`
+	DomesticWire *PaymentDetails_DomesticWire `protobuf:"bytes,60,opt,name=domestic_wire,json=domesticWire,proto3,oneof"`
 }
 
 type PaymentDetails_Fps_ struct {
@@ -670,7 +670,7 @@ func (*PaymentDetails_Swift_) isPaymentDetails_Details() {}
 
 func (*PaymentDetails_Ach_) isPaymentDetails_Details() {}
 
-func (*PaymentDetails_Wire_) isPaymentDetails_Details() {}
+func (*PaymentDetails_DomesticWire_) isPaymentDetails_Details() {}
 
 func (*PaymentDetails_Fps_) isPaymentDetails_Details() {}
 
@@ -1319,33 +1319,34 @@ func (x *PaymentDetails_Ach) GetAccountType() PaymentDetails_Ach_AchAccountType 
 	return PaymentDetails_Ach_ACH_ACCOUNT_TYPE_UNSPECIFIED
 }
 
-type PaymentDetails_Wire struct {
-	state              protoimpl.MessageState `protogen:"open.v1"`
-	BankName           string                 `protobuf:"bytes,10,opt,name=bank_name,json=bankName,proto3" json:"bank_name,omitempty"`
-	BankAddress        string                 `protobuf:"bytes,20,opt,name=bank_address,json=bankAddress,proto3" json:"bank_address,omitempty"`
-	SwiftCode          string                 `protobuf:"bytes,30,opt,name=swift_code,json=swiftCode,proto3" json:"swift_code,omitempty"`
-	AccountNumber      string                 `protobuf:"bytes,40,opt,name=account_number,json=accountNumber,proto3" json:"account_number,omitempty"`
-	BeneficiaryName    string                 `protobuf:"bytes,50,opt,name=beneficiary_name,json=beneficiaryName,proto3" json:"beneficiary_name,omitempty"`
-	BeneficiaryAddress string                 `protobuf:"bytes,60,opt,name=beneficiary_address,json=beneficiaryAddress,proto3" json:"beneficiary_address,omitempty"`
-	WireReference      string                 `protobuf:"bytes,70,opt,name=wire_reference,json=wireReference,proto3" json:"wire_reference,omitempty"`
+type PaymentDetails_DomesticWire struct {
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	BankName    string                 `protobuf:"bytes,10,opt,name=bank_name,json=bankName,proto3" json:"bank_name,omitempty"`
+	BankAddress string                 `protobuf:"bytes,20,opt,name=bank_address,json=bankAddress,proto3" json:"bank_address,omitempty"`
+	// ABA routing number (9 digits)
+	RoutingNumber      string `protobuf:"bytes,30,opt,name=routing_number,json=routingNumber,proto3" json:"routing_number,omitempty"`
+	AccountNumber      string `protobuf:"bytes,40,opt,name=account_number,json=accountNumber,proto3" json:"account_number,omitempty"`
+	BeneficiaryName    string `protobuf:"bytes,50,opt,name=beneficiary_name,json=beneficiaryName,proto3" json:"beneficiary_name,omitempty"`
+	BeneficiaryAddress string `protobuf:"bytes,60,opt,name=beneficiary_address,json=beneficiaryAddress,proto3" json:"beneficiary_address,omitempty"`
+	WireReference      string `protobuf:"bytes,70,opt,name=wire_reference,json=wireReference,proto3" json:"wire_reference,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
 
-func (x *PaymentDetails_Wire) Reset() {
-	*x = PaymentDetails_Wire{}
+func (x *PaymentDetails_DomesticWire) Reset() {
+	*x = PaymentDetails_DomesticWire{}
 	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *PaymentDetails_Wire) String() string {
+func (x *PaymentDetails_DomesticWire) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PaymentDetails_Wire) ProtoMessage() {}
+func (*PaymentDetails_DomesticWire) ProtoMessage() {}
 
-func (x *PaymentDetails_Wire) ProtoReflect() protoreflect.Message {
+func (x *PaymentDetails_DomesticWire) ProtoReflect() protoreflect.Message {
 	mi := &file_tzero_v1_common_payment_method_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1357,54 +1358,54 @@ func (x *PaymentDetails_Wire) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PaymentDetails_Wire.ProtoReflect.Descriptor instead.
-func (*PaymentDetails_Wire) Descriptor() ([]byte, []int) {
+// Deprecated: Use PaymentDetails_DomesticWire.ProtoReflect.Descriptor instead.
+func (*PaymentDetails_DomesticWire) Descriptor() ([]byte, []int) {
 	return file_tzero_v1_common_payment_method_proto_rawDescGZIP(), []int{0, 8}
 }
 
-func (x *PaymentDetails_Wire) GetBankName() string {
+func (x *PaymentDetails_DomesticWire) GetBankName() string {
 	if x != nil {
 		return x.BankName
 	}
 	return ""
 }
 
-func (x *PaymentDetails_Wire) GetBankAddress() string {
+func (x *PaymentDetails_DomesticWire) GetBankAddress() string {
 	if x != nil {
 		return x.BankAddress
 	}
 	return ""
 }
 
-func (x *PaymentDetails_Wire) GetSwiftCode() string {
+func (x *PaymentDetails_DomesticWire) GetRoutingNumber() string {
 	if x != nil {
-		return x.SwiftCode
+		return x.RoutingNumber
 	}
 	return ""
 }
 
-func (x *PaymentDetails_Wire) GetAccountNumber() string {
+func (x *PaymentDetails_DomesticWire) GetAccountNumber() string {
 	if x != nil {
 		return x.AccountNumber
 	}
 	return ""
 }
 
-func (x *PaymentDetails_Wire) GetBeneficiaryName() string {
+func (x *PaymentDetails_DomesticWire) GetBeneficiaryName() string {
 	if x != nil {
 		return x.BeneficiaryName
 	}
 	return ""
 }
 
-func (x *PaymentDetails_Wire) GetBeneficiaryAddress() string {
+func (x *PaymentDetails_DomesticWire) GetBeneficiaryAddress() string {
 	if x != nil {
 		return x.BeneficiaryAddress
 	}
 	return ""
 }
 
-func (x *PaymentDetails_Wire) GetWireReference() string {
+func (x *PaymentDetails_DomesticWire) GetWireReference() string {
 	if x != nil {
 		return x.WireReference
 	}
@@ -2285,13 +2286,13 @@ var File_tzero_v1_common_payment_method_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_common_payment_method_proto_rawDesc = "" +
 	"\n" +
-	"$tzero/v1/common/payment_method.proto\x12\x0ftzero.v1.common\x1a\x1ctzero/v1/common/common.proto\x1a\x1bbuf/validate/validate.proto\x1a google/protobuf/descriptor.proto\"\x9f=\n" +
+	"$tzero/v1/common/payment_method.proto\x12\x0ftzero.v1.common\x1a\x1ctzero/v1/common/common.proto\x1a\x1bbuf/validate/validate.proto\x1a google/protobuf/descriptor.proto\"\xaf=\n" +
 	"\x0ePaymentDetails\x12:\n" +
 	"\x04sepa\x18\n" +
 	" \x01(\v2$.tzero.v1.common.PaymentDetails.SepaH\x00R\x04sepa\x12=\n" +
 	"\x05swift\x18\x1e \x01(\v2%.tzero.v1.common.PaymentDetails.SwiftH\x00R\x05swift\x127\n" +
-	"\x03ach\x182 \x01(\v2#.tzero.v1.common.PaymentDetails.AchH\x00R\x03ach\x12:\n" +
-	"\x04wire\x18< \x01(\v2$.tzero.v1.common.PaymentDetails.WireH\x00R\x04wire\x127\n" +
+	"\x03ach\x182 \x01(\v2#.tzero.v1.common.PaymentDetails.AchH\x00R\x03ach\x12S\n" +
+	"\rdomestic_wire\x18< \x01(\v2,.tzero.v1.common.PaymentDetails.DomesticWireH\x00R\fdomesticWire\x127\n" +
 	"\x03fps\x18F \x01(\v2#.tzero.v1.common.PaymentDetails.FpsH\x00R\x03fps\x12A\n" +
 	"\x05mpesa\x18P \x01(\v2%.tzero.v1.common.PaymentDetails.MPesaB\x02\x18\x01H\x00R\x05mpesa\x12=\n" +
 	"\x05gcash\x18Z \x01(\v2%.tzero.v1.common.PaymentDetails.GCashH\x00R\x05gcash\x12f\n" +
@@ -2400,14 +2401,14 @@ const file_tzero_v1_common_payment_method_proto_rawDesc = "" +
 	"\x1cACH_ACCOUNT_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19ACH_ACCOUNT_TYPE_CHECKING\x10\n" +
 	"\x12\x1c\n" +
-	"\x18ACH_ACCOUNT_TYPE_SAVINGS\x10\x14:\x04\x88\xa6\x1d2\x1a\x88\x03\n" +
-	"\x04Wire\x12&\n" +
+	"\x18ACH_ACCOUNT_TYPE_SAVINGS\x10\x14:\x04\x88\xa6\x1d2\x1a\xff\x02\n" +
+	"\fDomesticWire\x12&\n" +
 	"\tbank_name\x18\n" +
 	" \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18FR\bbankName\x12-\n" +
 	"\fbank_address\x18\x14 \x01(\tB\n" +
-	"\xbaH\ar\x05\x10\x01\x18\x8c\x01R\vbankAddress\x12M\n" +
-	"\n" +
-	"swift_code\x18\x1e \x01(\tB.\xbaH+r)\x10\b\x18\v2#^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$R\tswiftCode\x120\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x8c\x01R\vbankAddress\x12<\n" +
+	"\x0erouting_number\x18\x1e \x01(\tB\x15\xbaH\x12r\x10\x10\t\x18\t2\n" +
+	"^[0-9]{9}$R\rroutingNumber\x120\n" +
 	"\x0eaccount_number\x18( \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18\"R\raccountNumber\x124\n" +
 	"\x10beneficiary_name\x182 \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18FR\x0fbeneficiaryName\x12;\n" +
 	"\x13beneficiary_address\x18< \x01(\tB\n" +
@@ -2499,14 +2500,14 @@ const file_tzero_v1_common_payment_method_proto_rawDesc = "" +
 	"\x10beneficiary_name\x18\x1e \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01\x18\x8c\x01R\x0fbeneficiaryName\x125\n" +
 	"\x11payment_reference\x18( \x01(\tB\b\xbaH\x05r\x03\x18\x8c\x01R\x10paymentReference:\x05\x88\xa6\x1d\xb4\x01B\x10\n" +
-	"\adetails\x12\x05\xbaH\x02\b\x01*\xef\x04\n" +
+	"\adetails\x12\x05\xbaH\x02\b\x01*\xf8\x04\n" +
 	"\x11PaymentMethodType\x12#\n" +
 	"\x1fPAYMENT_METHOD_TYPE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18PAYMENT_METHOD_TYPE_SEPA\x10\n" +
 	"\x12\x1d\n" +
 	"\x19PAYMENT_METHOD_TYPE_SWIFT\x10\x14\x12\x1b\n" +
-	"\x17PAYMENT_METHOD_TYPE_ACH\x102\x12\x1c\n" +
-	"\x18PAYMENT_METHOD_TYPE_WIRE\x10<\x12\x1b\n" +
+	"\x17PAYMENT_METHOD_TYPE_ACH\x102\x12%\n" +
+	"!PAYMENT_METHOD_TYPE_DOMESTIC_WIRE\x10<\x12\x1b\n" +
 	"\x17PAYMENT_METHOD_TYPE_FPS\x10F\x12\"\n" +
 	"\x1aPAYMENT_METHOD_TYPE_M_PESA\x10P\x1a\x02\b\x01\x12\x1e\n" +
 	"\x1aPAYMENT_METHOD_TYPE_G_CASH\x10Z\x12,\n" +
@@ -2551,7 +2552,7 @@ var file_tzero_v1_common_payment_method_proto_goTypes = []any{
 	(*PaymentDetails_IndianBankTransfer)(nil),                       // 11: tzero.v1.common.PaymentDetails.IndianBankTransfer
 	(*PaymentDetails_Swift)(nil),                                    // 12: tzero.v1.common.PaymentDetails.Swift
 	(*PaymentDetails_Ach)(nil),                                      // 13: tzero.v1.common.PaymentDetails.Ach
-	(*PaymentDetails_Wire)(nil),                                     // 14: tzero.v1.common.PaymentDetails.Wire
+	(*PaymentDetails_DomesticWire)(nil),                             // 14: tzero.v1.common.PaymentDetails.DomesticWire
 	(*PaymentDetails_Pesonet)(nil),                                  // 15: tzero.v1.common.PaymentDetails.Pesonet
 	(*PaymentDetails_Instapay)(nil),                                 // 16: tzero.v1.common.PaymentDetails.Instapay
 	(*PaymentDetails_PakistanBankTransfer)(nil),                     // 17: tzero.v1.common.PaymentDetails.PakistanBankTransfer
@@ -2570,7 +2571,7 @@ var file_tzero_v1_common_payment_method_proto_depIdxs = []int32{
 	6,  // 0: tzero.v1.common.PaymentDetails.sepa:type_name -> tzero.v1.common.PaymentDetails.Sepa
 	12, // 1: tzero.v1.common.PaymentDetails.swift:type_name -> tzero.v1.common.PaymentDetails.Swift
 	13, // 2: tzero.v1.common.PaymentDetails.ach:type_name -> tzero.v1.common.PaymentDetails.Ach
-	14, // 3: tzero.v1.common.PaymentDetails.wire:type_name -> tzero.v1.common.PaymentDetails.Wire
+	14, // 3: tzero.v1.common.PaymentDetails.domestic_wire:type_name -> tzero.v1.common.PaymentDetails.DomesticWire
 	7,  // 4: tzero.v1.common.PaymentDetails.fps:type_name -> tzero.v1.common.PaymentDetails.Fps
 	8,  // 5: tzero.v1.common.PaymentDetails.mpesa:type_name -> tzero.v1.common.PaymentDetails.MPesa
 	10, // 6: tzero.v1.common.PaymentDetails.gcash:type_name -> tzero.v1.common.PaymentDetails.GCash
@@ -2611,7 +2612,7 @@ func file_tzero_v1_common_payment_method_proto_init() {
 		(*PaymentDetails_Sepa_)(nil),
 		(*PaymentDetails_Swift_)(nil),
 		(*PaymentDetails_Ach_)(nil),
-		(*PaymentDetails_Wire_)(nil),
+		(*PaymentDetails_DomesticWire_)(nil),
 		(*PaymentDetails_Fps_)(nil),
 		(*PaymentDetails_Mpesa)(nil),
 		(*PaymentDetails_Gcash)(nil),

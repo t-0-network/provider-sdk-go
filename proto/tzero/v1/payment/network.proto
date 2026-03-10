@@ -15,7 +15,6 @@ import "buf/validate/validate.proto";
  * All methods of this service are idempotent, meaning they are safe to retry and multiple calls with the same parameters will have no additional effect.
  */
 service NetworkService {
-
   /**
     * Used by the provider to publish pay-in and pay-out quotes (FX rates) into the network.
     * These quotes include tiered pricing bands and an expiration timestamp.

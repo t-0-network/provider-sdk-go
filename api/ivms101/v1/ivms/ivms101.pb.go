@@ -441,7 +441,7 @@ func (x *LocalNaturalPersonNameId) GetNameIdentifierType() NaturalPersonNameType
 
 // Constraint: ValidAddress
 // There must be at least one occurrence of the element addressLine or (streetName and
-// buildingName and/or buildingNumber).
+// buildingName and/or buildingNumber)
 type Address struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Definition: Identifies the nature of the address.
@@ -1073,7 +1073,7 @@ const file_ivms101_v1_ivms_ivms101_proto_rawDesc = "" +
 	"\x18LocalNaturalPersonNameId\x12@\n" +
 	"\x12primary_identifier\x18\x01 \x01(\tB\x11\xbaH\x0er\f\x10\x01\x18d2\x06.*\\S.*R\x11primaryIdentifier\x12G\n" +
 	"\x14secondary_identifier\x18\x02 \x01(\tB\x14\xbaH\x11r\x0f\x18d2\v^$|^.*\\S.*$R\x13secondaryIdentifier\x12\\\n" +
-	"\x14name_identifier_type\x18\x03 \x01(\x0e2\".ivms101.NaturalPersonNameTypeCodeB\x06\xbaH\x03\xc8\x01\x01R\x12nameIdentifierType\"\x93\a\n" +
+	"\x14name_identifier_type\x18\x03 \x01(\x0e2\".ivms101.NaturalPersonNameTypeCodeB\x06\xbaH\x03\xc8\x01\x01R\x12nameIdentifierType\"\x94\a\n" +
 	"\aAddress\x12C\n" +
 	"\faddress_type\x18\x01 \x01(\x0e2\x18.ivms101.AddressTypeCodeB\x06\xbaH\x03\xc8\x01\x01R\vaddressType\x124\n" +
 	"\n" +
@@ -1092,8 +1092,8 @@ const file_ivms101_v1_ivms_ivms101_proto_rawDesc = "" +
 	"\ttown_name\x18\v \x01(\tB\x14\xbaH\x11r\x0f\x18#2\v^$|^.*\\S.*$R\btownName\x12B\n" +
 	"\x12town_location_name\x18\f \x01(\tB\x14\xbaH\x11r\x0f\x18#2\v^$|^.*\\S.*$R\x10townLocationName\x129\n" +
 	"\rdistrict_name\x18\r \x01(\tB\x14\xbaH\x11r\x0f\x18#2\v^$|^.*\\S.*$R\fdistrictName\x12F\n" +
-	"\x14country_sub_division\x18\x0e \x01(\tB\x14\xbaH\x11r\x0f\x18#2\v^$|^.*\\S.*$R\x12countrySubDivision\x12>\n" +
-	"\faddress_line\x18\x0f \x03(\tB\x1b\xbaH\x18\x92\x01\x15\x10\a\"\x11r\x0f\x18F2\v^$|^.*\\S.*$R\vaddressLine\x12+\n" +
+	"\x14country_sub_division\x18\x0e \x01(\tB\x14\xbaH\x11r\x0f\x18#2\v^$|^.*\\S.*$R\x12countrySubDivision\x12?\n" +
+	"\faddress_line\x18\x0f \x03(\tB\x1c\xbaH\x19\x92\x01\x16\x10\a\"\x12r\x10\x18\xff\x012\v^$|^.*\\S.*$R\vaddressLine\x12+\n" +
 	"\acountry\x18\x10 \x01(\tB\x11\xbaH\x0er\f2\n" +
 	"^[A-Z]{2}$R\acountry\"\x9d\x01\n" +
 	"\x13DateAndPlaceOfBirth\x12M\n" +
@@ -1103,10 +1103,10 @@ const file_ivms101_v1_ivms_ivms101_proto_rawDesc = "" +
 	"\x13national_identifier\x18\x01 \x01(\tB\x11\xbaH\x0er\f\x10\x01\x18#2\x06.*\\S.*R\x12nationalIdentifier\x12e\n" +
 	"\x18national_identifier_type\x18\x02 \x01(\x0e2#.ivms101.NationalIdentifierTypeCodeB\x06\xbaH\x03\xc8\x01\x01R\x16nationalIdentifierType\x12>\n" +
 	"\x10country_of_issue\x18\x03 \x01(\tB\x14\xbaH\x11r\x0f2\r^$|^[A-Z]{2}$R\x0ecountryOfIssue\x12I\n" +
-	"\x16registration_authority\x18\x04 \x01(\tB\x12\xbaH\x0fr\r2\v^$|^.*\\S.*$R\x15registrationAuthority\"\xed\x02\n" +
+	"\x16registration_authority\x18\x04 \x01(\tB\x12\xbaH\x0fr\r2\v^$|^.*\\S.*$R\x15registrationAuthority\"\xf7\x02\n" +
 	"\vLegalPerson\x124\n" +
-	"\x04name\x18\x01 \x01(\v2\x18.ivms101.LegalPersonNameB\x06\xbaH\x03\xc8\x01\x01R\x04name\x12A\n" +
-	"\x14geographic_addresses\x18\x02 \x03(\v2\x10.ivms101.AddressR\x11geographicAddress\x12=\n" +
+	"\x04name\x18\x01 \x01(\v2\x18.ivms101.LegalPersonNameB\x06\xbaH\x03\xc8\x01\x01R\x04name\x12K\n" +
+	"\x14geographic_addresses\x18\x02 \x03(\v2\x10.ivms101.AddressB\b\xbaH\x05\x92\x01\x02\b\x01R\x11geographicAddress\x12=\n" +
 	"\x0fcustomer_number\x18\x03 \x01(\tB\x14\xbaH\x11r\x0f\x1822\v^$|^.*\\S.*$R\x0ecustomerNumber\x12X\n" +
 	"\x17national_identification\x18\x04 \x01(\v2\x1f.ivms101.NationalIdentificationR\x16nationalIdentification\x12L\n" +
 	"\x17country_of_registration\x18\x05 \x01(\tB\x14\xbaH\x11r\x0f2\r^$|^[A-Z]{2}$R\x15countryOfRegistration\"\x93\x02\n" +
