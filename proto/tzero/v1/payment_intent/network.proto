@@ -1,0 +1,389 @@
+syntax = "proto3";
+
+package tzero.v1.payment_intent;
+
+import "buf/validate/validate.proto";
+import "tzero/v1/common/common.proto";
+import "tzero/v1/common/payment_method.proto";
+import "ivms101/v1/ivms/ivms101.proto";
+import "google/protobuf/timestamp.proto";
+
+/**
+ * PaymentIntentService provides Payment Intent APIs for providers.
+ *
+ * Payment Intent is a flow where:
+ * 1. Beneficiary provider creates a payment intent specifying amount/currency
+ * 2. End-user pays via one of the returned payment options
+ * 3. Pay-in provider confirms funds received
+ * 4. Settlement will happen periodically between providers
+ *
+ * This service is hosted by the T-0 Network and called by providers.
+ */
+service PaymentIntentService {
+  /**
+  * Used by the provider to publish payment intent (pay-in) quotes into the network.
+  * These quotes include tiered pricing bands and an expiration timestamp.
+ */
+  rpc UpdateQuote(UpdateQuoteRequest) returns (UpdateQuoteResponse)  {
+    option idempotency_level = IDEMPOTENT;
+  };
+
+  /**
+   * GetQuote returns available quotes for a given currency and amount.
+   *
+   * Use this to check indicative rates before creating a payment intent.
+   * The returned quotes show which providers can accept pay-ins and their current rates.
+   *
+   * Note: Quotes are indicative only. The actual rate used for settlement is determined
+   * at the time of ConfirmFundsReceived.
+   */
+  rpc GetQuote(GetQuoteRequest) returns (GetQuoteResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+
+  /**
+   * CreatePaymentIntent initiates a new payment intent.
+   *
+   * Called by the beneficiary provider (the one who will receive the settlement).
+   * The network finds suitable pay-in providers, retrieves their payment details,
+   * and returns available payment options to present to the end-user.
+   *
+   * The returned payment_intent_id must be stored by the beneficiary provider
+   * to correlate with the PaymentIntentUpdate notification received later.
+   *
+   * Idempotency: Multiple calls with the same external_reference return the same payment_intent_id.
+   */
+  rpc CreatePaymentIntent(CreatePaymentIntentRequest) returns (CreatePaymentIntentResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+
+  /**
+   * ConfirmFundsReceived confirms that the pay-in provider has received funds from the end-user.
+   */
+  rpc ConfirmFundsReceived(ConfirmFundsReceivedRequest) returns (ConfirmFundsReceivedResponse) {
+    option idempotency_level = IDEMPOTENT;
+  };
+}
+
+/*
+ * Base currency is always USD, so the quotes are always in USD/currency format.
+ */
+message UpdateQuoteRequest {
+  /**
+   * Zero or more quotes for pay-in operations, each quote must have a unique currency, and one or more bands, with the
+   * unique client_quote_id for each band.
+   */
+  repeated Quote payment_intent_quotes = 10;
+
+  message Quote {
+    // BRL, EUR, GBP, etc. (ISO 4217 currency code)
+    string currency = 10 [(buf.validate.field).string = {
+      len: 3,
+      pattern: "^[A-Z]{3}$"
+    }];
+
+    // Payment method must be specified
+    tzero.v1.common.PaymentMethodType payment_method = 25 [(buf.validate.field).required = true];
+
+    // list of bands for this quote
+    repeated Band bands = 30 [(buf.validate.field).repeated = {
+      min_items: 1
+    }];
+
+    // expiration time of the quote
+    google.protobuf.Timestamp expiration = 60 [(buf.validate.field).timestamp.gt_now = true];
+
+    // timestamp quote was created
+    google.protobuf.Timestamp timestamp = 70 [(buf.validate.field).required = true];
+
+    message Band {
+      // unique client generated id for this band
+      string client_quote_id = 10 [(buf.validate.field).string = {
+        min_len: 1,
+        max_len: 64
+      }];
+
+      // max amount of USD this quote is applicable for. Please look into documentation for valid amounts.
+      tzero.v1.common.Decimal max_amount = 40 [(buf.validate.field).required = true];
+
+      // USD/currency rate
+      tzero.v1.common.Decimal rate = 50 [(buf.validate.field).required = true];
+    }
+  }
+}
+
+message UpdateQuoteResponse {}
+
+/**
+ * Request to get indicative quotes for a currency/amount pair.
+ */
+message GetQuoteRequest {
+  /**
+   * Pay-in currency code in ISO 4217 format.
+   * Examples: "EUR", "GBP", "USD", "KES"
+   */
+  string currency = 20 [(buf.validate.field).string = {
+    len: 3,
+    pattern: "^[A-Z]{3}$"
+  }];
+
+  /**
+   * Pay-in amount in the specified currency.
+   * This is the fiat amount the end-user will pay.
+   */
+  tzero.v1.common.Decimal amount = 30 [(buf.validate.field).required = true];
+}
+
+message GetQuoteResponse {
+  oneof Result {
+    Success success = 10;
+    QuoteNotFound quote_not_found = 20;
+  }
+
+  /**
+   * Quotes were found for the requested currency/amount.
+   */
+  message Success {
+    /*
+     * Best quotes per payment method available for the specified currency and amount.
+     */
+    repeated IndicativeQuote best_quotes = 10;
+    /**
+     * Available indicative quotes.
+     * Each entry represents a different pay-in provider and payment method combination.
+     * Use CreatePaymentIntent to get the actual payment details for making a payment.
+     */
+    repeated IndicativeQuote all_quotes = 20;
+
+    /**
+     * Represents an indicative quote from a pay-in provider.
+     * Contains the payment method, provider info, and indicative exchange rate.
+     */
+    message IndicativeQuote {
+      /**
+       * The payment method type (e.g., SEPA, SWIFT, mobile money).
+       */
+      tzero.v1.common.PaymentMethodType payment_method = 10;
+
+      /**
+       * The T-0 provider ID of the pay-in provider offering this quote.
+       * Providers can use this to identify counterparties.
+       */
+      uint32 provider_id = 20;
+
+      /**
+       * Indicative exchange rate USD/XXX (base currency is always USD).
+       *
+       * Note: This is indicative only. The actual rate is determined when pay-in provider calls ConfirmFundsReceived
+       */
+      tzero.v1.common.Decimal indicative_rate = 30;
+    }
+  }
+
+  /**
+   * No providers have active quotes for the requested currency/amount.
+   */
+  message QuoteNotFound {}
+}
+
+/**
+ * Represents pay-in details for a payment intent option.
+ * Contains the payment method, provider info, payment details, and indicative exchange rate.
+ */
+message PaymentIntentPayInDetails {
+  /**
+   * The payment method type (e.g., SEPA, SWIFT, mobile money).
+   * Determines which payment details format is provided.
+   */
+  tzero.v1.common.PaymentMethodType payment_method = 10;
+
+  /**
+   * The T-0 provider ID of the pay-in provider offering this quote.
+   * Providers can use this to identify counterparties.
+   */
+  uint32 provider_id = 20;
+
+  /**
+   * Payment details for the end-user to make the payment.
+   * Contains bank account info, mobile money details, etc. based on payment_method.
+   * This should be displayed to the end-user to complete their payment.
+   */
+  tzero.v1.common.PaymentDetails payment_details = 30;
+
+  /**
+   * Indicative exchange rate USD/XXX (base currency is always USD).
+   *
+   * Note: This is indicative only. The actual rate is determined when pay-in provider calls ConfirmFundsReceived
+   */
+  tzero.v1.common.Decimal indicative_rate = 40;
+}
+
+/**
+ * Request to create a new payment intent.
+ */
+message CreatePaymentIntentRequest {
+  /**
+   * Provider-supplied unique identifier for this payment intent.
+   * Used for idempotency - subsequent requests with the same external_reference
+   * return the existing payment_intent_id instead of creating a new one.
+   * Should be unique per beneficiary provider.
+   */
+  string external_reference = 10;
+
+  /**
+   * Pay-in currency code in ISO 4217 format.
+   * The currency that the end-user will pay in.
+   */
+  string currency = 20 [(buf.validate.field).string = {
+    len: 3,
+    pattern: "^[A-Z]{3}$"
+  }];
+
+  /**
+   * Pay-in amount in the specified currency.
+   * The exact fiat amount the end-user should pay.
+   */
+  tzero.v1.common.Decimal amount = 30 [(buf.validate.field).required = true];
+
+  /**
+   * Travel rule compliance data.
+   * Required for regulatory compliance under FATF guidelines.
+   */
+  TravelRuleData travel_rule_data = 40;
+
+  /**
+   * Travel rule data containing originator information.
+   */
+  message TravelRuleData {
+    /**
+     * The natural or legal person or legal arrangement who is identified
+     * as the receiver of the requested payment.
+     */
+    repeated ivms101.Person beneficiary = 10 [(buf.validate.field).repeated.min_items = 1];
+
+    /**
+     * Optional travel rule data of the payer
+     */
+    optional ivms101.Person payer = 40;
+  }
+}
+
+message CreatePaymentIntentResponse {
+  oneof Result {
+    /**
+     * Payment intent created successfully with available payment options.
+     */
+    Success success = 10;
+    /**
+     * Failed to create payment intent.
+     */
+    Failure failure = 20;
+  }
+
+  /**
+   * Payment intent created successfully.
+   */
+  message Success {
+    /**
+     * Unique identifier for this payment intent.
+     * Store this ID to correlate with:
+     * - PaymentIntentUpdate notifications you'll receive
+     */
+    uint64 payment_intent_id = 10 [(buf.validate.field).uint64.gt = 0];
+
+    /**
+     * Available payment options for the end-user.
+     * Present these options to your user so they can choose how to pay.
+     * Each entry contains the payment details needed to complete the payment.
+     */
+    repeated PaymentIntentPayInDetails pay_in_details = 20;
+  }
+
+  /**
+   * Payment intent creation failed.
+   */
+  message Failure {
+    /**
+     * The reason for failure.
+     */
+    Reason reason = 10;
+
+    enum Reason {
+      FAILURE_REASON_UNSPECIFIED = 0;
+      /**
+       * No quotes found for the requested currency/amount.
+       */
+      FAILURE_REASON_QUOTE_NOT_FOUND = 10;
+      /**
+       * Payment intent rejected.
+       */
+      FAILURE_REASON_REJECTED = 20;
+    }
+  }
+}
+
+/**
+ * Request to confirm that funds have been received from the end-user.
+ */
+message ConfirmFundsReceivedRequest {
+  /**
+   * The payment intent ID being confirmed.
+   * Must be a valid, pending payment intent.
+   */
+  uint64 payment_intent_id = 10 [(buf.validate.field).uint64.gt = 0];
+
+  /*
+   * Confirmation code received in the get payment details along with the payment_intent_id. This is to prevent
+   * the accidental confirmation of the wrong payment intent.
+   */
+  string confirmation_code = 20;
+
+  /**
+   * The payment method used by the end-user.
+   * Must match one of the payment methods returned in CreatePaymentIntentResponse.
+   */
+  tzero.v1.common.PaymentMethodType payment_method = 30;
+
+  /*
+   * Transaction reference
+   */
+  string transaction_reference = 40 [(buf.validate.field).string = {
+    min_len: 1,
+    max_len: 256
+  }];
+
+}
+
+message ConfirmFundsReceivedResponse {
+  oneof Result {
+    /**
+     * Funds confirmed successfully. Settlement will proceed.
+     */
+    Accept accept = 10;
+    /**
+     * Funds receipt rejected. No settlement will occur.
+     */
+    Reject reject = 20;
+  }
+
+  /**
+   * Funds accepted - settlement will proceed.
+   * The beneficiary provider will receive a PaymentIntentUpdate notification
+   * with settlement details.
+   */
+  message Accept {
+  }
+
+  /**
+   * Funds rejected.
+   */
+  message Reject {
+    Reason reason = 10;
+
+    enum Reason {
+      REJECT_REASON_UNSPECIFIED = 0;
+      REJECT_REASON_CONFIRMATION_CODE_MISMATCH = 10;
+      REJECT_REASON_NO_ACTIVE_QUOTE = 20;
+    }
+  }
+}

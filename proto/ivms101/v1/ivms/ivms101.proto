@@ -155,7 +155,7 @@ message LocalNaturalPersonNameId {
 
 // Constraint: ValidAddress
 // There must be at least one occurrence of the element addressLine or (streetName and
-// buildingName and/or buildingNumber).
+// buildingName and/or buildingNumber)
 message Address {
 
   // Definition: Identifies the nature of the address.
@@ -250,7 +250,7 @@ message Address {
       max_items: 7,
       items: {
         string: {
-          max_len: 70,
+          max_len: 255,
           pattern: "^$|^.*\\S.*$"  // allow empty, disallow whitespace-only
         }
       }
@@ -338,7 +338,10 @@ message LegalPerson {
   LegalPersonName name = 1 [(buf.validate.field).required = true];
 
   // Definition: The address of the legal person.
-  repeated Address geographic_addresses = 2 [json_name = "geographicAddress"];
+  repeated Address geographic_addresses = 2 [
+    json_name = "geographicAddress",
+    (buf.validate.field).repeated.min_items = 1
+  ];
 
   // Definition: The unique identification number applied by the VASP to customer.
   // NOTE The specification has a descrepency in that 5.2.9.3.3 specifies an element

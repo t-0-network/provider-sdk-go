@@ -129,6 +129,8 @@ message AppendLedgerEntriesRequest {
     ACCOUNT_TYPE_FEE_EXPENSE = 60; // Reflects the fees that the provider has to pay for the services provided by the network.
     ACCOUNT_TYPE_SETTLEMENT_IN = 80;
     ACCOUNT_TYPE_SETTLEMENT_OUT = 90;
+    ACCOUNT_TYPE_PAYMENT_INTENT_IN = 100;
+    ACCOUNT_TYPE_PAYMENT_INTENT_OUT = 110;
   }
 }
 
@@ -272,6 +274,7 @@ message UpdatePaymentRequest {
       REASON_NO_QUOTE_AFTER_AML_APPROVAL = 1; // AML review completed, but the pay-out provider no longer has a valid quote available.
       REASON_QUOTE_REJECTED_AFTER_AML_APPROVAL = 2; // AML review completed and a new quote was required, but the pay-in provider rejected the updated quote (e.g. due to rate change after AML delay).
       REASON_AML_RISK_CHECK_FAILED = 3; // Payment was rejected by the pay-out provider because the AML / risk checks failed.
+      REASON_CREDIT_LIMIT_EXCEEDED_AFTER_AML_APPROVAL = 4; // AML review completed and a new quote was found, but the updated settlement amount exceeds the credit limit between the pay-in and pay-out providers.
     }
   }
 
