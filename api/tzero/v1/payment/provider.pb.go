@@ -28,34 +28,40 @@ const (
 type AppendLedgerEntriesRequest_AccountType int32
 
 const (
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_UNSPECIFIED    AppendLedgerEntriesRequest_AccountType = 0
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_BALANCE        AppendLedgerEntriesRequest_AccountType = 20
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PAY_IN         AppendLedgerEntriesRequest_AccountType = 40
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PAY_OUT        AppendLedgerEntriesRequest_AccountType = 50
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_FEE_EXPENSE    AppendLedgerEntriesRequest_AccountType = 60 // Reflects the fees that the provider has to pay for the services provided by the network.
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_SETTLEMENT_IN  AppendLedgerEntriesRequest_AccountType = 80
-	AppendLedgerEntriesRequest_ACCOUNT_TYPE_SETTLEMENT_OUT AppendLedgerEntriesRequest_AccountType = 90
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_UNSPECIFIED        AppendLedgerEntriesRequest_AccountType = 0
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_BALANCE            AppendLedgerEntriesRequest_AccountType = 20
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PAY_IN             AppendLedgerEntriesRequest_AccountType = 40
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PAY_OUT            AppendLedgerEntriesRequest_AccountType = 50
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_FEE_EXPENSE        AppendLedgerEntriesRequest_AccountType = 60 // Reflects the fees that the provider has to pay for the services provided by the network.
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_SETTLEMENT_IN      AppendLedgerEntriesRequest_AccountType = 80
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_SETTLEMENT_OUT     AppendLedgerEntriesRequest_AccountType = 90
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PAYMENT_INTENT_IN  AppendLedgerEntriesRequest_AccountType = 100
+	AppendLedgerEntriesRequest_ACCOUNT_TYPE_PAYMENT_INTENT_OUT AppendLedgerEntriesRequest_AccountType = 110
 )
 
 // Enum value maps for AppendLedgerEntriesRequest_AccountType.
 var (
 	AppendLedgerEntriesRequest_AccountType_name = map[int32]string{
-		0:  "ACCOUNT_TYPE_UNSPECIFIED",
-		20: "ACCOUNT_TYPE_BALANCE",
-		40: "ACCOUNT_TYPE_PAY_IN",
-		50: "ACCOUNT_TYPE_PAY_OUT",
-		60: "ACCOUNT_TYPE_FEE_EXPENSE",
-		80: "ACCOUNT_TYPE_SETTLEMENT_IN",
-		90: "ACCOUNT_TYPE_SETTLEMENT_OUT",
+		0:   "ACCOUNT_TYPE_UNSPECIFIED",
+		20:  "ACCOUNT_TYPE_BALANCE",
+		40:  "ACCOUNT_TYPE_PAY_IN",
+		50:  "ACCOUNT_TYPE_PAY_OUT",
+		60:  "ACCOUNT_TYPE_FEE_EXPENSE",
+		80:  "ACCOUNT_TYPE_SETTLEMENT_IN",
+		90:  "ACCOUNT_TYPE_SETTLEMENT_OUT",
+		100: "ACCOUNT_TYPE_PAYMENT_INTENT_IN",
+		110: "ACCOUNT_TYPE_PAYMENT_INTENT_OUT",
 	}
 	AppendLedgerEntriesRequest_AccountType_value = map[string]int32{
-		"ACCOUNT_TYPE_UNSPECIFIED":    0,
-		"ACCOUNT_TYPE_BALANCE":        20,
-		"ACCOUNT_TYPE_PAY_IN":         40,
-		"ACCOUNT_TYPE_PAY_OUT":        50,
-		"ACCOUNT_TYPE_FEE_EXPENSE":    60,
-		"ACCOUNT_TYPE_SETTLEMENT_IN":  80,
-		"ACCOUNT_TYPE_SETTLEMENT_OUT": 90,
+		"ACCOUNT_TYPE_UNSPECIFIED":        0,
+		"ACCOUNT_TYPE_BALANCE":            20,
+		"ACCOUNT_TYPE_PAY_IN":             40,
+		"ACCOUNT_TYPE_PAY_OUT":            50,
+		"ACCOUNT_TYPE_FEE_EXPENSE":        60,
+		"ACCOUNT_TYPE_SETTLEMENT_IN":      80,
+		"ACCOUNT_TYPE_SETTLEMENT_OUT":     90,
+		"ACCOUNT_TYPE_PAYMENT_INTENT_IN":  100,
+		"ACCOUNT_TYPE_PAYMENT_INTENT_OUT": 110,
 	}
 )
 
@@ -132,10 +138,11 @@ func (PayoutResponse_Failed_Reason) EnumDescriptor() ([]byte, []int) {
 type UpdatePaymentRequest_Failed_Reason int32
 
 const (
-	UpdatePaymentRequest_Failed_REASON_UNSPECIFIED                       UpdatePaymentRequest_Failed_Reason = 0
-	UpdatePaymentRequest_Failed_REASON_NO_QUOTE_AFTER_AML_APPROVAL       UpdatePaymentRequest_Failed_Reason = 1 // AML review completed, but the pay-out provider no longer has a valid quote available.
-	UpdatePaymentRequest_Failed_REASON_QUOTE_REJECTED_AFTER_AML_APPROVAL UpdatePaymentRequest_Failed_Reason = 2 // AML review completed and a new quote was required, but the pay-in provider rejected the updated quote (e.g. due to rate change after AML delay).
-	UpdatePaymentRequest_Failed_REASON_AML_RISK_CHECK_FAILED             UpdatePaymentRequest_Failed_Reason = 3 // Payment was rejected by the pay-out provider because the AML / risk checks failed.
+	UpdatePaymentRequest_Failed_REASON_UNSPECIFIED                              UpdatePaymentRequest_Failed_Reason = 0
+	UpdatePaymentRequest_Failed_REASON_NO_QUOTE_AFTER_AML_APPROVAL              UpdatePaymentRequest_Failed_Reason = 1 // AML review completed, but the pay-out provider no longer has a valid quote available.
+	UpdatePaymentRequest_Failed_REASON_QUOTE_REJECTED_AFTER_AML_APPROVAL        UpdatePaymentRequest_Failed_Reason = 2 // AML review completed and a new quote was required, but the pay-in provider rejected the updated quote (e.g. due to rate change after AML delay).
+	UpdatePaymentRequest_Failed_REASON_AML_RISK_CHECK_FAILED                    UpdatePaymentRequest_Failed_Reason = 3 // Payment was rejected by the pay-out provider because the AML / risk checks failed.
+	UpdatePaymentRequest_Failed_REASON_CREDIT_LIMIT_EXCEEDED_AFTER_AML_APPROVAL UpdatePaymentRequest_Failed_Reason = 4 // AML review completed and a new quote was found, but the updated settlement amount exceeds the credit limit between the pay-in and pay-out providers.
 )
 
 // Enum value maps for UpdatePaymentRequest_Failed_Reason.
@@ -145,12 +152,14 @@ var (
 		1: "REASON_NO_QUOTE_AFTER_AML_APPROVAL",
 		2: "REASON_QUOTE_REJECTED_AFTER_AML_APPROVAL",
 		3: "REASON_AML_RISK_CHECK_FAILED",
+		4: "REASON_CREDIT_LIMIT_EXCEEDED_AFTER_AML_APPROVAL",
 	}
 	UpdatePaymentRequest_Failed_Reason_value = map[string]int32{
-		"REASON_UNSPECIFIED":                       0,
-		"REASON_NO_QUOTE_AFTER_AML_APPROVAL":       1,
-		"REASON_QUOTE_REJECTED_AFTER_AML_APPROVAL": 2,
-		"REASON_AML_RISK_CHECK_FAILED":             3,
+		"REASON_UNSPECIFIED":                              0,
+		"REASON_NO_QUOTE_AFTER_AML_APPROVAL":              1,
+		"REASON_QUOTE_REJECTED_AFTER_AML_APPROVAL":        2,
+		"REASON_AML_RISK_CHECK_FAILED":                    3,
+		"REASON_CREDIT_LIMIT_EXCEEDED_AFTER_AML_APPROVAL": 4,
 	}
 )
 
@@ -1853,7 +1862,7 @@ var File_tzero_v1_payment_provider_proto protoreflect.FileDescriptor
 
 const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\n" +
-	"\x1ftzero/v1/payment/provider.proto\x12\x10tzero.v1.payment\x1a$tzero/v1/common/payment_method.proto\x1a%tzero/v1/common/payment_receipt.proto\x1a\x1ctzero/v1/common/common.proto\x1a\x1divms101/v1/ivms/ivms101.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\"\x9e\n" +
+	"\x1ftzero/v1/payment/provider.proto\x12\x10tzero.v1.payment\x1a$tzero/v1/common/payment_method.proto\x1a%tzero/v1/common/payment_receipt.proto\x1a\x1ctzero/v1/common/common.proto\x1a\x1divms101/v1/ivms/ivms101.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\"\xe7\n" +
 	"\n" +
 	"\x1aAppendLedgerEntriesRequest\x12f\n" +
 	"\ftransactions\x18\x14 \x03(\v28.tzero.v1.payment.AppendLedgerEntriesRequest.TransactionB\b\xbaH\x05\x92\x01\x02\b\x01R\ftransactions\x1a\xc4\x05\n" +
@@ -1880,7 +1889,7 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	" \x01(\rR\x0eaccountOwnerId\x12[\n" +
 	"\faccount_type\x18\x14 \x01(\x0e28.tzero.v1.payment.AppendLedgerEntriesRequest.AccountTypeR\vaccountType\x12.\n" +
 	"\x05debit\x18( \x01(\v2\x18.tzero.v1.common.DecimalR\x05debit\x120\n" +
-	"\x06credit\x182 \x01(\v2\x18.tzero.v1.common.DecimalR\x06credit\"\xd7\x01\n" +
+	"\x06credit\x182 \x01(\v2\x18.tzero.v1.common.DecimalR\x06credit\"\xa0\x02\n" +
 	"\vAccountType\x12\x1c\n" +
 	"\x18ACCOUNT_TYPE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14ACCOUNT_TYPE_BALANCE\x10\x14\x12\x17\n" +
@@ -1888,7 +1897,9 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\x14ACCOUNT_TYPE_PAY_OUT\x102\x12\x1c\n" +
 	"\x18ACCOUNT_TYPE_FEE_EXPENSE\x10<\x12\x1e\n" +
 	"\x1aACCOUNT_TYPE_SETTLEMENT_IN\x10P\x12\x1f\n" +
-	"\x1bACCOUNT_TYPE_SETTLEMENT_OUT\x10Z\"\x1d\n" +
+	"\x1bACCOUNT_TYPE_SETTLEMENT_OUT\x10Z\x12\"\n" +
+	"\x1eACCOUNT_TYPE_PAYMENT_INTENT_IN\x10d\x12#\n" +
+	"\x1fACCOUNT_TYPE_PAYMENT_INTENT_OUT\x10n\"\x1d\n" +
 	"\x1bAppendLedgerEntriesResponse\"\xb1\x05\n" +
 	"\rPayoutRequest\x12\x1d\n" +
 	"\n" +
@@ -1926,7 +1937,7 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\x12REASON_UNSPECIFIED\x10\x00B\n" +
 	"\n" +
 	"\b_detailsB\b\n" +
-	"\x06result\"\xc3\t\n" +
+	"\x06result\"\xf8\t\n" +
 	"\x14UpdatePaymentRequest\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\x05 \x01(\x04R\tpaymentId\x12*\n" +
@@ -1944,16 +1955,17 @@ const file_tzero_v1_payment_provider_proto_rawDesc = "" +
 	"\x14beneficiary_provider\x18\n" +
 	" \x01(\v2\x0f.ivms101.PersonH\x00R\x13beneficiaryProvider\x88\x01\x01B\x17\n" +
 	"\x15_beneficiary_providerB\x13\n" +
-	"\x11_travel_rule_data\x1a\x9c\x02\n" +
+	"\x11_travel_rule_data\x1a\xd1\x02\n" +
 	"\x06Failed\x12L\n" +
 	"\x06reason\x18\n" +
 	" \x01(\x0e24.tzero.v1.payment.UpdatePaymentRequest.Failed.ReasonR\x06reason\x12\x1d\n" +
-	"\adetails\x18\x14 \x01(\tH\x00R\adetails\x88\x01\x01\"\x98\x01\n" +
+	"\adetails\x18\x14 \x01(\tH\x00R\adetails\x88\x01\x01\"\xcd\x01\n" +
 	"\x06Reason\x12\x16\n" +
 	"\x12REASON_UNSPECIFIED\x10\x00\x12&\n" +
 	"\"REASON_NO_QUOTE_AFTER_AML_APPROVAL\x10\x01\x12,\n" +
 	"(REASON_QUOTE_REJECTED_AFTER_AML_APPROVAL\x10\x02\x12 \n" +
-	"\x1cREASON_AML_RISK_CHECK_FAILED\x10\x03B\n" +
+	"\x1cREASON_AML_RISK_CHECK_FAILED\x10\x03\x123\n" +
+	"/REASON_CREDIT_LIMIT_EXCEEDED_AFTER_AML_APPROVAL\x10\x04B\n" +
 	"\n" +
 	"\b_details\x1a\x93\x01\n" +
 	"\tConfirmed\x12:\n" +
